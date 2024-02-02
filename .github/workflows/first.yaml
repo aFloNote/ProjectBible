@@ -3,17 +3,16 @@ name: first workflow
 on:
   push:
     branches:
-      -master
-    pull_request:
+      - master
+  pull_request:
     branches:
-      -main
-    workflow_dispatch:
+      - master
+  workflow_dispatch:
+
 jobs:
   hello:
     runs-on: ubuntu-latest
     steps:
-      -name: hello world
+      - name: hello world
         run: echo "Hello World"
         shell: bash
-  
-
