@@ -13,44 +13,7 @@ import {
   import "@/views/Sermons/SermonNavBar.css";
   import React from "react";
   
-  const NAV_ITEMS = [
-    {
-      href: "https://github.com/radix-ui",
-      label: "Recent",
-      icon: MdUpdate,
-      className: "sm:block hidden",
-      desc: "Recent",
-    },
-    {
-      href: "https://github.com/radix-ui",
-      label: "Menu",
-      icon: FaBookOpen,
-      className: "sm:block hidden",
-      desc: "Scripture",
-    },
-    {
-      href: "https://github.com/radix-ui",
-      label: "Series",
-      icon: FaLayerGroup,
-      className: "sm:block hidden",
-      desc: "Series",
-    },
-    {
-      href: "https://github.com/radix-ui",
-      label: "Author",
-      icon: IoPersonCircleOutline,
-      className: "sm:block hidden",
-      desc: "Speaker",
-    },
-    {
-      href: "https://github.com/radix-ui",
-      label: "Search",
-      icon: FaSearch,
-      className: "sm:block hidden",
-      desc: "Recent",
-    },
-  ];
-  
+ 
   function TopBar() {
     const { theme } = useTheme();
     const isDark =
@@ -61,35 +24,66 @@ import {
     const iconSize = 20;
   
     return (
-      <div>
-        <NavigationMenu>
-          <NavigationMenuList className={`NavigationMenuList ${themeClass} pt-1`}>
-            {NAV_ITEMS.map((item, index) => (
-              <React.Fragment key={index}>
-                <NavigationMenuItem className={item.className}>
-                  <NavigationMenuLink
-                    href={item.href}
-                    className={`${navigationMenuTriggerStyle()}`}
-                  >
-                    {item.label}
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-                <NavigationMenuItem className="sm:hidden block">
-                  <NavigationMenuLink
-                    href={item.href}
-                    className={`${navigationMenuTriggerStyle()}`}
-                  >
-                    <div className="flex flex-col items-center">
-                      <item.icon size={iconSize} />
-                      <span className="text-xs font-normal">{item.desc}</span>
-                    </div>
-                  </NavigationMenuLink>
-                </NavigationMenuItem>
-              </React.Fragment>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
-      </div>
+        <NavigationMenu className="fixed top-0 w-screen sm:hidden block">
+        <NavigationMenuList className={`NavigationMenuList ${themeClass}`}>
+
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="https://github.com/radix-ui"
+          className={`${navigationMenuTriggerStyle()}`}
+        >
+          <MdUpdate size={iconSize} />
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+
+    
+
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="https://github.com/radix-ui"
+          className={`${navigationMenuTriggerStyle()}`}
+        >
+          <MdUpdate size={iconSize} />
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+
+   
+
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="https://github.com/radix-ui"
+          className={`${navigationMenuTriggerStyle()}`}
+        >
+          <FaBookOpen size={iconSize} />
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+
+
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="https://github.com/radix-ui"
+          className={`${navigationMenuTriggerStyle()}`}
+        >
+          <FaLayerGroup size={iconSize} />
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+
+      
+
+      <NavigationMenuItem>
+        <NavigationMenuLink
+          href="https://github.com/radix-ui"
+          className={`${navigationMenuTriggerStyle()}`}
+        >
+          <IoPersonCircleOutline size={iconSize} />
+        </NavigationMenuLink>
+      </NavigationMenuItem>
+
+      
+
+    
+      </NavigationMenuList>
+  </NavigationMenu>
     );
   }
   
