@@ -6,8 +6,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 import { FaBars } from 'react-icons/fa';
 import { useState } from 'react';
+import { ModeToggle } from "@/components/mode-toogle";
 function MenuDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -18,12 +24,22 @@ function MenuDropdown() {
         />
 </DropdownMenuTrigger>
       <DropdownMenuContent>
-        <DropdownMenuLabel>My Account</DropdownMenuLabel>
+        <DropdownMenuLabel>Home</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>Profile</DropdownMenuItem>
-        <DropdownMenuItem>Billing</DropdownMenuItem>
-        <DropdownMenuItem>Team</DropdownMenuItem>
-        <DropdownMenuItem>Subscription</DropdownMenuItem>
+        <DropdownMenuItem>
+
+        <Popover>
+  <PopoverTrigger>Open</PopoverTrigger>
+  <PopoverContent>Place content for the popover here.</PopoverContent>
+</Popover>
+
+
+          
+        </DropdownMenuItem>
+        <DropdownMenuItem>Ministries</DropdownMenuItem>
+        <DropdownMenuItem>Connect</DropdownMenuItem>
+        <DropdownMenuItem>Give</DropdownMenuItem>
+        <DropdownMenuItem><ModeToggle/></DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );

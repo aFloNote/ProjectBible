@@ -7,7 +7,9 @@ function SermonLanding() {
     <>
       <Header/>
       <Main />
-      <Footer />  
+        <div>
+      <Footer />
+        </div>
     </>
   );
 }
