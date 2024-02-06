@@ -1,12 +1,12 @@
 #root {
-    display: flex;
-    justify-content: flex-start; /* Center children horizontally */
-    align-items: center; /* Center children vertically */
-    min-height: 100vh; /* Ensure it takes at least the full height of the viewport */
-    flex-direction: column; /* Stack children vertically */
-    max-width: 1280px;
-    margin: 0 auto; /* Center the container itself if it's smaller than the viewport width */
-    padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Vertically center the content */
+  align-items: center; /* Horizontally center the content if flex-direction is column */
+  max-width: 1280px;
+/* Adjust height as needed, 100vh will make it fill the viewport height */
+  margin: 0 auto;
+  padding: 1rem;
+ 
 }
-
 

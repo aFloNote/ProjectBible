@@ -1,17 +1,16 @@
 
-import Header from '@/views/Sermons/SermonHeader';
 import Main from '@/views/Sermons/MainContent';
-import Footer from '@/views/Sermons/SermonFooter';
+import Footer from '@/views/Sermons/SermonNav';
+import Header from '@/views/sitenav/TopNav';
 function SermonLanding() {
   return (
     <>
-      <Header/>
+    <Header />
       <Main />
-        <div>
+      
       <Footer />
-        </div>
+       
     </>
   );
 }
-
 export default SermonLanding;

@@ -1,10 +1,7 @@
 
 import { ThemeProvider } from "@/components/theme-provider"
-
-import './App.css'
-
 import Sermon from '@/views/Sermons/SermonLanding'
-
+import "./App.css"
 function App() {
   
 

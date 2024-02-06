@@ -15,10 +15,6 @@ module.exports = {
       screens: {
         "2xl": "1400px",
       },
-      fontSize: {
-        '3xl':'2rem'
-      },
-    
     },
     extend: {
       colors: {
