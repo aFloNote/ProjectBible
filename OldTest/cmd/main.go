@@ -1,25 +1,18 @@
 package main
 
-
-
 import (
-	
 	"net/http"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/storage"
+	"os"
+	
 	"github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/router"
-    _"github.com/lib/pq"
-	"os"
-	"log"
-	"fmt"
-	
+	"github.com/aFloNote/ProjectBible/OldTest/internal/storage"
+	_ "github.com/lib/pq"
 )
 
 
 func main() {
-	
-	
-    fmt.Println("DB_HOST:", dbHost)
+
 	fileStorage.InitMinio(os.Getenv("STORAGE_ENDPOINT"), os.Getenv("STORAGE_ACCESS_KEY"), os.Getenv("STORAGE_SECRET_KEY"))
 	db.InitDB()
 

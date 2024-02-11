@@ -1,0 +1,14 @@
+○ apache2.service
+     Loaded: masked (Reason: Unit apache2.service is masked.)
+     Active: inactive (dead)
+
+Feb 08 00:00:01 pop-os systemd[1]: Reloading The Apache HTTP Server...
+Feb 08 00:00:01 pop-os systemd[1]: Reloaded The Apache HTTP Server.
+Feb 09 00:00:01 pop-os systemd[1]: Reloading The Apache HTTP Server...
+Feb 09 00:00:01 pop-os systemd[1]: Reloaded The Apache HTTP Server.
+Feb 10 00:00:01 pop-os systemd[1]: Reloading The Apache HTTP Server...
+Feb 10 00:00:01 pop-os systemd[1]: Reloaded The Apache HTTP Server.
+Feb 10 18:45:31 pop-os systemd[1]: Stopping The Apache HTTP Server...
+Feb 10 18:45:31 pop-os systemd[1]: apache2.service: Deactivated successfully.
+Feb 10 18:45:31 pop-os systemd[1]: Stopped The Apache HTTP Server.
+Feb 10 18:45:31 pop-os systemd[1]: apache2.service: Consumed 5.283s CPU time.

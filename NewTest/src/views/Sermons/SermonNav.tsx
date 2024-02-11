@@ -11,6 +11,7 @@ import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdUpdate } from "react-icons/md";
 import { FaLayerGroup, FaBookOpen} from "react-icons/fa";
 import React from "react";
+
 import "@/Styles/SermonNav.css";
 
 const NAV_ITEMS = [
@@ -42,22 +43,19 @@ const NAV_ITEMS = [
     desc: "Speaker",
   },
  
+ 
 ];
 
 function SermonNav() {
   const { theme } = useTheme();
-  const isDark =
-    theme === "dark" ||
-    (theme === "system" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const themeClass = isDark ? "dark" : "light";
+
   const iconSize = 20;
 
   return (
     <div>
       <NavigationMenu className="sm:hidden block">
         <NavigationMenuList
-          className={`NavigationMenuList ${themeClass} text-center fixed bottom-0 inset-x-0 pt-2 flex justify-between`}
+          className={`NavigationMenuList ${theme} text-center fixed bottom-0 inset-x-0 pt-2 flex justify-between`}
         >
           {NAV_ITEMS.map((item, index) => (
             <React.Fragment key={index}>
