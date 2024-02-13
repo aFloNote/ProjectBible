@@ -9,10 +9,12 @@ import { Auth0Provider } from "@auth0/auth0-react";
 function App() {
   return (
     <Auth0Provider
-      domain="dev-n78yi183h67c5ooa.us.auth0.com"
-      clientId="Sr4PDtUW7RxqtGEHC4TEhwNBS9YM04oq"
+      domain="dev-gzursgw36hm2kcsi.us.auth0.com"
+      clientId="LdLlgYFRihdKp1a7bVcsjLAAHQcZcbAz"
       authorizationParams={{
         redirect_uri: "https://localhost/admin",
+        audience: "https://sermon.api",
+        scope: "read:author",
       }}
     >
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
