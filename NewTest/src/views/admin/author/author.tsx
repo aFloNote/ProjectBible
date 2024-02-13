@@ -19,7 +19,15 @@ function Author() {
   useEffect(() => {
     // Step 2: Set Up an Interceptor
     const setupAxiosInterceptors = async () => {
+<<<<<<< HEAD
       const token = await getAccessTokenSilently();
+=======
+      const token = await getAccessTokenSilently({
+        authorizationParams: {
+          audience: "https://sermon.api",
+          scope: "read:authors",
+          }});
+>>>>>>> test
       console.log(token);
       api.interceptors.request.use(config => {
         if (token) {
