@@ -7,14 +7,23 @@ import AuthAdmin from "@/views/admin/authadmin";
 import { Auth0Provider } from "@auth0/auth0-react";
 
 function App() {
+  const redirect = import.meta.env.VITE_REACT_APP_REDIRECT_URI;
+  const aud =import.meta.env.VITE_REACT_APP_AUD;
+  const scope= import.meta.env.VITE_REACT_APP_SCOPE;
+  const domain=import.meta.env.VITE_REACT_APP_DOMAIN;
+  const clientId=import.meta.env.VITE_REACT_APP_CLIENT_ID;
+ 
+
+
   return (
     <Auth0Provider
-      domain="dev-gzursgw36hm2kcsi.us.auth0.com"
-      clientId="LdLlgYFRihdKp1a7bVcsjLAAHQcZcbAz"
+      domain= {domain as string}
+      clientId={clientId as string}
+      useRefreshTokens={true}
       authorizationParams={{
-        redirect_uri: "https://localhost/admin",
-        audience: "https://sermon.api",
-        scope: "read:author",
+        redirect_uri: redirect,
+        audience: aud,
+        scope: scope,
       }}
     >
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
@@ -30,3 +39,5 @@ function App() {
 }
 
 export default App;
+
+
