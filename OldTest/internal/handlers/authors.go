@@ -17,7 +17,7 @@ type Author struct {
 }
 
 // AuthorsHandler handles the /api/authors endpoint
-func AuthorsHandler() http.Handler {
+func FetchAuthorsHandler() http.Handler {
 	return middleware.EnsureValidToken()(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// CORS Headers.

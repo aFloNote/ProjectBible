@@ -26,6 +26,7 @@
   console.log(authorsData);
     
   if (!authorsData || authorsData===undefined || error || isLoading) {
+      console.log(error)
       return <div>Error Finding Authors</div>
   }
   else{

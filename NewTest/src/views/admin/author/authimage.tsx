@@ -2,21 +2,37 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 interface AuthImageProps {
-  // Define any props for the component here
+  onImageUpdate: (files: File[]) => void;
 }
 
-export const AuthImage: React.FC<AuthImageProps> = () => {
-  const [images, setImages] = useState<string[]>([]);
+interface ImageWithPreview {
+  file: File;
+  preview: string;
+}
+
+export const AuthImage: React.FC<AuthImageProps> = ({ onImageUpdate }) => {
+  const [images, setImages] = useState<ImageWithPreview[]>([]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Map the accepted files into an array of file object URLs and update state
     const mappedImages = acceptedFiles.map(file => ({
-      preview: URL.createObjectURL(file)
+      file,
+      preview: URL.createObjectURL(file),
     }));
-    setImages(mappedImages.map(file => file.preview));
+    setImages(mappedImages);
   }, []);
 
-  const { getRootProps, getInputProps} = useDropzone({
+  const removeImage = (event: React.MouseEvent<HTMLButtonElement>, imageSrc: string) => {
+    event.stopPropagation();
+    setImages(images.filter(image => image.preview !== imageSrc));
+    URL.revokeObjectURL(imageSrc);
+  };
+
+  useEffect(() => {
+    const files = images.map(image => image.file);
+    onImageUpdate(files);
+  }, [images, onImageUpdate]);
+
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: {
       'image/jpeg': [],
@@ -25,18 +41,6 @@ export const AuthImage: React.FC<AuthImageProps> = () => {
     maxFiles: 1,
   });
 
-  // Function to removev an image
-  const removeImage = (event: React.MouseEvent<HTMLButtonElement>, imageSrc: string) => {
-    event.stopPropagation();
-    setImages(images.filter(src => src !== imageSrc));
-    URL.revokeObjectURL(imageSrc); // Clean up the object URL to avoid memory leaks
-  };
-
-  useEffect(() => {
-    // Clean up all object URLs to avoid memory leaks
-    return () => images.forEach(imageSrc => URL.revokeObjectURL(imageSrc));
-  }, [images]);
-  
   return (
     <div {...getRootProps()} className="cursor-pointer">
       <input {...getInputProps()} />
@@ -44,13 +48,13 @@ export const AuthImage: React.FC<AuthImageProps> = () => {
         <div className="flex flex-col items-center justify-center">
           {images.map((image, index) => (
             <div key={index} className="relative">
-              <img src={image} alt="preview" className="max-w-xs max-h-32" />
+              <img src={image.preview} alt="preview" className="max-w-xs max-h-32" />
               <button 
-                onClick={(event) => removeImage(event,image)} 
+                onClick={(event) => removeImage(event, image.preview)} 
                 className="absolute top-0 right-0 p-1 rounded-full"
                 type="button"
               >
-                &times; {/* Cross symbol to indicate removal */}
+                &times;
               </button>
             </div>
           ))}

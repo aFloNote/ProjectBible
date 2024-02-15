@@ -16,7 +16,7 @@ func NewRouter() *http.ServeMux {
     router := http.NewServeMux()
 
 
-	router.Handle("/api/fetchauthors", handlers.AuthorsHandler())
+	router.Handle("/api/fetchauthors", handlers.FetchAuthorsHandler())
 	router.Handle("/api/private-scoped", handlers.PrivateScopedHandler())
 
 	log.Print("Server listening on https://localhost")
