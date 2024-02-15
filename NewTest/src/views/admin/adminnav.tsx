@@ -14,10 +14,10 @@ function AdminNav() {
   const { theme } = useTheme(); 
   return (
     <NavigationMenu>
-    <NavigationMenuList className={`NavigationMenuList ${theme} text-center fixed top-0 inset-x-0 pt-2 flex justify-between`}>
-      <NavigationMenuItem>
+    <NavigationMenuList className={`NavigationMenuList ${theme} text-center fixed top-0 justify-between inset-x-0`}>
+      <NavigationMenuItem className="">
         <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-        <NavigationMenuContent>
+        <NavigationMenuContent >
           <NavigationMenuLink>Link</NavigationMenuLink>
         </NavigationMenuContent>
       </NavigationMenuItem>

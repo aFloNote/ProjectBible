@@ -1,17 +1,22 @@
 
 import Nav from '@/views/admin/adminnav'
-import Author from '@/views/admin/author/author'
-
+import {Author} from '@/views/admin/author/author'
 function Admin() {
   return (
-    <div className="flex flex-col h-screen">
-      <div>
-        <Nav/>
+    <>
+      <div >
+      <Nav />
       </div>
-      <div className="flex-none">
-        <Author/>
-      </div>
+      
+        <div className="flex-1 overflow-auto pt-20">
+          <Author />
+        </div>
+        <div className="flex-1 overflow-auto">
+       
+     
+    
     </div>
+    </>
   );
 }
 

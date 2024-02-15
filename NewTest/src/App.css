@@ -1,8 +1,6 @@
 #root {
   display: flex;
-  flex-direction: column;
-  justify-content: center; /* Vertically center the content */
-  align-items: center; /* Horizontally center the content if flex-direction is column */
+  /* Horizontally center the content if flex-direction is column */
   max-width: 1280px;
 /* Adjust height as needed, 100vh will make it fill the viewport height */
   margin: 0 auto;
