@@ -14,33 +14,41 @@ import { Button } from "@/components/ui/button";
 import { AuthImage } from "@/views/admin/author/authimage";
 
 import { useState } from "react";
+import { uploadAuthor } from "@/hooks/sermonhooks";
+
 // Import your components here
 
 export function NewAuthor() {
   const [name, setName] = useState("");
   const [ministry, setMinistry] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const { data,error,isLoading,mutate } = uploadAuthor();
 
   const handleImageUpdate = (files: File[]) => {
     setUploadedFiles(files);
   };
 
-  const handleSubmit = async (event: { preventDefault: () => void; }) => {
-    event.preventDefault();
-
-    if (!canSubmit) return;
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
 
     const formData = new FormData();
     formData.append("name", name);
     formData.append("ministry", ministry);
-
-    // Assuming you're handling a single file for simplicity
-    if (uploadedFiles.length > 0) {
-      formData.append("image", uploadedFiles[0], uploadedFiles[0].name);
+    formData.append("image", uploadedFiles[0]);
+   
+    let servResponse = ''
+    if (data) {
+      servResponse = data.message;
+    }
+    else if (error) {
+      servResponse = error.toString();
+    }
+    else if (isLoading) {
+      servResponse = 'Loading...';
     }
 
-    // Make the API call with formData
-    // ...
+    mutate(formData);
+    console.log('asdfsdf',servResponse);
   };
 
   // Determine if the form can be submitted based on name, ministry, and image presence

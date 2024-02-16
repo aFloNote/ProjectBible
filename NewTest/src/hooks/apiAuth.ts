@@ -19,6 +19,29 @@ export const UseApi = () => {
       const response = await axios.get<T>('https://localhost/api'+endpoint, config);
       return response.data;
     };
+
+    const uploadApi = async <T, R>(endpoint: string, data: T, config: AxiosRequestConfig = {}): Promise<R> => {
+      const token = await getAccessTokenSilently();
+      
+      // Setup default headers if not provided
+      if (!config.headers) {
+        config.headers = {};
+      }
   
-    return fetchApi;
+      // Append the Authorization header with the Bearer token
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+  
+      const response = await axios.post<R>('https://localhost/api' + endpoint, data, {
+        ...config,
+      
+      });
+  
+      return response.data;
+    };
+  
+   
+  
+    return {fetchApi,uploadApi};
   };

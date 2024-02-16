@@ -1,9 +1,12 @@
 package fileStorage
 
 import (
-	"context"
+	
 	"log"
+	"mime/multipart"
+	"net/http"
 	"os"
+
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
@@ -24,14 +27,26 @@ func InitMinio(endpoint, accessKeyID, secretAccessKey string) *minio.Client {
 }
 
 // listBuckets is a helper function to list and log all bucket names. It verifies the MinIO client is connected.
-func listBuckets(minio *minio.Client) {
-	buckets, err := minio.ListBuckets(context.Background())
-	if err != nil {
-		log.Fatalf("Failed to list buckets: %v", err)
-	}
 
-	log.Printf("Successfully connected to MinIO! Client: %#v\n", minio)
-	for _, bucket := range buckets {
-		log.Printf("Bucket found: %s", bucket.Name)
-	}
+
+func ParseFile(r *http.Request, maxMemory int64, formFileName string) (multipart.File, *multipart.FileHeader, string, error) {
+    // Parse the multipart form with the specified max memory limit
+    if err := r.ParseMultipartForm(maxMemory); err != nil {
+        return nil, nil, "",err
+    }
+
+    // Retrieve the file from the form data
+    file, header, err := r.FormFile(formFileName)
+    if err != nil {
+        return nil, nil, "", err
+    }
+
+    // Determine the content type, defaulting to "application/octet-stream" if not found
+    contentType := header.Header.Get("Content-Type")
+    if contentType == "" {
+        contentType = "application/octet-stream"
+    }
+
+    return file, header, contentType,nil
 }
+

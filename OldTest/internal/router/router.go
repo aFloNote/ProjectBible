@@ -8,15 +8,20 @@ import (
     "log"
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/handlers"
-
+	"github.com/minio/minio-go/v7"
 
 )
 
-func NewRouter() *http.ServeMux {
+
+
+
+
+func NewRouter(minio *minio.Client) *http.ServeMux {
     router := http.NewServeMux()
 
 
 	router.Handle("/api/fetchauthors", handlers.FetchAuthorsHandler())
+	router.Handle("/api/uploadauthors", handlers.AddAuthorsHandler(minio))
 	router.Handle("/api/private-scoped", handlers.PrivateScopedHandler())
 
 	log.Print("Server listening on https://localhost")

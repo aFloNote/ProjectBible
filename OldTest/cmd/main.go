@@ -14,9 +14,9 @@ import (
 func main() {
 	
    
-	fileStorage.InitMinio(os.Getenv("STORAGE_ENDPOINT"), os.Getenv("STORAGE_ACCESS_KEY"), os.Getenv("STORAGE_SECRET_KEY"))
-	db.InitDB()
-	router.NewRouter()
+	 minio:=fileStorage.InitMinio(os.Getenv("STORAGE_ENDPOINT"), os.Getenv("STORAGE_ACCESS_KEY"), os.Getenv("STORAGE_SECRET_KEY"))
+	 db.InitDB()
+	 router.NewRouter(minio)
 	
 	//db.InsertAuthor()
 
