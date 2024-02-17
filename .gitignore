@@ -4,12 +4,11 @@ node_modules/
 dist/
 build/
 *.tsbuildinfo
-.env*
+
 .env.local
 .env.development
 .env.production
-cert.pem
-key.pem
+.env
 .vite/
 npm-debug.log*
 yarn-debug.log*

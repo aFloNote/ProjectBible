@@ -1,0 +1,14 @@
+DB_USER=root
+DB_PASSWORD=secret
+DB_HOST=postgres
+DB_PORT=5432
+DB_NAME=BibleDB
+DB_URL=postgres://root:secret@postgres:5432/BibleDB
+STORAGE_ENDPOINT=s3.us-west-004.backblazeb2.com
+STORAGE_ACCESS_KEY=002b2e3e4e5e6e7e8e9e
+STORAGE_SECRET_KEY=K004dbVPG5hroanEsR1VUSmMq8gMK/E
+
+# Our Auth0 API's Identifier.
+AUTH0_DOMAIN=dev-gzursgw36hm2kcsi.us.auth0.com
+AUTH0_AUDIENCE=https://sermon.api
+
