@@ -4,7 +4,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import "./App.css";
 import AuthAdmin from "@/views/admin/authadmin";
 import { QueryClient, QueryClientProvider  } from 'react-query'
-
+import { Provider } from 'react-redux';
+import {store} from '@/redux/store';
 import { Auth0Provider } from "@auth0/auth0-react";
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         scope: scope,
       }}
     >
+      <Provider store={store}>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
           <Router>
@@ -38,6 +40,7 @@ function App() {
           </Router>
         </ThemeProvider>
       </QueryClientProvider>
+      </Provider>
     </Auth0Provider>
   );
 }

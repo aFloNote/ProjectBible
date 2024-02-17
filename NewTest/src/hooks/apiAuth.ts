@@ -15,7 +15,7 @@ export const UseApi = () => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-  
+      console.log('gsd')
       const response = await axios.get<T>('https://localhost/api'+endpoint, config);
       return response.data;
     };
@@ -37,7 +37,7 @@ export const UseApi = () => {
         ...config,
       
       });
-  
+      console.log('response',response);
       return response.data;
     };
   

@@ -26,38 +26,51 @@ type Author struct {
 // AuthorsHandler handles the /api/authors endpoint
 
 func FetchAuthorsHandler() http.Handler {
-	
-	return middleware.EnsureValidToken()(
-		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// CORS Headers.
-			w.Header().Set("Access-Control-Allow-Credentials", "true")
-			w.Header().Set("Access-Control-Allow-Origin", "https://localhost/admin")
-			w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-			w.Header().Set("Content-Type", "application/json")
+    return middleware.EnsureValidToken()(
+        http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            // CORS Headers.
+            w.Header().Set("Access-Control-Allow-Credentials", "true")
+            w.Header().Set("Access-Control-Allow-Origin", "https://localhost/admin")
+            w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+            w.Header().Set("Content-Type", "application/json")
+		
+            // Fetch author data from the database
+            rows, err := db.Query("SELECT author_id, name, ministry, image_path FROM authors")
+            if err != nil {
+				fmt.Fprintf(os.Stderr,"Error query: %v", err)
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+            }
+            defer rows.Close()
 
-			// Simulated author data
-			authors := []Author{
-				{
-					AuthorID:   1,
-					Name:       "John Doe",
-					Ministry:   "Global Outreach",
-					ImagePath:  "path/to/image1.jpg",
-				},
-				{
-					AuthorID:   2,
-					Name:       "Jane Smith",
-					Ministry:   "Local Missions",
-					ImagePath:  "path/to/image2.jpg",
-				},
-			}
+            authors := []Author{}
+            for rows.Next() {
+                var author Author
+                err := rows.Scan(&author.AuthorID, &author.Name, &author.Ministry, &author.ImagePath)
+                if err != nil {
+					fmt.Fprintf(os.Stderr,"Error scaning rows: %v", err)
+                    http.Error(w, err.Error(), http.StatusInternalServerError)
+                    return
+                }
 
-			// Encode the authors slice to JSON and write it to the response
-			if err := json.NewEncoder(w).Encode(authors); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
-		}),
-	)
+                authors = append(authors, author)
+            }
+
+            // Check for errors from iterating over rows.
+            if err := rows.Err(); err != nil {
+				fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+            }
+
+            // Encode the authors slice to JSON and write it to the response
+            if err := json.NewEncoder(w).Encode(authors); err != nil {
+				fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
+                http.Error(w, err.Error(), http.StatusInternalServerError)
+                return
+            }
+        }),
+    )
 }
 
 func AddAuthorsHandler(minioClient *minio.Client) http.Handler {
@@ -94,7 +107,7 @@ func AddAuthorsHandler(minioClient *minio.Client) http.Handler {
 
 			 // Attempt to insert author information into the database
 			query := "INSERT INTO authors (name, ministry, image_path) VALUES ($1, $2, $3)"
-			_, err = db.ExecQuery(query, name, ministry, path) // Note: Using path as MinIO doesn't return a URL in uploadInfo
+			_, err = db.Exec(query, name, ministry, path) // Note: Using path as MinIO doesn't return a URL in uploadInfo
 			if err != nil {
 				// If the query fails, attempt to remove the uploaded file from MinIO
 				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, minio.RemoveObjectOptions{})

@@ -2,7 +2,6 @@
   import * as React from "react";
   import {  ChevronsUpDown } from "lucide-react";
   import {  CheckIcon } from "@radix-ui/react-icons"
-  import { FetchAuthor } from '@/hooks/sermonhooks';
   import { Button } from "@/components/ui/button";
   import {
     Command,
@@ -17,15 +16,18 @@
     PopoverTrigger,
   } from "@/components/ui/popover";
   import { cn } from "@/lib/utils";
-
-  export function SelectAuthor() {
-    const { data: authorsData, error, isLoading } = FetchAuthor();
+  import {Author} from '@/hooks/sermonhooks'
+  interface NewAuthorProps {
+    authorsData: Author[];
+  }
+    export function SelectAuthor({ authorsData }: NewAuthorProps, {error}: {error: Error | null}) {
+  
     const [open, setOpen] = React.useState(false);
     const [author_id, setID] = React.useState("");
 
   console.log(authorsData);
     
-  if (!authorsData || authorsData===undefined || error || isLoading) {
+  if (!authorsData || authorsData===undefined || error) {
       console.log(error)
       return <div>Error Finding Authors</div>
   }

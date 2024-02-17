@@ -6,7 +6,7 @@ import ("database/sql"
 
 
 
-func ExecQuery(query string, args ...interface{}) (sql.Result, error) {
+func Exec(query string, args ...interface{}) (sql.Result, error) {
     // Prepare the SQL statement to ensure that our SQL query is safe before executing it.
     db := GetDB()
     stmt, err := db.Prepare(query)
@@ -22,4 +22,21 @@ func ExecQuery(query string, args ...interface{}) (sql.Result, error) {
     }
 
     return result, nil
+}
+func Query(query string, args ...interface{}) (*sql.Rows, error) {
+    // Prepare the SQL statement to ensure that our SQL query is safe before executing it.
+    db := GetDB()
+    stmt, err := db.Prepare(query)
+    if err != nil {
+        return nil, fmt.Errorf("error preparing query: %w", err)
+    }
+    defer stmt.Close()
+
+    // Execute the SQL statement with variable parameters.
+    rows, err := stmt.Query(args...)
+    if err != nil {
+        return nil, fmt.Errorf("error executing query: %w", err)
+    }
+
+    return rows, nil
 }
