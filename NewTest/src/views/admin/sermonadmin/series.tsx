@@ -9,15 +9,16 @@ import {
 import { SelectItem } from "@/views/admin/sermonadmin/selectItem";
 import { NewItem } from "@/views/admin/sermonadmin/newItem";
 import { Fetch } from "@/hooks/sermonhooks";
-interface Series{
-  id: string;
-  name: string;
-  imagePath: string;
-}
-
+import { setSelectedSeries } from '@/redux/selected';
+import { useDispatch } from 'react-redux';
+import { SeriesType } from '@/types/sermon';
 export function Series() {
-  const { data: seriesData, error:seriesError } = Fetch<Series[]>('fetchseries', 'SeriesData');
+  const dispatch = useDispatch();
 
+  const { data: seriesData, error:seriesError } = Fetch<SeriesType[]>('fetchseries', 'SeriesData');
+  const handleSelectSeries = (series: SeriesType[]) => { // replace with your Author type
+    dispatch(setSelectedSeries(series));
+  };
   
   return (
     <Card className="w-[500px] mx-auto">
@@ -28,7 +29,7 @@ export function Series() {
       <CardContent>
         {seriesData && (
           <>
-          <SelectItem items={seriesData} error={seriesError as Error} type="Series" idKey="series_id" nameKey="title" />
+          <SelectItem items={seriesData} error={seriesError as Error} type="Series" idKey="series_id" nameKey="title" onSelect={handleSelectSeries} />
           <NewItem  items={seriesData} error={seriesError as Error} type="Series" head="title" desc="description"/>
           </>
         )}

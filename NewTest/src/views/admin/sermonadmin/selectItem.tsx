@@ -26,6 +26,7 @@
     type: string;
     idKey: string;
     nameKey: string;
+    onSelect: (item: any) => void;
   }
   
   export function SelectItem({  items, error, type, idKey, nameKey }: SelectProps) {

@@ -95,7 +95,7 @@ func AddSeriesHandler(minioClient *minio.Client) http.Handler {
             // Get form data
             title := r.FormValue("head")
             desc := r.FormValue("desc")
-
+            fmt.Println("theTitle is ",title)
             // Get the image file from the form
             
 			path:= fmt.Sprintf("sermons/series/%s/image/%s", title, header.Filename)
@@ -105,8 +105,9 @@ func AddSeriesHandler(minioClient *minio.Client) http.Handler {
                 http.Error(w, err.Error(), http.StatusInternalServerError)
                 return
             }
-
+            
 			 // Attempt to insert author information into the database
+            fmt.Println("Title before database query: ", title)
 			query := "INSERT INTO series (title, description, num_of_eps,image_path) VALUES ($1, $2, $3,$4)"
 			_, err = db.Exec(query, title, desc,0, path) // Note: Using path as MinIO doesn't return a URL in uploadInfo
 			if err != nil {
@@ -124,7 +125,7 @@ func AddSeriesHandler(minioClient *minio.Client) http.Handler {
 				return
 			}
 			// Example: Get the ID of the last inserted row (if supported by your DB)
-		
+            fmt.Println("theTitle is ",title)
 			
 
             // Write the author string to the response

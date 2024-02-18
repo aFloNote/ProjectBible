@@ -1,7 +1,6 @@
 import { ThemeProvider } from "@/components/theme-provider";
 import Sermon from "@/views/Sermons/SermonLanding";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import "./App.css";
 import AuthAdmin from "@/views/admin/authadmin";
 import { QueryClient, QueryClientProvider  } from 'react-query'
 import { Provider } from 'react-redux';
@@ -18,6 +17,7 @@ function App() {
 
 
   return (
+    <div id="root" className="flex items-center justify-center min-h-screen">
     <Auth0Provider
       domain= {domain as string}
       clientId={clientId as string}
@@ -42,6 +42,7 @@ function App() {
       </QueryClientProvider>
       </Provider>
     </Auth0Provider>
+    </div>
   );
 }
 

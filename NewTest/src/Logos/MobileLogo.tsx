@@ -1,6 +1,5 @@
 import logoLight from '@/assets/FBC_TV_Logo.png';
 import logoDark from '@/assets/FBC_TV_Logo_White.png';
-import '@/Logos/ChurchLogo.css'; // Adjust the path as needed
 import { useTheme } from "@/components/theme-provider";
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 // If you're using a specific Image component (like from Next.js), import it:

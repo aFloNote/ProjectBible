@@ -42,7 +42,7 @@ export const AuthImage: React.FC<AuthImageProps> = ({ onImageUpdate }) => {
   });
 
   return (
-    <div {...getRootProps()} className="cursor-pointer">
+    <div {...getRootProps()} className="cursor-pointer text-black">
       <input {...getInputProps()} />
       {images.length > 0 ? (
         <div className="flex flex-col items-center justify-center">
@@ -51,7 +51,7 @@ export const AuthImage: React.FC<AuthImageProps> = ({ onImageUpdate }) => {
               <img src={image.preview} alt="preview" className="max-w-xs max-h-32" />
               <button 
                 onClick={(event) => removeImage(event, image.preview)} 
-                className="absolute top-0 right-0 p-1 rounded-full"
+                className="absolute top-0 right-0 p-1 rounded-full text-red-500"
                 type="button"
               >
                 &times;

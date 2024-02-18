@@ -1,19 +1,31 @@
 import Nav from "@/views/admin/adminnav";
 import { Author } from "@/views/admin/sermonadmin/author";
 import { Series } from "@/views/admin/sermonadmin/series";
+import { Sermon } from "@/views/admin/sermonadmin/sermon";
 function Admin() {
   return (
     <>
-      <div>
+        <div className="">
         <Nav />
-      </div>
+        </div>
 
-      <div className="flex-1 overflow-auto pt-20">
-        <Author />
-      </div>
+      <div className="container mx-auto">
+      
+   
+        <div className="flex flex-row">
+        
+            <Author />
+         
 
-      <div className="flex-1 overflow-auto pt-20">
-        <Series />
+          
+            <Series />
+        
+        </div>
+
+        <div className="pt-10">
+          <Sermon />
+        </div>
+      
       </div>
     </>
   );

@@ -8,18 +8,28 @@ import {
    
   
   } from "@/components/ui/navigation-menu"
+  import { ModeToggle } from "@/components/mode-toggle";
+  import {Logo} from "@/Logos/SiteLogo";
+  
 
-import { useTheme } from "@/components/theme-provider";
 import Logout from "@/logout"
 function AdminNav() {
-  const { theme } = useTheme(); 
+ 
+ 
+  
   return (
-    <NavigationMenu>
-    <NavigationMenuList className={`NavigationMenuList ${theme} text-center fixed top-0 justify-between inset-x-0`}>
-      <NavigationMenuItem className="">
+    <NavigationMenu className="shadow-sm">
+    <NavigationMenuList className={`fixed top-0 inset-x-0 pt-1 pb-1 pl-1 pr-4 flex justify-between`}>
+    <NavigationMenuItem>
+      <Logo ratio={16/9} size="8em"/>
+    </NavigationMenuItem>
+      <NavigationMenuItem>
       <Logout/>
-        
       </NavigationMenuItem>
+      <NavigationMenuItem>
+    <ModeToggle/>
+      </NavigationMenuItem>
+      
     </NavigationMenuList>
   </NavigationMenu>
   );
