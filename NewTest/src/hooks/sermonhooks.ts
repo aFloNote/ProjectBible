@@ -1,50 +1,45 @@
 import { UseApi } from '@/hooks/apiAuth';
 import { useQuery, useMutation } from 'react-query';
 
-export interface Author {
-  author_id: number;
-  name: string;
-  ministry: string;
-  imagePath: string;
-}
+
+
 interface UploadResponse {
   message: string;
   // other fields...
 }
 
 
-export function FetchAuthor() {
- 
-  const fetchApi = UseApi().fetchApi;
 
-  // Async function to fetch author data
-  const fetchAuthorData = async () => {
-    console.log('usequery')
-    const response = await fetchApi<Author[]>('/fetchauthors');
-    return response;
-  }
-
-  // Using useQuery hook to fetch data
-  
-  const { data, error, isLoading } = useQuery<Author[], Error>("AuthorData", fetchAuthorData);
-
-  // Return data, error, and loading state
-  return { data, error, isLoading };
-}
-export function uploadAuthor() {
+export function Upload(endpoint: string) {
  
   const {uploadApi} = UseApi();
 
-  const uploadAuthorData = async (formData: FormData) => {
+  const uploadData = async (formData: FormData) => {
    
     
-    return await uploadApi<FormData,UploadResponse>('/uploadauthors', formData);
+    return await uploadApi<FormData,UploadResponse>('/'+endpoint, formData);
   };
 
   // useMutation hook setup correctly
-  const { data, error, isLoading, mutate } = useMutation(uploadAuthorData);
+  const { data, error, isLoading, mutate } = useMutation(uploadData);
 
   // Return data, error, and loading state
   return { data, error, isLoading,mutate };
 }
 
+export function Fetch<TData>(endPoint: string, queryKey: string) {
+  const fetchApi = UseApi().fetchApi;
+
+  // Async function to fetch data
+  const fetchData = async () => {
+    console.log('endPoint '+endPoint)
+    const response = await fetchApi<TData>('/' + endPoint);
+    return response;
+  }
+
+  // Using useQuery hook to fetch data
+  const { data, error, isLoading } = useQuery<TData>(queryKey, fetchData);
+
+  // Return data, error, and loading state
+  return { data, error, isLoading };
+}
