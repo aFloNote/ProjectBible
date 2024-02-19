@@ -5,8 +5,10 @@ export interface  AuthorsType{
     image_path: string;
   }
 export interface SeriesType{
-    id: string;
-    name: string;
-    imagePath: string;
+    series_id: string;
+    title: string;
+    description:string;
+    image_path: string;
+    num_of_eps: number;
   }
   

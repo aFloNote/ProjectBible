@@ -16,7 +16,9 @@
     PopoverTrigger,
   } from "@/components/ui/popover";
   import { cn } from "@/lib/utils";
-
+  import { useDispatch } from 'react-redux';
+  import { setSelectedAuthor, setSelectedSeries } from '@/redux/selected'; // replace with the actual path to your actions
+  
  
   
   
@@ -26,12 +28,22 @@
     type: string;
     idKey: string;
     nameKey: string;
-    onSelect: (item: any) => void;
+  
   }
   
   export function SelectItem({  items, error, type, idKey, nameKey }: SelectProps) {
     const [open, setOpen] = React.useState(false);
     const [selectedId, setSelectedId] = React.useState("");
+
+
+    const dispatch = useDispatch();
+
+// inside your onSelect function
+
+
+
+
+
     if (!items || error ||  items===undefined || items.length===0) {
       console.log('asdfsd'+error)
       return <div>Error Finding {type}</div>
@@ -45,12 +57,12 @@
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-[200px] justify-between"
+              className="w-[200px] pl-0"
             >
               {selectedId
                 ? items.find((item) => item[idKey].toString() === selectedId)?.[nameKey]
                 : `Select ${type}...`}
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 " />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-[200px] p-0">
@@ -64,12 +76,19 @@
                     value={item[idKey].toString()}
                     onSelect={(currentValue) => {
                  
-                    console.log(currentValue, selectedId, item[idKey], item[nameKey])
-                    const currentId = typeof item[idKey] === 'number' ? parseInt(currentValue, 10) : currentValue;
+                   
+                
                   
-                  
-                      setSelectedId(currentId === selectedId ? "" : currentValue)
+                      console.log(currentValue,selectedId)
+                      setSelectedId(currentValue === selectedId ? "" : currentValue)
+                      console.log(selectedId)
                       setOpen(false)
+                      if (type === 'Author') {
+                        dispatch(setSelectedAuthor(currentValue !== selectedId ? item : null));
+                      } else if (type === 'Series') {
+                        dispatch(setSelectedSeries(currentValue !== selectedId ? item : null));
+                      }
+
                     }}
                   >
                     {item[nameKey]}

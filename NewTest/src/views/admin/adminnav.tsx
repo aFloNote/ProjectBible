@@ -10,28 +10,46 @@ import {
   } from "@/components/ui/navigation-menu"
   import { ModeToggle } from "@/components/mode-toggle";
   import {Logo} from "@/Logos/SiteLogo";
-  
+  import { useAuth0 } from "@auth0/auth0-react";
+  import {Button} from "@/components/ui/button";
 
-import Logout from "@/logout"
 function AdminNav() {
- 
+  const { logout } = useAuth0();
+
  
   
   return (
-    <NavigationMenu className="shadow-sm">
-    <NavigationMenuList className={`fixed top-0 inset-x-0 pt-1 pb-1 pl-1 pr-4 flex justify-between`}>
-    <NavigationMenuItem>
-      <Logo ratio={16/9} size="8em"/>
-    </NavigationMenuItem>
+    <div className='flex columns-3 justify-between w-full'>
+        
+        <Logo ratio={16/9} size="6em"/>
+   
+    <NavigationMenu>
+    <NavigationMenuList className="">
+  
+    
+    
+     
+  
       <NavigationMenuItem>
-      <Logout/>
+    
       </NavigationMenuItem>
+
       <NavigationMenuItem>
-    <ModeToggle/>
+      
       </NavigationMenuItem>
+      
       
     </NavigationMenuList>
   </NavigationMenu>
+  <div className='flex justify-end'>
+  <Button className='' variant="ghost" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+    Logout
+    </Button>
+    <div className='pt-2 pr-1'> 
+    <ModeToggle/>
+    </div>
+    </div>
+  </div>
   );
 }
 

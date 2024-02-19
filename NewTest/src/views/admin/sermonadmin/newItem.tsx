@@ -97,7 +97,7 @@ export function NewItem({ items,type,head,desc }: NewItemProps) {
       <DialogTrigger asChild>
         <Button variant="outline">Create {type}</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:min-w-[225px]">
         {serverResponse ? (
           <>
             <DialogHeader>
@@ -123,7 +123,7 @@ export function NewItem({ items,type,head,desc }: NewItemProps) {
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="head" className="text-right">
+                <Label htmlFor="head" className="text-left">
                   {head.charAt(0).toUpperCase()+head.slice(1)}
                 </Label>
                 <Input
@@ -134,7 +134,7 @@ export function NewItem({ items,type,head,desc }: NewItemProps) {
                 />
               </div>
               <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="desc" className="text-right">
+                <Label htmlFor="desc" className="text-left">
                   {desc.charAt(0).toUpperCase()+desc.slice(1)}
                 </Label>
                 <Input
@@ -145,10 +145,10 @@ export function NewItem({ items,type,head,desc }: NewItemProps) {
                 />
               </div>
               <div className="grid grid-rows-1 items-center gap-4">
-                <Label htmlFor="typeimage" className="text-center">
+                <Label htmlFor="typeimage" className="text-center dark:text-white">
                   Insert {type} Image
                 </Label>
-                <div className="border-dashed border-2 border-gray-300 bg-gray-100 p-4 rounded-lg cursor-pointer hover:bg-gray-200">
+                <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
                   <AuthImage onImageUpdate={handleImageUpdate} />
                 </div>
               </div>

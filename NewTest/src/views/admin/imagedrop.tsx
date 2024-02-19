@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 interface AuthImageProps {
@@ -12,6 +12,7 @@ interface ImageWithPreview {
 
 export const AuthImage: React.FC<AuthImageProps> = ({ onImageUpdate }) => {
   const [images, setImages] = useState<ImageWithPreview[]>([]);
+  const prevImagesRef = useRef<ImageWithPreview[]>([]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const mappedImages = acceptedFiles.map(file => ({
@@ -29,7 +30,9 @@ export const AuthImage: React.FC<AuthImageProps> = ({ onImageUpdate }) => {
 
   useEffect(() => {
     const files = images.map(image => image.file);
-    onImageUpdate(files);
+    if (JSON.stringify(prevImagesRef.current) !== JSON.stringify(files)) {
+      onImageUpdate(files);
+    }
   }, [images, onImageUpdate]);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -42,7 +45,7 @@ export const AuthImage: React.FC<AuthImageProps> = ({ onImageUpdate }) => {
   });
 
   return (
-    <div {...getRootProps()} className="cursor-pointer text-black">
+    <div {...getRootProps()} className="cursor-pointer text-black dark:text-white">
       <input {...getInputProps()} />
       {images.length > 0 ? (
         <div className="flex flex-col items-center justify-center">

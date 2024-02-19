@@ -4,31 +4,24 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   navigationMenuTriggerStyle,
-  NavigationMenuContent,
-  NavigationMenuTrigger
+
 } from "@/components/ui/navigation-menu";
 
-import { useTheme } from "@/components/theme-provider";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdUpdate } from "react-icons/md";
 import { FaLayerGroup, FaBookOpen, FaSearch } from "react-icons/fa";
 import Logo from "@/Logos/MobileLogo";
-import "@/Styles/TopNav.css";
-import React from "react";
+
+
 
 
 function TopBar() {
-  const { theme } = useTheme();
-  const isDark =
-    theme === "dark" ||
-    (theme === "system" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches);
-  const themeClass = isDark ? "dark" : "light";
+  
   const iconSize = 20;
 
   return (
       <NavigationMenu className="sm:hidden block">
-      <NavigationMenuList className={`NavigationMenuList ${themeClass} text-center fixed top-0 inset-x-0 pt-1 pb-1 pl-1 flex justify-between`}>
+      <NavigationMenuList className={`className="flex fixed top-0 inset-x-0 pt-1 pb-1 pl-1 pr-4 justify-between bg-background shadow-lg dark:shadow-blue-500/50`}>
 
     <NavigationMenuItem>
       <Logo />
