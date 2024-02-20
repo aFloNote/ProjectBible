@@ -63,7 +63,7 @@ export const AuthImage: React.FC<AuthImageProps> = ({ onImageUpdate }) => {
           ))}
         </div>
       ) : (
-        <p>Drag 'n' drop some images here, or click to select images</p>
+        <p>Drag 'n' or click to add image</p>
       )}
     </div>
   );

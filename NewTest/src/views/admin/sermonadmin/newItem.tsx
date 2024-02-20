@@ -144,7 +144,7 @@ export function NewItem({ items,type,head,desc }: NewItemProps) {
                   className="col-span-3"
                 />
               </div>
-              <div className="grid grid-rows-1 items-center gap-4">
+              <div className="grid grid-rows-1 flex justify-center gap-4">
                 <Label htmlFor="typeimage" className="text-center dark:text-white">
                   Insert {type} Image
                 </Label>

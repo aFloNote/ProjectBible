@@ -23,7 +23,7 @@ export function AuthorSeries({items, error, type, idKey,nameKey,desc}: Props) {
 
   return (
     <div>
-    <h1 className="flex justify-center text-2xl font-semibold">
+    <h1 className="flex justify-center text-xl font-semibold">
     
       {type}
     </h1>
