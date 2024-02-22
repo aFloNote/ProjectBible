@@ -5,7 +5,7 @@ export const UseApi = () => {
   
     const fetchApi = async <T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> => {
       const token = await getAccessTokenSilently();
-      
+    const domain = import.meta.env.VITE_REACT_APP_DOMAIN;
       // Setup default headers if not provided
       if (!config.headers) {
         config.headers = {};
@@ -16,7 +16,7 @@ export const UseApi = () => {
         config.headers.Authorization = `Bearer ${token}`;
       }
 
-      const response = await axios.get<T>('https://localhost/api'+endpoint, config);
+      const response = await axios.get<T>(domain+endpoint, config);
       return response.data;
     };
 
@@ -32,8 +32,8 @@ export const UseApi = () => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-  
-      const response = await axios.post<R>('https://localhost/api' + endpoint, data, {
+      const domain = import.meta.env.VITE_REACT_APP_DOMAIN;
+      const response = await axios.post<R>(domain + endpoint, data, {
         ...config,
       
       });
