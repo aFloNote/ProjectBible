@@ -31,7 +31,7 @@ func FetchSeriesHandler() http.Handler {
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
       
             w.Header().Set("Access-Control-Allow-Credentials", "true")
-            w.Header().Set("Access-Control-Allow-Origin", "https://localhost/admin")
+            w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
             w.Header().Set("Access-Control-Allow-Headers", "Authorization")
             w.Header().Set("Content-Type", "application/json")
 
