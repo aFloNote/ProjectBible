@@ -38,7 +38,7 @@ import {
 export function Sermon() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { data: seriesData, error: seriesError } = Fetch<SeriesType[]>(
+  const { data: seriesData, error: seriesError, isLoading: seriesIsLoading } = Fetch<SeriesType[]>(
     "fetchseries",
     "SeriesData"
   );
@@ -46,6 +46,9 @@ export function Sermon() {
     "fetchauthors",
     "AuthorData"
   );
+  console.log("Authors:", authorsData); 
+  console.log("Series:", seriesData);
+  console.log("isLoading:", seriesIsLoading);
   const [titleForm, setTitleForm] = useState("");
   const [scriptureForm, setscriptureForm] = useState("");
 

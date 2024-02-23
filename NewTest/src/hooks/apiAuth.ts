@@ -15,15 +15,15 @@ export const UseApi = () => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-
-      const response = await axios.get<T>(domain+endpoint, config);
+      console.log('--------------------------------------? '+domain+'/api'+endpoint)
+      const response = await axios.get<T>(domain+'/api'+endpoint, config);
       return response.data;
     };
 
     const uploadApi = async <T, R>(endpoint: string, data: T, config: AxiosRequestConfig = {}): Promise<R> => {
       const token = await getAccessTokenSilently();
-      
-      // Setup default headers if not provided
+      const domain = import.meta.env.VITE_REACT_APP_DOMAIN;  
+     
       if (!config.headers) {
         config.headers = {};
       }
@@ -32,8 +32,9 @@ export const UseApi = () => {
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-      const domain = import.meta.env.VITE_REACT_APP_DOMAIN;
-      const response = await axios.post<R>(domain + endpoint, data, {
+      
+      console.log('--------------------------------------? '+domain+'/api'+endpoint)
+      const response = await axios.post<R>(domain +'/api'+ endpoint, data, {
         ...config,
       
       });

@@ -39,7 +39,7 @@ export function Fetch<TData>(endPoint: string, queryKey: string) {
 
   // Using useQuery hook to fetch data
   const { data, error, isLoading } = useQuery<TData>(queryKey, fetchData);
-
+  console.log(data,error,isLoading)
   // Return data, error, and loading state
   return { data, error, isLoading };
 }

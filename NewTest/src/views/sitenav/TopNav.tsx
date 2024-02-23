@@ -1,53 +1,53 @@
 import {
   NavigationMenu,
+  
+ 
   NavigationMenuItem,
-  NavigationMenuLink,
+ 
   NavigationMenuList,
-  navigationMenuTriggerStyle,
-
-} from "@/components/ui/navigation-menu";
-
-import { IoPersonCircleOutline } from "react-icons/io5";
-import { MdUpdate } from "react-icons/md";
-import { FaLayerGroup, FaBookOpen, FaSearch } from "react-icons/fa";
-import Logo from "@/Logos/MobileLogo";
-
-
-
-
-function TopBar() {
-  
-  const iconSize = 20;
-
-  return (
-      <NavigationMenu className="sm:hidden block">
-      <NavigationMenuList className={`className="flex fixed top-0 inset-x-0 pt-1 pb-1 pl-1 pr-4 justify-between bg-background shadow-lg dark:shadow-blue-500/50`}>
-
-    <NavigationMenuItem>
-      <Logo />
-    </NavigationMenuItem>
-
-  
-
-
  
 
-    <NavigationMenuItem>
-      <NavigationMenuLink
-        href="https://github.com/radix-ui"
-        className={`${navigationMenuTriggerStyle()}`}
-      >
-        <FaBookOpen size={iconSize} />
-      </NavigationMenuLink>
-    </NavigationMenuItem>
+} from "@/components/ui/navigation-menu"
+import { ModeToggle } from "@/components/mode-toggle";
+import {Logo} from "@/Logos/SiteLogo";
+
+import {Button} from "@/components/ui/button";
+
+function TopNav() {
 
 
-    
+
+
+return (
+  <div className='flex columns-3 justify-between w-full'>
+      
+      <Logo ratio={16/9} size="6em"/>
+ 
+  <NavigationMenu>
+  <NavigationMenuList className="">
 
   
-    </NavigationMenuList>
+  
+   
+
+    <NavigationMenuItem>
+  
+    </NavigationMenuItem>
+
+    <NavigationMenuItem>
+    
+    </NavigationMenuItem>
+    
+    
+  </NavigationMenuList>
 </NavigationMenu>
-  );
+<div className='flex justify-end'>
+  <div className='pt-2 pr-1'> 
+  <ModeToggle/>
+  </div>
+  </div>
+</div>
+);
 }
 
-export default TopBar
+export default TopNav;

@@ -1,19 +1,34 @@
 
 import Main from '@/views/Sermons/SermonContent';
 import Footer from '@/views/Sermons/SermonNav';
-import Header from '@/views/sitenav/TopNav';
-import { useAuth0 } from "@auth0/auth0-react";
+import Nav from '@/views/sitenav/TopNav';
+
 function SermonLanding() {
-  const { loginWithRedirect } = useAuth0();
+
   return (
+  
+    
     <>
-    <button onClick={() => loginWithRedirect()}>Log In</button>
-    <Header />
-      <Main />
-      
-      <Footer />
+      <div className="container">
+        <div className="flex sticky top-0  pt-2 pb-1 pl-1 bg-background shadow-lg dark:shadow-blue-500/50">
+          <Nav />
+        </div>
+        <div className="container px-4">
+        
+
+     
+            <Main />
+          
        
+        </div>
+        <div className="flex sticky bottom-0 pt-2 pb-1 pl-1 bg-background shadow-lg dark:shadow-blue-500/50 sm:hidden block">
+        <Footer />
+        </div>
+      </div>
     </>
   );
 }
-export default SermonLanding;
+export default SermonLanding; 
+<>
+
+</>

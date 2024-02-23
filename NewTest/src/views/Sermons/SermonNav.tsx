@@ -6,11 +6,9 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
-import { useTheme } from "@/components/theme-provider";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { MdUpdate } from "react-icons/md";
-import { FaLayerGroup, FaBookOpen} from "react-icons/fa";
-import React from "react";
+import { FaLayerGroup, FaBookOpen } from "react-icons/fa";
 
 import "@/Styles/SermonNav.css";
 
@@ -42,40 +40,43 @@ const NAV_ITEMS = [
 
     desc: "Speaker",
   },
- 
- 
 ];
 
 function SermonNav() {
-  const { theme } = useTheme();
-
-  const iconSize = 20;
+  const iconSize = 30;
 
   return (
-    <div>
-      <NavigationMenu className="sm:hidden block">
-        <NavigationMenuList
-          className={`NavigationMenuList ${theme} text-center fixed bottom-0 inset-x-0 pt-2 flex justify-between`}
-        >
-          {NAV_ITEMS.map((item, index) => (
-            <React.Fragment key={index}>
-              <NavigationMenuItem className="flex-1">
-                <NavigationMenuLink
-                  href={item.href}
-                  className={`${navigationMenuTriggerStyle()} flex flex-col items-center justify-center`}
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    <item.icon size={iconSize} />
-                    <span className="text-xs text-center font-normal">
-                      {item.desc}
-                    </span>
-                  </div>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </React.Fragment>
-          ))}
+    <div className="flex justify-full w-full">
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+          <div className="flex flex-col items-center justify-center">
+            <FaBookOpen size={iconSize} />
+            <span className="text-xs text-center font-normal">Scriptures</span>
+          </div>
+          </NavigationMenuItem>
+
+          <NavigationMenuItem>
+          <div className="flex flex-col items-center justify-center">
+            <MdUpdate size={iconSize} />
+            <span className="text-xs text-center font-normal">Recent</span>
+          </div>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+          <div className="flex flex-col items-center justify-center">
+            <FaLayerGroup size={iconSize} />
+            <span className="text-xs text-center font-normal">Series</span>
+          </div>
+          </NavigationMenuItem>
+          <div className="flex flex-col items-center justify-center">
+            <IoPersonCircleOutline size={iconSize} />
+            <span className="text-xs text-center font-normal">Authors</span>
+          </div>
         </NavigationMenuList>
       </NavigationMenu>
+      <div className="flex justify-end">
+        <div className="pt-2 pr-1"></div>
+      </div>
     </div>
   );
 }
