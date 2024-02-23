@@ -25,7 +25,6 @@ func NewRouter(minio *minio.Client) *http.ServeMux {
 	router.Handle("/api/uploadauthor", handlerSermon.AddAuthorsHandler(minio))
 	router.Handle("/api/uploadseries", handlerSermon.AddSeriesHandler(minio))
 	router.Handle("/api/uploadsermon", handlerSermon.AddSermonHandler(minio))
-	log.Print("Server listening on https://localhost")
 	if err := http.ListenAndServe("0.0.0.0:8080", router); err != nil {
 		log.Fatalf("There was an error with the http server: %v", err)
 	}
