@@ -2,6 +2,8 @@ package handlerSermon
 
 import (
 	"context"
+	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,23 +13,81 @@ import (
 	"github.com/minio/minio-go/v7"
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/storage"
+	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
+	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	// Import other necessary packages
 )
 
 // Author represents the structure of your author data
 type Sermon struct {
-    ID          int    `json:"series_id"`
-    Title       string `json:"title"`
-    Description string `json:"description"`
-    ImagePath   string `json:"image_path"`
-    NumOfEps    int    `json:"num_of_eps"`
+    SermonId        int    `json:"sermon_id"`
+	Title       string `json:"title"`
+	DateDelivered time.Time `json:"date_delivered"`
+	AudioLink string `json:"audio_link"`
+	AuthorId  int    `json:"author_id"`
+	SeriesId   int    `json:"series_id"`
+	Scripture string `json:"scripture"`
+    Desc sql.NullString
+    ImagePath  sql.NullString
+	
+	
+
 }
 
 // AuthorsHandler handles the /api/authors endpoint
+func fetchSermons(w http.ResponseWriter, r *http.Request) {
+	
+    w.Header().Set("Access-Control-Allow-Credentials", "true")
+    w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
+    w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+    w.Header().Set("Content-Type", "application/json")
+	
+    // Fetch author data from the database
+    rows, err := db.Query("SELECT * FROM  sermons ORDER BY date_delivered DESC")
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error query: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
+	fmt.Println("Hello, World!3") 
+    allsermons := []Sermon{}
+    for rows.Next() {
+        var sermon Sermon
+		err := rows.Scan(&sermon.SermonId,&sermon.Title ,&sermon.DateDelivered, &sermon.AudioLink, &sermon.AuthorId,&sermon.SeriesId, &sermon.Scripture ,&sermon.Desc , &sermon.ImagePath,)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Error scanning rows: %v", err)
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
 
+        allsermons = append(allsermons, sermon)
+    }
 
+    // Check for errors from iterating over rows.
+    if err := rows.Err(); err != nil {
+        fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+	
+    // Encode the authors slice to JSON and write it to the response
+    if err := json.NewEncoder(w).Encode(allsermons); err != nil {
+        fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+}
+
+func PubFetchSermonHandler() http.Handler {
+    return http.HandlerFunc(fetchSermons)
+}
+
+func FetchSermonHandler() http.Handler {
+    return middleware.EnsureValidToken()(
+        http.HandlerFunc(fetchSermons),
+    )
+}
 
 func AddSermonHandler(minioClient *minio.Client) http.Handler {
     return middleware.EnsureValidToken()(

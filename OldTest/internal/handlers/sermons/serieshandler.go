@@ -29,6 +29,7 @@ type Series struct {
 func FetchSeriesHandler() http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+            fmt.Println("Hello, World!")  
       
             w.Header().Set("Access-Control-Allow-Credentials", "true")
             w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
