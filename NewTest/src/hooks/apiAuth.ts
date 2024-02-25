@@ -16,7 +16,7 @@ export const UseApi = () => {
           config.headers.Authorization = `Bearer ${token}`;
         }
       }
-    
+      console.log(domain+'/api'+endpoint)
       const response = await axios.get<T>(domain+'/api'+endpoint, config);
       return response.data;
     };

@@ -5,7 +5,7 @@ export interface  AuthorsType{
     image_path: string;
   }
 export interface SeriesType{
-    series_id: string;
+    series_id: number;
     title: string;
     description:string;
     image_path: string;
@@ -18,6 +18,12 @@ export interface SermonType{
     scripture: string;
     audio_path: string;
     video_path: string;
-    series_id: string;
+    series_id: number;
     author_id: number;
   }
+
+export interface SermonFullType{
+  SermonType: SermonType;
+  AuthorsType: AuthorsType;
+  SeriesType: SeriesType
+}

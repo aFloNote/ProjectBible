@@ -18,7 +18,6 @@ import (
 
 func NewRouter(minio *minio.Client) *http.ServeMux {
 	router := http.NewServeMux()
-	
 	router.Handle("/api/pubfetchsermons", handlerSermon.PubFetchSermonHandler())
 	router.Handle("/api/fetchauthors", handlerSermon.FetchAuthorsHandler())
 	router.Handle("/api/fetchseries", handlerSermon.FetchSeriesHandler())

@@ -1,11 +1,13 @@
 // src/redux/store.ts
 
 import { configureStore } from '@reduxjs/toolkit';
-import selectedReducer from '@/redux/selected';
+import sermonAdminReducer from '@/redux/sermonAdminSelector';
+import sermonReducer from '@/redux/sermonSelector';
 
 export const store = configureStore({
   reducer: {
-    selected: selectedReducer,
+    sermonAdmin: sermonAdminReducer,
+    sermon: sermonReducer,
     // other reducers
   },
 });

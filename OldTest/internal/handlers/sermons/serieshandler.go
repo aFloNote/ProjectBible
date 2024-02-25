@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/minio/minio-go/v7"
-
+    "github.com/aFloNote/ProjectBible/OldTest/types"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
@@ -16,13 +16,7 @@ import (
 )
 
 // Author represents the structure of your author data
-type Series struct {
-    ID          int    `json:"series_id"`
-    Title       string `json:"title"`
-    Description string `json:"description"`
-    ImagePath   string `json:"image_path"`
-    NumOfEps    int    `json:"num_of_eps"`
-}
+
 
 // AuthorsHandler handles the /api/authors endpoint
 
@@ -45,9 +39,9 @@ func FetchSeriesHandler() http.Handler {
             }
             defer rows.Close()
 
-            allseries := []Series{}
+            allseries := []types.SeriesType{}
             for rows.Next() {
-                var series Series
+                var series types.SeriesType
                 err := rows.Scan(&series.ID, &series.Title, &series.Description, &series.NumOfEps, &series.ImagePath)
                 if err != nil {
                     fmt.Fprintf(os.Stderr, "Error scanning rows: %v", err)

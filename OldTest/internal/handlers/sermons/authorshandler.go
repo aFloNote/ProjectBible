@@ -1,27 +1,23 @@
 package handlerSermon
 
 import (
+	
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 
+	"github.com/aFloNote/ProjectBible/OldTest/types"
 	"github.com/minio/minio-go/v7"
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
+	"github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	// Import other necessary packages
 )
 
 // Author represents the structure of your author data
-type Author struct {
-	ID   int    `json:"author_id"`
-	Name       string `json:"name"`
-	Ministry   string `json:"ministry"`
-	ImagePath  string `json:"image_path"`
-}
 
 // AuthorsHandler handles the /api/authors endpoint
 
@@ -43,9 +39,9 @@ func FetchAuthorsHandler() http.Handler {
             }
             defer rows.Close()
 
-            authors := []Author{}
+            authors := []types.AuthorType{}
             for rows.Next() {
-                var author Author
+                var author types.AuthorType
                 err := rows.Scan(&author.ID, &author.Name, &author.Ministry, &author.ImagePath)
                 if err != nil {
 					fmt.Fprintf(os.Stderr,"Error scaning rows: %v", err)

@@ -53,10 +53,10 @@ export function Sermon() {
   const [scriptureForm, setscriptureForm] = useState("");
 
   const selectedAuthor = useSelector(
-    (state: RootState) => state.selected.selectedAuthor
+    (state: RootState) => state.sermonAdmin.selectedAuthor
   );
   const selectedSeries = useSelector(
-    (state: RootState) => state.selected.selectedSeries
+    (state: RootState) => state.sermonAdmin.selectedSeries
   );
   const [date, setDate] = React.useState<Date>();
   console.log("Selected Series:", selectedSeries);

@@ -17,7 +17,7 @@
   } from "@/components/ui/popover";
   import { cn } from "@/lib/utils";
   import { useDispatch } from 'react-redux';
-  import { setSelectedAuthor, setSelectedSeries } from '@/redux/selected'; // replace with the actual path to your actions
+  import { setSelectedAuthor, setSelectedSeries } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
   
  
   

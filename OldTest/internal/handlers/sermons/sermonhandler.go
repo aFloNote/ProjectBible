@@ -3,6 +3,8 @@ package handlerSermon
 import (
 	"context"
 	"database/sql"
+	"log"
+
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -10,74 +12,114 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/minio/minio-go/v7"
-
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
+	"github.com/aFloNote/ProjectBible/OldTest/types"
+	"github.com/minio/minio-go/v7"
 	// Import other necessary packages
 )
 
-// Author represents the structure of your author data
-type Sermon struct {
-    SermonId        int    `json:"sermon_id"`
-	Title       string `json:"title"`
-	DateDelivered time.Time `json:"date_delivered"`
-	AudioLink string `json:"audio_link"`
-	AuthorId  int    `json:"author_id"`
-	SeriesId   int    `json:"series_id"`
-	Scripture string `json:"scripture"`
-    Desc sql.NullString
-    ImagePath  sql.NullString
-	
-	
 
-}
-
-// AuthorsHandler handles the /api/authors endpoint
 func fetchSermons(w http.ResponseWriter, r *http.Request) {
-	
+	fmt.Println("Hello, World!")
     w.Header().Set("Access-Control-Allow-Credentials", "true")
     w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
     w.Header().Set("Access-Control-Allow-Headers", "Authorization")
     w.Header().Set("Content-Type", "application/json")
-	
-    // Fetch author data from the database
-    rows, err := db.Query("SELECT * FROM  sermons ORDER BY date_delivered DESC")
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error query: %v", err)
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-    defer rows.Close()
-	fmt.Println("Hello, World!3") 
-    allsermons := []Sermon{}
-    for rows.Next() {
-        var sermon Sermon
-		err := rows.Scan(&sermon.SermonId,&sermon.Title ,&sermon.DateDelivered, &sermon.AudioLink, &sermon.AuthorId,&sermon.SeriesId, &sermon.Scripture ,&sermon.Desc , &sermon.ImagePath,)
-        if err != nil {
-            fmt.Fprintf(os.Stderr, "Error scanning rows: %v", err)
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
 
-        allsermons = append(allsermons, sermon)
-    }
+    // Get sermon ID from the request parameters, if present
 
-    // Check for errors from iterating over rows.
-    if err := rows.Err(); err != nil {
-        fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
-        http.Error(w, err.Error(), http.StatusInternalServerError)
+
+	params := r.URL.Query()
+    sermonIDstr := params.Get("sermon_id")
+
+    // Start building the SQL query
+    query := `
+    SELECT 
+        sermons.sermon_id, sermons.title, sermons.date_delivered, sermons.scripture, sermons.audio_link, sermons.series_id, sermons.author_id,
+        authors.author_id, authors.name, authors.ministry, authors.image_path,
+        series.series_id, series.title, series.description, series.image_path, series.num_of_eps
+    FROM 
+        sermons
+    INNER JOIN 
+        authors ON sermons.author_id = authors.author_id
+    INNER JOIN 
+        series ON sermons.series_id = series.series_id
+    `
+
+    // If a sermon ID was provided, add a WHERE clause to the query
+	var sermonID int
+	var err error
+	var rows *sql.Rows
+    if sermonIDstr !="" {
+		sermonID, err = strconv.Atoi(sermonIDstr)
+   		 if err != nil {
+        // Handle error: sermonIDStr is not a valid integer
+        log.Printf("Invalid sermon_id: %v", err)
         return
     }
-	
-    // Encode the authors slice to JSON and write it to the response
-    if err := json.NewEncoder(w).Encode(allsermons); err != nil {
-        fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
-        http.Error(w, err.Error(), http.StatusInternalServerError)
-        return
-    }
-}
+        query += "WHERE sermons.sermon_id = $1 ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query, sermonID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+    } else{
+		query += "ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons no param: %v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+	}
+
+    // Execute the query
+   
+
+	defer rows.Close()
+
+	sermons := []types.SermonFull{}
+
+	for rows.Next() {
+		var sermon types.SermonType
+		var author types.AuthorType
+		var series types.SeriesType
+
+		err := rows.Scan(
+			&sermon.ID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.AudioLink, &sermon.SeriesId, &sermon.AuthorId,
+			&author.ID, &author.Name, &author.Ministry, &author.ImagePath,
+			&series.ID, &series.Title, &series.Description, &series.ImagePath, &series.NumOfEps,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Process Sermons error: %v\n", err)
+			w.Write([]byte(`{""Failed to process series_id: " + err.Error()"}`))
+		}
+
+		sermons = append(sermons, types.SermonFull{
+			SermonType: sermon,
+			AuthorType: author,
+			SeriesType: series,
+		})
+	}
+		fmt.Println("Sermons: ", sermons)
+		// Check for errors from iterating over rows.
+		if err := rows.Err(); err != nil {
+			fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
+		// Encode the authors slice to JSON and write it to the response
+		if err := json.NewEncoder(w).Encode(sermons); err != nil {
+			fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
 
 func PubFetchSermonHandler() http.Handler {
     return http.HandlerFunc(fetchSermons)
@@ -142,13 +184,13 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
 			fmt.Printf("Size: %v, Content Type: %s\n", header.Size, contentType)
 			path:= fmt.Sprintf("sermons/sermons/%s/audio/%s", title, header.Filename)
 			// Start the timer
-			start := time.Now()
+		
 
 			// Upload the file
 			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
 
 			// Stop the timer
-			elapsed := time.Since(start)
+			
 
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to upload file to MinIO. Upload info: %+v, Error: %v\n", upLoadInfo, err)
@@ -156,10 +198,7 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
 				return
 			}
 
-// Calculate the upload speed
-speed := float64(header.Size) / elapsed.Seconds()
-
-fmt.Printf("Uploaded %s in %v at %f bytes/second\n", header.Filename, elapsed, speed)
+		
 			
 			 // Attempt to insert author information into the database
             fmt.Println("Title before database query: ", title)
@@ -192,3 +231,4 @@ fmt.Printf("Uploaded %s in %v at %f bytes/second\n", header.Filename, elapsed, s
         }),
     )
 }
+
