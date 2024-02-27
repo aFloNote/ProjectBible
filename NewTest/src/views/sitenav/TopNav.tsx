@@ -42,7 +42,7 @@ return (
   </NavigationMenuList>
 </NavigationMenu>
 <div className='flex justify-end'>
-  <div className='pt-2 pr-1'> 
+  <div className='pt-2 pr-2'> 
   <ModeToggle/>
   </div>
   </div>

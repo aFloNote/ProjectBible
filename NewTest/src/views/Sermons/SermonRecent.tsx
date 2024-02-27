@@ -61,9 +61,9 @@ export function Recent() {
         
           }
         }>
-            <div className="grid grid-cols-5 gap-4 px-4 pt-2 pb-2 items-center">
+            <div className="grid grid-cols-5 gap-4 px-4 pt-2 pb-2 items-center ">
               <DateComp date={SermonFull.SermonType.date_delivered} />
-              <div className="col-span-4">
+              <div className="col-span-4 leading-none">
                 <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden">
                   {SermonFull.SermonType.title}
                 </h2>

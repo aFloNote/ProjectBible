@@ -1,4 +1,4 @@
-export interface  AuthorsType{
+export interface  AuthorType{
     author_id: number;
     name: string;
     ministry: string;
@@ -16,7 +16,7 @@ export interface SermonType{
     title: string;
     date_delivered: string;
     scripture: string;
-    audio_path: string;
+    audio_link: string;
     video_path: string;
     series_id: number;
     author_id: number;
@@ -24,6 +24,6 @@ export interface SermonType{
 
 export interface SermonFullType{
   SermonType: SermonType;
-  AuthorsType: AuthorsType;
+  AuthorType: AuthorType;
   SeriesType: SeriesType
 }
