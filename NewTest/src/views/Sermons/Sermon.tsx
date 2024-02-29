@@ -1,20 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Fetch } from "@/hooks/sermonhooks";
 import { SermonFullType } from "@/types/sermon";
-import { Image } from "@/image";
-import DateComp from "@/views/formatting/sermondate";
-
+import { SiteImage } from "@/image";
 import { Audio } from "@/components/audioplayer";
-
-
 import 'react-h5-audio-player/lib/styles.css';
 
 export function SermonPage() {
   const navigate = useNavigate();
   const { sermonId } = useParams<{ sermonId: string }>();
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
-
+  console.log(sermonId);
   useEffect(() => {
     if (!sermonId) {
       navigate("/"); // redirect to home page if no sermon is selected
@@ -23,54 +19,49 @@ export function SermonPage() {
 
   const { data: sermonFull } = Fetch<SermonFullType[]>(
     `pubfetchsermons?sermon_id=${sermonId}`,
-    "SeriesAuthorData",
-    false
+    sermonId || "SermonFull",
+    false,   
   );
+ 
 
-  // If sermonFull is not loaded yet, return a loading message
+
   if (!sermonFull) {
     return <div>Loading...</div>;
   }
 
-
-  // Render the sermon details
   return (
-    <>
-      <div className="w-full pt-3 flex justify-center items-center">
+    <div className="flex flex-col"> 
+      <div className="">
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
-          <Image
-            ratio={2}
-            size="100%"
+          <SiteImage
+            divClass='w-full max-w-screen-lg px-4 mx-auto pt-4'
+            ratio={16/9}
+            alt='Series Image'
             source={
               b2endpoint +
               encodeURIComponent(sermonFull[0].SeriesType.image_path)
             }
-            className="flex justify-center rounded-md object-cover"
           />
         )}
-      </div>
-      <div className="pt-2">
-        <div className="col-span-4 leading-none pb-1 pl-4">
-          <h2 className="text-sm leading-none">
-            {sermonFull[0].SermonType.title}
-          </h2>
-          <p className="text-gray-500 font-medium text-xs">
-            {sermonFull[0].SeriesType.description}
-          </p>
-         
-            <div className="text-gray-500 text-xs">
-              <DateComp date={sermonFull[0].SermonType.date_delivered} />
+        <div className="pt-2">
+          <div className="col-span-4 leading-none pb-1 pl-4">
+            <h2 className="text-lg text-center leading-none">
+              {sermonFull[0].SermonType.title}
+            </h2>
+            <div className="text-center">
+              <p className="text-gray-500 text-sm text-center font-medium">
+                {sermonFull[0].SeriesType.description}
+              </p>
             </div>
-            <div className="text-gray-500 font-bold text-xs">
+            <div className="text-gray-500 text-center font-bold text-xs">
               {sermonFull[0].AuthorType.name}
             </div>
-        </div>
-        <div className="border-t"></div>
-       
-        <div>
-            <Audio audio_link={sermonFull[0].SermonType.audio_link}/>
+          </div>
         </div>
       </div>
-    </>
+      <div className=""> {/* Audio player container */}
+        <Audio audio_link={sermonFull[0].SermonType.audio_link} sermonFull={sermonFull}/>
+      </div>
+    </div>
   );
 }

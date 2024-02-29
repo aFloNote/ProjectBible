@@ -20,54 +20,60 @@ import (
 // Author represents the structure of your author data
 
 // AuthorsHandler handles the /api/authors endpoint
+func fetchAuthors(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Credentials", "true")
+    w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
+    w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+    w.Header().Set("Content-Type", "application/json")
+
+    // Fetch author data from the database
+    rows, err := db.Query("SELECT author_id, name, ministry, image_path FROM authors")
+    if err != nil {
+        fmt.Fprintf(os.Stderr,"Error query: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
+
+    authors := []types.AuthorType{}
+    for rows.Next() {
+        var author types.AuthorType
+        err := rows.Scan(&author.ID, &author.Name, &author.Ministry, &author.ImagePath)
+        if err != nil {
+            fmt.Fprintf(os.Stderr,"Error scaning rows: %v", err)
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+        authors = append(authors, author)
+    }
+
+    // Check for errors from iterating over rows.
+    if err := rows.Err(); err != nil {
+        fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Encode the authors slice to JSON and write it to the response
+    if err := json.NewEncoder(w).Encode(authors); err != nil {
+        fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+
+}
+func PubFetchAuthorsHandler() http.Handler {
+    return http.HandlerFunc(fetchAuthors)
+}
 
 func FetchAuthorsHandler() http.Handler {
     return middleware.EnsureValidToken()(
-        http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            // CORS Headers.
-            w.Header().Set("Access-Control-Allow-Credentials", "true")
-            w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
-            w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-            w.Header().Set("Content-Type", "application/json")
-		
-            // Fetch author data from the database
-            rows, err := db.Query("SELECT author_id, name, ministry, image_path FROM authors")
-            if err != nil {
-				fmt.Fprintf(os.Stderr,"Error query: %v", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
-            defer rows.Close()
-
-            authors := []types.AuthorType{}
-            for rows.Next() {
-                var author types.AuthorType
-                err := rows.Scan(&author.ID, &author.Name, &author.Ministry, &author.ImagePath)
-                if err != nil {
-					fmt.Fprintf(os.Stderr,"Error scaning rows: %v", err)
-                    http.Error(w, err.Error(), http.StatusInternalServerError)
-                    return
-                }
-
-                authors = append(authors, author)
-            }
-
-            // Check for errors from iterating over rows.
-            if err := rows.Err(); err != nil {
-				fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
-
-            // Encode the authors slice to JSON and write it to the response
-            if err := json.NewEncoder(w).Encode(authors); err != nil {
-				fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
-        }),
+        http.HandlerFunc(fetchAuthors),
     )
 }
+
 
 func AddAuthorsHandler(minioClient *minio.Client) http.Handler {
     return middleware.EnsureValidToken()(

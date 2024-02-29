@@ -2,70 +2,103 @@ package handlerSermon
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
+	"strconv"
 
-	"github.com/minio/minio-go/v7"
-    "github.com/aFloNote/ProjectBible/OldTest/types"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/storage"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
+	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
+	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
+	"github.com/aFloNote/ProjectBible/OldTest/types"
+	"github.com/minio/minio-go/v7"
 	// Import other necessary packages
 )
 
 // Author represents the structure of your author data
 
-
 // AuthorsHandler handles the /api/authors endpoint
+func fetchSeries(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Credentials", "true")
+    w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
+    w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+    w.Header().Set("Content-Type", "application/json")
+    params := r.URL.Query()
+    authorIDstr := params.Get("author_id")
+    // Fetch author data from the database
+    query :=`SELECT DISTINCT ON (s.series_id) s.series_id, s.title, s.description, s.num_of_eps, s.image_path 
+          FROM series s `
+var err error
+var authorID int
+var rows *sql.Rows
+if authorIDstr !="" {
+    authorID, err = strconv.Atoi(authorIDstr)
+    if err != nil {
+        // Handle error: authorIDStr is not a valid integer
+        log.Printf("Invalid author_id: %v", err)
+        http.Error(w, "Invalid author_id", http.StatusBadRequest)
+        return
+    }
+    fmt.Println("Author ID: ", authorID) // Print author id to console
+    query += "INNER JOIN sermons se ON s.series_id = se.series_id WHERE se.author_id = $1 ORDER BY s.series_id ASC"
+    
+    rows, err = db.Query(query, authorID)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error query: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+} else{
+    query += " ORDER BY s.series_id ASC"
+    rows, err = db.Query(query)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error query: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+}
+   
+    
+    defer rows.Close()
+
+    allseries := []types.SeriesType{}
+    for rows.Next() {
+        var series types.SeriesType
+        err := rows.Scan(&series.ID, &series.Title, &series.Description, &series.NumOfEps, &series.ImagePath)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "Error scanning rows: %v", err)
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+        allseries = append(allseries, series)
+    }
+
+    // Check for errors from iterating over rows.
+    if err := rows.Err(); err != nil {
+        fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Encode the authors slice to JSON and write it to the response
+    if err := json.NewEncoder(w).Encode(allseries); err != nil {
+        fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+}
+func PubFetchSeriesHandler() http.Handler {
+    return http.HandlerFunc(fetchSeries)
+}
 
 func FetchSeriesHandler() http.Handler {
     return middleware.EnsureValidToken()(
-        http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            fmt.Println("Hello, World!")  
-      
-            w.Header().Set("Access-Control-Allow-Credentials", "true")
-            w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
-            w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-            w.Header().Set("Content-Type", "application/json")
-
-            // Fetch author data from the database
-            rows, err := db.Query("SELECT series_id, title,description,num_of_eps,image_path FROM  series")
-            if err != nil {
-                fmt.Fprintf(os.Stderr, "Error query: %v", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
-            defer rows.Close()
-
-            allseries := []types.SeriesType{}
-            for rows.Next() {
-                var series types.SeriesType
-                err := rows.Scan(&series.ID, &series.Title, &series.Description, &series.NumOfEps, &series.ImagePath)
-                if err != nil {
-                    fmt.Fprintf(os.Stderr, "Error scanning rows: %v", err)
-                    http.Error(w, err.Error(), http.StatusInternalServerError)
-                    return
-                }
-
-                allseries = append(allseries, series)
-            }
-
-            // Check for errors from iterating over rows.
-            if err := rows.Err(); err != nil {
-				fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
-
-            // Encode the authors slice to JSON and write it to the response
-            if err := json.NewEncoder(w).Encode(allseries); err != nil {
-				fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
-        }),
+        http.HandlerFunc(fetchSeries),
     )
 }
 

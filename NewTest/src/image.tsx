@@ -4,19 +4,24 @@
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 interface ImageProps {
     ratio: number;
-    size: string;
     source: string;
-    className: string;
+    divClass:string;
+    alt:string
+    
 }
-export function Image({ ratio, size, source,className}: ImageProps) {
+export function SiteImage({source,ratio,divClass,alt}: ImageProps) {
   
   
     return (
-        <div style={{ width: size }}>
-            <AspectRatio ratio={ratio}>
-                <img src={source} alt="Logo" className={className} style={{ width: '100%', height: '100%' }} />
-            </AspectRatio>
-        </div>
+        <div className={divClass}> {/* Ensure it's responsive and centered */}
+        <AspectRatio ratio={ratio} className="w-full"> {/* Maintain aspect ratio */}
+            <img
+                src={source}
+                alt={alt}
+                className="h-full w-full rounded-md object-cover"
+            />
+        </AspectRatio>
+    </div>
     );
 }
 

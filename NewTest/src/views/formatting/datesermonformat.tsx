@@ -9,10 +9,10 @@ interface DateComponentProps {
     let year = date.getUTCFullYear();
   
     return (
-      <div className="flex flex-col leading-none">
-        <div className='text-center text-gray-500 text-xs'>{month}</div>
-        <div className='text-center text-gray-500'>{day}</div>
-        <div className='text-center text-gray-500 text-xs'>{year}</div>
+      <div className="flex flex-col">
+        <div className='text-center text-gray-400 leading-none'>{month}</div>
+        <div className='text-center text-gray-400 text-4xl leading-none'>{day}</div>
+       
       </div>
     );
   }

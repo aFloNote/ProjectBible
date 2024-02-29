@@ -33,7 +33,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 
 	params := r.URL.Query()
     sermonIDstr := params.Get("sermon_id")
-
+	authorIDstr := params.Get("author_id")
+	seriesIDstr := params.Get("series_id") 
     // Start building the SQL query
     query := `
     SELECT 
@@ -50,6 +51,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 
     // If a sermon ID was provided, add a WHERE clause to the query
 	var sermonID int
+	var authorID int
+	var seriesID int
 	var err error
 	var rows *sql.Rows
     if sermonIDstr !="" {
@@ -58,7 +61,7 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
         // Handle error: sermonIDStr is not a valid integer
         log.Printf("Invalid sermon_id: %v", err)
         return
-    }
+    } 
         query += "WHERE sermons.sermon_id = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, sermonID)
 		if err != nil {
@@ -66,16 +69,46 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-    } else{
-		query += "ORDER BY sermons.date_delivered DESC"
-		rows, err = db.Query(query)
+    } else if authorIDstr != "" {
+		authorID, err = strconv.Atoi(authorIDstr)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons no param: %v\n", err)
+			// Handle error: authorIDStr is not a valid integer
+			log.Printf("Invalid author_id: %v", err)
+			return
+		}
+		query += "WHERE sermons.author_id = $1 ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query, authorID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}	
+		
+
+	} else if seriesIDstr != "" {
+		seriesID, err = strconv.Atoi(seriesIDstr)
+		if err != nil {
+			// Handle error: seriesIDStr is not a valid integer
+			log.Printf("Invalid series_id: %v", err)
+			return
+		}
+		query += "WHERE sermons.series_id = $1 ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query, seriesID)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
+	}	else {
+			query += "ORDER BY sermons.date_delivered DESC"
+				rows, err = db.Query(query)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error querying the database for Sermons no param: %v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 	}
+
 
     // Execute the query
    
@@ -107,19 +140,20 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 	}
 		fmt.Println("Sermons: ", sermons)
 		// Check for errors from iterating over rows.
-		if err := rows.Err(); err != nil {
+		if err = rows.Err(); err != nil {
 			fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		
 		// Encode the authors slice to JSON and write it to the response
-		if err := json.NewEncoder(w).Encode(sermons); err != nil {
+		if err= json.NewEncoder(w).Encode(sermons); err != nil {
 			fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-	}
+}
+
 
 func PubFetchSermonHandler() http.Handler {
     return http.HandlerFunc(fetchSermons)
