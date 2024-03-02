@@ -35,7 +35,7 @@ function App() {
               <Router>
                 <Routes>
                  
-                  <Route path="admin" element={<AuthAdmin />} />
+                  <Route path="admin/*" element={<AuthAdmin />} />
                   <Route path="/*" element={<SermonLanding />} />
                 </Routes>
               </Router>

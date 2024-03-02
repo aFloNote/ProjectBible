@@ -3,19 +3,20 @@ package handlerSermon
 import (
 	"context"
 	"database/sql"
-	"log"
 
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
+
 	"time"
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/types"
+	"github.com/google/uuid"
+	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
 	// Import other necessary packages
 )
@@ -32,15 +33,15 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 
 
 	params := r.URL.Query()
-    sermonIDstr := params.Get("sermon_id")
-	authorIDstr := params.Get("author_id")
-	seriesIDstr := params.Get("series_id") 
+    sermonID := params.Get("sermon_id")
+	authorID := params.Get("author_id")
+	seriesID := params.Get("series_id") 
     // Start building the SQL query
     query := `
     SELECT 
-        sermons.sermon_id, sermons.title, sermons.date_delivered, sermons.scripture, sermons.audio_link, sermons.series_id, sermons.author_id,
-        authors.author_id, authors.name, authors.ministry, authors.image_path,
-        series.series_id, series.title, series.description, series.image_path, series.num_of_eps
+        sermons.sermon_id, sermons.title, sermons.date_delivered, sermons.scripture, sermons.audio_path, sermons.series_id, sermons.author_id, sermons.topic, sermons.slug,
+        authors.author_id, authors.name, authors.ministry, authors.image_path, authors.slug,
+        series.series_id, series.title, series.description, series.image_path, series.date_published, series.slug
     FROM 
         sermons
     INNER JOIN 
@@ -50,18 +51,12 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
     `
 
     // If a sermon ID was provided, add a WHERE clause to the query
-	var sermonID int
-	var authorID int
-	var seriesID int
+	
 	var err error
 	var rows *sql.Rows
-    if sermonIDstr !="" {
-		sermonID, err = strconv.Atoi(sermonIDstr)
-   		 if err != nil {
-        // Handle error: sermonIDStr is not a valid integer
-        log.Printf("Invalid sermon_id: %v", err)
-        return
-    } 
+    if sermonID !="" {
+		
+   		
         query += "WHERE sermons.sermon_id = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, sermonID)
 		if err != nil {
@@ -69,13 +64,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-    } else if authorIDstr != "" {
-		authorID, err = strconv.Atoi(authorIDstr)
-		if err != nil {
-			// Handle error: authorIDStr is not a valid integer
-			log.Printf("Invalid author_id: %v", err)
-			return
-		}
+    } else if authorID != "" {
+		
 		query += "WHERE sermons.author_id = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, authorID)
 		if err != nil {
@@ -85,13 +75,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		}	
 		
 
-	} else if seriesIDstr != "" {
-		seriesID, err = strconv.Atoi(seriesIDstr)
-		if err != nil {
-			// Handle error: seriesIDStr is not a valid integer
-			log.Printf("Invalid series_id: %v", err)
-			return
-		}
+	} else if seriesID != "" {
+		
 		query += "WHERE sermons.series_id = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, seriesID)
 		if err != nil {
@@ -123,9 +108,9 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		var series types.SeriesType
 
 		err := rows.Scan(
-			&sermon.ID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.AudioLink, &sermon.SeriesId, &sermon.AuthorId,
-			&author.ID, &author.Name, &author.Ministry, &author.ImagePath,
-			&series.ID, &series.Title, &series.Description, &series.ImagePath, &series.NumOfEps,
+			&sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.Topic, &sermon.Slug,
+			&author.AuthorID, &author.Name, &author.Ministry, &author.Image_Path, &author.Slug,
+			&series.SeriesID, &series.Title, &series.Desc, &series.Image_Path,	&series.Date_Published, &series.Slug,
 		)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Process Sermons error: %v\n", err)
@@ -186,18 +171,10 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
             // Get form data
             title := r.FormValue("title")
             scripture := r.FormValue("scripture")
-			authid, err := strconv.Atoi(r.FormValue("author_id"))
-			if err != nil {
-				// handlfmt.Fprintf(os.Stderr, "Process fil error: %v\n", err)
-				fmt.Fprintf(os.Stderr, "Process auhor_id error: %v\n", err)
-				w.Write([]byte(`{""Failed to process author_id: " + err.Error()"}`))
-			}
-			seriesid, err := strconv.Atoi(r.FormValue("series_id"))
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Process series_id error: %v\n", err)
-				w.Write([]byte(`{""Failed to process series_id: " + err.Error()"}`))
-				// handle error
-			}
+			seriesid := r.FormValue("series_id")
+			authid:= r.FormValue("author_id")
+			sermonID := uuid.New()
+            slug := slug.Make(title)
             
 			dateStr := r.FormValue("date") // assuming this is your date field
 			layout := "2006-01-02T15:04:05Z"
@@ -216,7 +193,7 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
 			}
             // Get the image file from the form
 			fmt.Printf("Size: %v, Content Type: %s\n", header.Size, contentType)
-			path:= fmt.Sprintf("sermons/sermons/%s/audio/%s", title, header.Filename)
+			path:= fmt.Sprintf("sermons/sermons/%s/audio/%s", sermonID, header.Filename)
 			// Start the timer
 		
 
@@ -236,8 +213,8 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
 			
 			 // Attempt to insert author information into the database
             fmt.Println("Title before database query: ", title)
-			query := "INSERT INTO sermons (title, date_delivered, audio_link, series_id, author_id, scripture) VALUES ($1, $2, $3,$4,$5,$6)"
-			_, err = db.Exec(query, title, t,path, seriesid,authid,scripture) // Note: Using path as MinIO doesn't return a URL in uploadInfo
+			query := "INSERT INTO sermons (sermon_id,title, date_delivered, audio_path, series_id, author_id, scripture, slug) VALUES ($1, $2, $3,$4,$5,$6,$7,$8)"
+			_, err = db.Exec(query, sermonID,title, t,path, seriesid,authid,scripture,slug) // Note: Using path as MinIO doesn't return a URL in uploadInfo
 			if err != nil {
 				// If the query fails, attempt to remove the uploaded file from MinIO
 				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, minio.RemoveObjectOptions{})
@@ -252,9 +229,7 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
 				http.Error(w, "Failed to insert author into database: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
-			// Example: Get the ID of the last inserted row (if supported by your DB)
-            fmt.Println("theTitle is ",title)
-			
+			// Example: Get the ID of the last inserted row (if supported by your DB
 
             // Write the author string to the response
             if _, err := w.Write([]byte("Author Added")); err != nil {

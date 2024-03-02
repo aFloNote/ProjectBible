@@ -40,8 +40,24 @@ export const UseApi = () => {
       });
       return response.data;
     };
-  
-   
-  
-    return {fetchApi,uploadApi};
+
+    const deleteApi = async <R>(endpoint: string, config: AxiosRequestConfig = {}): Promise<R> => {
+      const domain = import.meta.env.VITE_REACT_APP_DOMAIN;
+    
+      if (!config.headers) {
+        config.headers = {};
+      }
+    
+      const token = await getAccessTokenSilently();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    
+      const response = await axios.delete<R>(domain + '/api' + endpoint, config);
+      return response.data;
+    };
+    
+    return { fetchApi, uploadApi, deleteApi };
   };
+
+  

@@ -11,7 +11,7 @@ function SermonLanding() {
   return (
     <>
       <div className="container">
-        <div className="flex sticky top-0  pt-2 pb-1 pl-1 bg-background shadow-lg dark:shadow-blue-500/50 z-10">
+        <div className="flex sticky top-0  pt-2 pb-1 pl-1 bg-background  border-b-2 dark:shadow-lg dark:shadow-blue-500/50 z-10">
           <Nav />
         </div>
         <div className='flex flex-col'>

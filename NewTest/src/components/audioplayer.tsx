@@ -25,8 +25,6 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [showSpeedControl, setShowSpeedControl] = useState(false);
 
-
-
   const handleSpeedChange = (value: number[]) => {
     setPlaybackRate(value[0]);
   };
@@ -64,6 +62,13 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
   const handleProgress = (state: { played: number; playedSeconds: number }) => {
     setPlayed(state.played);
     setPlayedSeconds(state.playedSeconds);
+    if ("mediaSession" in navigator) {
+      navigator.mediaSession.setPositionState({
+        duration: duration,
+        playbackRate: playbackRate,
+        position: state.playedSeconds,
+      });
+    }
   };
 
   const handleDuration = (duration: number) => {
@@ -79,27 +84,27 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
       .join(":");
   };
   useEffect(() => {
-    if ('mediaSession' in navigator && sermonFull && sermonFull[0] && playerRef.current) {
+    if (
+      "mediaSession" in navigator &&
+      sermonFull &&
+      sermonFull[0] &&
+      playerRef.current
+    ) {
       navigator.mediaSession.metadata = new MediaMetadata({
         title: sermonFull[0].SermonType.title,
         artist: sermonFull[0].AuthorType.name,
         artwork: [
           {
-            src: b2endpoint + encodeURIComponent(sermonFull[0].SeriesType.image_path),
+            src:
+              b2endpoint +
+              encodeURIComponent(sermonFull[0].SeriesType.image_path),
           },
         ],
       });
-  
     }
-    navigator.mediaSession.setPositionState({
-      duration: duration,
-      playbackRate: playbackRate,
-      position: playedSeconds,
-    });
-  }, [sermonFull, b2endpoint,duration,playedSeconds,playbackRate]);
+  }, [sermonFull, b2endpoint]);
 
   return (
-
     <div>
       <ReactPlayer
         key={isPlaying ? "playing" : "paused"}
@@ -121,7 +126,6 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
         }}
       />
       <div className="flex justify-center items-center pr-2 pl-2">
-   
         <span className="pr-1">{formatTime(playedSeconds)}</span>
         <Slider
           min={0}
@@ -176,9 +180,8 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
         <button className="text-2xl p-4" onClick={handleFastForward}>
           <FaRedo />
         </button>
-      
+
         <div className="pt-2">
-       
           <Button
             variant="ghost"
             onClick={() =>

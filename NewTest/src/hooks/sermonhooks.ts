@@ -1,45 +1,52 @@
 import { UseApi } from '@/hooks/apiAuth';
 import { useQuery, useMutation } from 'react-query';
 
-
-
 interface UploadResponse {
   message: string;
   // other fields...
 }
 
-
-
 export function Upload(endpoint: string) {
- 
-  const {uploadApi} = UseApi();
+  const { uploadApi } = UseApi();
 
   const uploadData = async (formData: FormData) => {
-   
-    
-    return await uploadApi<FormData,UploadResponse>('/'+endpoint, formData);
+    return await uploadApi<FormData, UploadResponse>('/' + endpoint, formData);
   };
 
   // useMutation hook setup correctly
   const { data, error, isLoading, mutate } = useMutation(uploadData);
 
   // Return data, error, and loading state
-  return { data, error, isLoading,mutate };
+  return { data, error, isLoading, mutate };
 }
 
-export function Fetch<TData>(endPoint: string, queryKey: string, requireAuth=true) {
+export function Fetch<TData>(endPoint: string, queryKey: string, requireAuth = true) {
   const fetchApi = UseApi().fetchApi;
 
   // Async function to fetch data
   const fetchData = async () => {
-    console.log('endPoint '+endPoint)
+    console.log('endPoint ' + endPoint);
     const response = await fetchApi<TData>('/' + endPoint, requireAuth);
     return response;
-  }
+  };
 
   // Using useQuery hook to fetch data
   const { data, error, isLoading } = useQuery<TData>(queryKey, fetchData);
 
   // Return data, error, and loading state
   return { data, error, isLoading };
+}
+
+export function Delete(endpoint: string) {
+  const { deleteApi } = UseApi();
+
+  const deleteData = async (id: string) => {
+    return await deleteApi(`/` + endpoint + `?id=${id}`);
+  };
+
+  // useMutation hook setup correctly
+  const { data, error, isLoading, mutate } = useMutation(deleteData);
+
+  // Return data, error, and loading state
+  return { data, error, isLoading, mutate };
 }
