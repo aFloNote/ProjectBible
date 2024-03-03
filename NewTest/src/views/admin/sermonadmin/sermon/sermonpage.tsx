@@ -19,6 +19,11 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { Fetch } from "@/hooks/sermonhooks";
 import { SermonType } from "@/types/sermon";
 import {EditSermon} from "@/views/admin/sermonadmin/sermon/editsermon";
+import { UseSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import {SelectTopic} from "@/views/admin/sermonadmin/topic/selecttopic";
+import {SelectScripture} from "@/views/admin/sermonadmin/scriptures/selectscriptures";
+
 import React from "react";
 
 export function Series() {
@@ -91,6 +96,22 @@ export function Series() {
         
       </div>
       <div className="grid gap-4 py-4">
+      <div className="grid grid-cols-8 items-center gap-4">
+          <Label htmlFor="head" className="text-right col-span-1">
+            Topic 
+          </Label>      
+          <SelectTopic/>
+          <Label htmlFor="desc" className="text-right col-span-1">
+            
+          </Label>
+          <Input
+            id="desc"
+            placeholder="Enter Description: required"
+            value={scriptureForm}
+            onChange={(e) => setScriptureForm(e.target.value)}
+            className="col-span-3"
+          />
+        </div>
         <div className="grid grid-cols-8 items-center gap-4">
           <Label htmlFor="head" className="text-right col-span-1">
             Title

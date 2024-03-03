@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setSelectedAuthor, setSelectedSeries, setSelectedSermon,setSelectedSermonPage, setSelectedTopic } from "@/redux/sermonAdminSelector";
+import { setSelectedAuthor, setSelectedSeries, setSelectedSermon,setSelectedSermonPage, setSelectedTopic,setSelectedScripture } from "@/redux/sermonAdminSelector";
 import "@/Styles/SermonNav.css";
 
 function SermonSideBar() {
@@ -29,6 +29,8 @@ function SermonSideBar() {
             dispatch(setSelectedAuthor(null));
             dispatch(setSelectedSeries(null));
             dispatch(setSelectedSermon(null));
+            dispatch(setSelectedTopic(null));
+            dispatch(setSelectedScripture(null));
             dispatch(setSelectedSermonPage("sermons"));
           }}
         >
@@ -61,6 +63,8 @@ function SermonSideBar() {
             dispatch(setSelectedAuthor(null));
             dispatch(setSelectedSeries(null));
             dispatch(setSelectedSermon(null));
+            dispatch(setSelectedTopic(null));
+            dispatch(setSelectedScripture(null));
             dispatch(setSelectedSermonPage("series"));
           }}
         >
@@ -93,6 +97,8 @@ function SermonSideBar() {
             dispatch(setSelectedAuthor(null));
             dispatch(setSelectedSeries(null));
             dispatch(setSelectedSermon(null));
+            dispatch(setSelectedTopic(null));
+            dispatch(setSelectedScripture(null));
             dispatch(setSelectedSermonPage("authors"));
           }}
         >
@@ -126,6 +132,7 @@ function SermonSideBar() {
             dispatch(setSelectedSeries(null));
             dispatch(setSelectedSermon(null));
             dispatch(setSelectedTopic(null));
+            dispatch(setSelectedScripture(null));
             dispatch(setSelectedSermonPage("topics"));
           }}
         >
@@ -159,6 +166,7 @@ function SermonSideBar() {
             dispatch(setSelectedSeries(null));
             dispatch(setSelectedSermon(null));
             dispatch(setSelectedTopic(null));
+            dispatch(setSelectedScripture(null));
             dispatch(setSelectedSermonPage("scriptures"));
           }}
         >

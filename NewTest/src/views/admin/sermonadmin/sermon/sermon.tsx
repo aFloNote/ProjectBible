@@ -11,6 +11,10 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { EditSermon } from "@/views/admin/sermonadmin/sermon/editsermon";
 import { SelectSermon } from "@/views/admin/sermonadmin/sermon/selectSermon";
+import { SelectScripture } from "@/views/admin/sermonadmin/scriptures/selectscriptures";
+import {SelectTopic} from "@/views/admin/sermonadmin/topic/selecttopic";
+import {SelectSeries} from "@/views/admin/sermonadmin/series/selectseries";
+import {SelectAuthor} from "@/views/admin/sermonadmin/author/selectAuthor";
 import {
   Dialog,
   DialogContent,
@@ -31,12 +35,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Select } from "@radix-ui/react-select";
 
 export function Sermon() {
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [titleForm, setTitleForm] = useState("");
   const [scriptureForm, setscriptureForm] = useState("");
+  const selectedAuthor=useSelector((state:RootState)=>state.sermonAdmin.selectedAuthor);
+  const selectedSeries=useSelector((state:RootState)=>state.sermonAdmin.selectedSeries);
+  const selectedTopic=useSelector((state:RootState)=>state.sermonAdmin.selectedTopic);
+  const selectedScripture=useSelector((state:RootState)=>state.sermonAdmin.selectedScripture);
 
  
   const [date, setDate] = React.useState<Date>();
@@ -56,7 +65,17 @@ export function Sermon() {
 
  
   const { isLoading, mutate } = Upload("uploadsermon".toLowerCase());
-
+  React.useEffect(() => {
+    setCanSubmit(
+      titleForm !== "" &&
+        scriptureForm !== "" &&
+        uploadedFiles.length > 0 &&
+        selectedAuthor != null &&
+        selectedSeries != null &&
+        selectedTopic != null &&
+        selectedScripture != null
+    );
+  }, [titleForm, scriptureForm, uploadedFiles, selectedAuthor, selectedSeries, selectedTopic, selectedScripture]);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -98,6 +117,23 @@ export function Sermon() {
       
       <Separator />
       <div className="flex columns-2 justify-evenly pt-5">
+      <div className="flex items-center space-x-4">
+          
+          <SelectTopic />
+        </div>
+        <div className="flex items-center space-x-4">
+          
+          <SelectScripture />
+        </div>
+        <div className="flex items-center space-x-4">
+          
+          <SelectSeries />
+        </div>
+        <div className="flex items-center space-x-4">
+          
+          <SelectAuthor />
+        </div>
+        </div>
         <div className="flex items-center space-x-4">
           <Label htmlFor="title" className="font-medium">
             Title
@@ -110,7 +146,7 @@ export function Sermon() {
             onChange={(e) => setTitleForm(e.target.value)}
           />
         </div>
-
+        <div className="flex columns-2 justify-evenly pt-5">
         <div className="flex items-center space-x-4">
           <Label className="font-medium">Scripture</Label>
           <Input
@@ -121,7 +157,8 @@ export function Sermon() {
             className=""
           />
         </div>
-      </div>
+        </div>
+      
 
       <div className="flex justify-evenly pt-5">
         <Popover>

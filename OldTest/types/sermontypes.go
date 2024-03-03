@@ -9,6 +9,8 @@ type SermonFull struct {
    AuthorType  AuthorType
    SeriesType SeriesType
    SermonType SermonType
+   TopicType TopicType
+   ScriptureType ScriptureType
 }
 type AuthorType struct {
 	AuthorID   string    `json:"author_id"`
