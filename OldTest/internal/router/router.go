@@ -35,6 +35,16 @@ func NewRouter(minio *minio.Client) *http.ServeMux {
 	router.Handle("/api/updateauthor", handlerSermon.UpdateAuthorsHandler(minio))
 	router.Handle("/api/deleteauthor", handlerSermon.DeleteAuthorsHandler(minio))
 
+	router.Handle("/api/pubfetchtopics", handlerSermon.PubFetchTopicsHandler())
+	router.Handle("/api/fetchtopics", handlerSermon.FetchTopicsHandler())
+	router.Handle("/api/uploadtopic", handlerSermon.AddTopicsHandler(minio))
+	router.Handle("/api/updatetopic", handlerSermon.UpdateTopicsHandler(minio))
+	router.Handle("/api/deletetopic", handlerSermon.DeleteTopicsHandler(minio))
+
+	router.Handle("/api/pubfetchscriptures", handlerSermon.PubFetchScripturesHandler())
+	router.Handle("/api/fetchscriptures", handlerSermon.FetchScripturesHandler())
+	router.Handle("/api/updatescripture", handlerSermon.UpdateScripturesHandler(minio))
+
 	if err := http.ListenAndServe("0.0.0.0:8080", router); err != nil {
 		log.Fatalf("There was an error with the http server: %v", err)
 	}

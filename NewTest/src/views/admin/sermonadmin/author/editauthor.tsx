@@ -37,7 +37,6 @@ import {
 
 import { SelectAuthor } from "@/views/admin/sermonadmin/author/selectAuthor";
 
-
 export function EditAuthor() {
   const selectedAuthor = useSelector(
     (state: RootState) => state.sermonAdmin.selectedAuthor
@@ -97,6 +96,7 @@ export function EditAuthor() {
       });
     }
   };
+  console.log(selectedAuthor);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData();
@@ -214,17 +214,17 @@ export function EditAuthor() {
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="bio" className="text-left">
-              BioLink
-            </Label>
-            <Input
-              id="bio"
-              placeholder="Enter a link to the author's bio: optional"
-              value={bioForm||"" }
-              onChange={(e) => setBioForm(e.target.value)}
-              className="col-span-3"
-            />
-          </div>
+                  <Label htmlFor="bio" className="text-left">
+                    BioLink
+                  </Label>
+                  <Input
+                    id="bio"
+                    placeholder="Enter a link to the author's bio: optional"
+                    value={bioForm || ""}
+                    onChange={(e) => setBioForm(e.target.value)}
+                    className="col-span-3"
+                  />
+                </div>
                 <div className="grid grid-rows-1 flex justify-center gap-4">
                   <Label
                     htmlFor="typeimage"

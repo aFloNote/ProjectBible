@@ -42,6 +42,10 @@ export function EditSeries() {
   const selectedSeries = useSelector(
     (state: RootState) => state.sermonAdmin.selectedSeries
   );
+  useEffect(() => {
+    setHeadForm(selectedSeries ? selectedSeries.title : "");
+    setDescForm(selectedSeries ? selectedSeries.description : "");
+  }, [selectedSeries]);
   const [canSubmit, setCanSubmit] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [headForm, setHeadForm] = useState(
@@ -60,11 +64,8 @@ export function EditSeries() {
   const handleImageUpdate = (files: File[]) => {
     setUploadedFiles(files);
   };
-  useEffect(() => {
-    setHeadForm(selectedSeries ? selectedSeries.title : "");
-    setDescForm(selectedSeries ? selectedSeries.description : "");
-  }, [selectedSeries]);
-  dispatch(setSelectedSeries(null));
+
+
   const queryClient = useQueryClient();
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -111,8 +112,8 @@ export function EditSeries() {
           messageTitle: "Success!",
           message: "Series added successfully",
         });
-        console.log("series editteed");
-        queryClient.invalidateQueries("seriesData");
+        
+        queryClient.invalidateQueries("SeriesData");
       },
       onError: () => {
         setServerResponse({

@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { setSelectedSeries } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
 import { Fetch } from "@/hooks/sermonhooks";
 import { SeriesType } from "@/types/sermon";
-
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 
 
@@ -63,6 +63,7 @@ const { data: seriesData, error } = Fetch<SeriesType[]>(
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
+          <ScrollArea>
           <Command>
             <CommandInput placeholder={`Search series...`} />
             <CommandEmpty>No series found.</CommandEmpty>
@@ -96,6 +97,7 @@ const { data: seriesData, error } = Fetch<SeriesType[]>(
               ))}
             </CommandGroup>
           </Command>
+          </ScrollArea>
         </PopoverContent>
       </Popover>
     );

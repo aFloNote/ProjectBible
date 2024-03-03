@@ -1,13 +1,14 @@
 import { Button } from "@/components/ui/button";
 
-import { IoPersonCircleOutline } from "react-icons/io5";
+import { IoPersonCircleOutline, } from "react-icons/io5";
+import {IoIosPaper} from "react-icons/io";
 import { TbPodium } from "react-icons/tb";
-import { FaLayerGroup } from "react-icons/fa";
+import { FaLayerGroup,FaBookOpen } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setSelectedAuthor, setSelectedSeries, setSelectedSermon,setSelectedSermonPage } from "@/redux/sermonAdminSelector";
+import { setSelectedAuthor, setSelectedSeries, setSelectedSermon,setSelectedSermonPage, setSelectedTopic } from "@/redux/sermonAdminSelector";
 import "@/Styles/SermonNav.css";
 
 function SermonSideBar() {
@@ -84,7 +85,7 @@ function SermonSideBar() {
           </div>
         </Button>
       </div>
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center pb-4">
         <Button
           variant="ghost"
           onClick={() => {
@@ -112,6 +113,72 @@ function SermonSideBar() {
               }
             >
               Authors
+            </span>
+          </div>
+        </Button>
+      </div>
+      <div className="flex flex-col items-center pb-4">
+        <Button
+          variant="ghost"
+          onClick={() => {
+            navigate("/admin/topicspage");
+            dispatch(setSelectedAuthor(null));
+            dispatch(setSelectedSeries(null));
+            dispatch(setSelectedSermon(null));
+            dispatch(setSelectedTopic(null));
+            dispatch(setSelectedSermonPage("topics"));
+          }}
+        >
+          <div className="flex flex-col items-center">
+            <IoIosPaper
+              size={iconSize}
+              className={
+                selectedSermonPage === "topics"
+                  ? "text-blue-500"
+                  : "text-gray-500"
+              }
+            />
+            <span
+              className={
+                selectedSermonPage === "topics"
+                  ? "text-xs text-center font-normal text-blue-500"
+                  : "text-xs text-center font-normal text-gray-500"
+              }
+            >
+              Topics
+            </span>
+          </div>
+        </Button>
+      </div>
+      <div className="flex flex-col items-center pb-4">
+        <Button
+          variant="ghost"
+          onClick={() => {
+            navigate("/admin/scripturespage");
+            dispatch(setSelectedAuthor(null));
+            dispatch(setSelectedSeries(null));
+            dispatch(setSelectedSermon(null));
+            dispatch(setSelectedTopic(null));
+            dispatch(setSelectedSermonPage("scriptures"));
+          }}
+        >
+          <div className="flex flex-col items-center">
+            <FaBookOpen
+              size={iconSize}
+              className={
+                selectedSermonPage === "scriptures"
+                  ? "text-blue-500"
+                  : "text-gray-500"
+              }
+            />
+            <span
+              className={
+                selectedSermonPage === "scriptures"
+                  ? "text-xs text-center font-normal text-blue-500"
+                  : "text-xs text-center font-normal text-gray-500"
+              }
+            >
+              Scriptures
             </span>
           </div>
         </Button>

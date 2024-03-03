@@ -52,6 +52,7 @@ export function Series() {
         messageTitle: "Error! Duplicate series",
         message: "series already exists",
       });
+      setIsDialogOpen(true);
       return;
     }
 
@@ -69,7 +70,7 @@ export function Series() {
           message: "Series added successfully",
         });
         setIsDialogOpen(true);
-        queryClient.invalidateQueries("seriesData");
+        queryClient.invalidateQueries("SeriesData");
       },
       onError: () => {
         setServerResponse({

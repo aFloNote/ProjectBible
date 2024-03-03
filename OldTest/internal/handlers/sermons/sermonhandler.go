@@ -108,7 +108,7 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		var series types.SeriesType
 
 		err := rows.Scan(
-			&sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.Topic, &sermon.Slug,
+			&sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.TopicID, &sermon.Slug,
 			&author.AuthorID, &author.Name, &author.Ministry, &author.Image_Path, &author.Slug,
 			&series.SeriesID, &series.Title, &series.Desc, &series.Image_Path,	&series.Date_Published, &series.Slug,
 		)

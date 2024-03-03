@@ -20,7 +20,7 @@ import { useDispatch } from 'react-redux';
 import { setSelectedAuthor, setSelectedSeries } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
 import { Fetch } from "@/hooks/sermonhooks";
 import { AuthorType } from "@/types/sermon";
-
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 
 
@@ -63,6 +63,7 @@ const { data: authorsData, error } = Fetch<AuthorType[]>(
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
+          <ScrollArea>
           <Command>
             <CommandInput placeholder={`Search author...`} />
             <CommandEmpty>No author found.</CommandEmpty>
@@ -96,6 +97,7 @@ const { data: authorsData, error } = Fetch<AuthorType[]>(
               ))}
             </CommandGroup>
           </Command>
+          </ScrollArea>
         </PopoverContent>
       </Popover>
     );

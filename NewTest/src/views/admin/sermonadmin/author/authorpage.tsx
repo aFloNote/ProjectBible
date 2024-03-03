@@ -54,6 +54,7 @@ export function Author() {
         messageTitle: "Error! Duplicate Authors",
         message: "Author already exists",
       });
+      setIsDialogOpen(true);
       return;
     }
 

@@ -19,7 +19,7 @@ export interface SermonType{
     title: string;
     date_delivered: string;
     scripture: string;
-    audio_link: string;
+    audio_path: string;
     video_path: string;
     series_id: string;
     author_id: string;
@@ -27,9 +27,23 @@ export interface SermonType{
     author_slug: string;
     series_slug: string;
   }
+export interface TopicType{
+    topic_id: string;
+    name: string;
+    image_path: string;
+    slug: string;
+  }
+  export interface ScriptureType{
+    scripture_id: string;
+    book: string;
+    image_path: string;
+    slug: string;
+  }
 
 export interface SermonFullType{
   SermonType: SermonType;
   AuthorType: AuthorType;
-  SeriesType: SeriesType
+  SeriesType: SeriesType;
+  TopicType: TopicType;
+  ScriptureType: ScriptureType;
 }

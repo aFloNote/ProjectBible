@@ -1,7 +1,7 @@
 package types
 
 import (
-	"database/sql"
+	
 	"time"
 )
 
@@ -33,12 +33,21 @@ type SermonType struct {
 	Audio_Path string `json:"audio_path"`
 	AuthorID  string    `json:"author_id"`
 	SeriesID   string    `json:"series_id"`
+	TopicID string `json:"topic_id"`
 	Scripture string `json:"scripture"`
-    Desc sql.NullString
-    Image_Path  sql.NullString
-	Topic sql.NullString
+    Desc string `json:"description"`
+    Image_Path  string `json:"image_path"`
 	Slug string `json:"slug"`
-	
-	
-
+}
+type TopicType struct {
+	TopicID   string    `json:"topic_id"`
+	Name      string `json:"name"`
+	Image_Path  string `json:"image_path"`
+	Slug 	 string `json:"slug"`
+}
+type ScriptureType struct {
+	ScriptureID   string    `json:"scripture_id"`
+	Book     string `json:"book"`
+	Image_Path  string `json:"image_path"`
+	Slug 	 string `json:"slug"`
 }

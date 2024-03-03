@@ -1,9 +1,11 @@
-import { AuthorType, SeriesType, SermonType } from "@/types/sermon";
+import { AuthorType, SeriesType, SermonType,TopicType,ScriptureType } from "@/types/sermon";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface SelectedState {
   selectedAuthor: AuthorType | null; // use Authors type
   selectedSeries: SeriesType | null; // replace with your Series type
   selectedSermon: SermonType | null; 
+  selectedTopic: TopicType | null;
+  selectedScripture: ScriptureType | null;
   selectedSermonPage:string;
 }
 
@@ -11,7 +13,9 @@ const initialState: SelectedState = {
   selectedAuthor: null,
   selectedSeries: null,
   selectedSermon: null,
-  selectedSermonPage: "recent",
+  selectedTopic: null,
+  selectedScripture: null,
+  selectedSermonPage: "sermons",
 };
 
 const selectedSlice = createSlice({
@@ -32,10 +36,18 @@ const selectedSlice = createSlice({
     setSelectedSermonPage(state, action: PayloadAction<string>) {
       state.selectedSermonPage = action.payload;
     },
+    setSelectedTopic(state, action: PayloadAction<TopicType | null>) {
+      state.selectedTopic = action.payload;
+    },
+    setSelectedScripture(state, action: PayloadAction<ScriptureType | null>) {
+      state.selectedScripture = action.payload;
+    },
+
   },
 });
 
-export const { setSelectedAuthor, setSelectedSeries, setSelectedSermon,setSelectedSermonPage } =
+export const { setSelectedAuthor, setSelectedSeries, setSelectedSermon,setSelectedSermonPage,setSelectedTopic
+,setSelectedScripture } =
   selectedSlice.actions;
 
 export default selectedSlice.reducer;
