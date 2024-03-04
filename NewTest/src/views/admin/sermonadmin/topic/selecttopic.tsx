@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import {useEffect,useState} from "react";
 import {  ChevronsUpDown } from "lucide-react";
 import {  CheckIcon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button";
@@ -21,21 +21,26 @@ import { setSelectedTopic } from '@/redux/sermonAdminSelector'; // replace with 
 import { Fetch } from "@/hooks/sermonhooks";
 import { TopicType } from "@/types/sermon";
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 
 
-
-
-export function SelectTopic() {
-  const [open, setOpen] = React.useState(false);
-  const [selectedId, setSelectedId] = React.useState("");
-
+export function SelectTopic({buttonVar="outline"}: {buttonVar?: "outline" | "link" | "default" | "destructive" | "secondary" | "ghost" | null | undefined}) {
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
+  const selectedTopic = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedTopic
+  );
+  useEffect(() => {
+    if (selectedTopic !== null) {
+      setSelectedId(selectedTopic.slug);
+    }
+    else setSelectedId("");
+  }, [selectedTopic]);
 
   const dispatch = useDispatch();
-
-// inside your onSelect function
-
-
+  
 const { data: topicData, error } = Fetch<TopicType[]>(
     "fetchtopics",
     "TopicData"
@@ -52,10 +57,10 @@ const { data: topicData, error } = Fetch<TopicType[]>(
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant={buttonVar}
             role="combobox"
             aria-expanded={open}
-            className="w-[200px] pl-0"
+            className='h-5'
           >
             {selectedId
                ? topicData.find((topic) => topic.slug === selectedId)?.name
@@ -74,16 +79,9 @@ const { data: topicData, error } = Fetch<TopicType[]>(
                   key={topic.slug}
                   value={topic.slug}
                   onSelect={(currentValue) => {
-               
-                 
-              
-                
-                    console.log(currentValue,selectedId)
                     setSelectedId(currentValue === selectedId ? "" : currentValue)
-                    console.log(selectedId)
                     setOpen(false)
-               
-                      dispatch(setSelectedTopic(currentValue !== selectedId ? topic : null));
+                    dispatch(setSelectedTopic(currentValue !== selectedId ? topic : null));
                   
                   }}
                 >

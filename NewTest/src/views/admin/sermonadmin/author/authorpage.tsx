@@ -46,7 +46,7 @@ export function Author() {
     event.preventDefault();
 
     const isHeadInItems = authorsData?.some(
-      (itemData) => itemData.name === headForm
+      (itemData) => itemData.name.toLowerCase() === headForm.toLowerCase()
     );
     if (isHeadInItems) {
       setServerResponse({

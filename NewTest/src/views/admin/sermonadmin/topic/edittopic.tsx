@@ -23,6 +23,8 @@ import { Upload, Delete } from "@/hooks/sermonhooks";
 import { useQueryClient } from "react-query";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
+import {Fetch} from "@/hooks/sermonhooks";
+import { TopicType } from "@/types/sermon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -57,6 +59,10 @@ export function EditTopic() {
   const { isLoading: isUploading, mutate: upload } = Upload("updatetopic");
   const { isLoading: isDeleting, mutate: deleteItem } = Delete("deletetopic");
   const dispatch = useDispatch();
+  const { data: topicsData } = Fetch<TopicType[]>(
+    "fetchtopics",
+    "TopicData"
+  );
   const handleImageUpdate = (files: File[]) => {
     setUploadedFiles(files);
   };
@@ -96,6 +102,27 @@ export function EditTopic() {
     }
   };
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    if (selectedTopic != null) {
+      if (topicsData !== undefined&&topicsData.length>1){
+      const filteredTopicsData = topicsData?.filter(
+        (itemData) => itemData.topic_id !== selectedTopic.topic_id
+      );
+  
+      const isHeadInItems = filteredTopicsData?.some(
+        (itemData) => itemData.name.toLowerCase() === headForm.toLowerCase()
+      );
+  
+      if (isHeadInItems) {
+        setServerResponse({
+          success: false,
+          messageTitle: "Error! Duplicate Topics",
+          message: "Topic already exists",
+        });
+        setIsDialogOpen(true);
+        return;
+      }
+    }
+  }
     event.preventDefault();
     const formData = new FormData();
     formData.append("name", headForm);
@@ -229,7 +256,7 @@ export function EditTopic() {
                 </form>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive">Delete Topic</Button>
+                    <Button variant="destructive" disabled={!canSubmit}>Delete Topic</Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>

@@ -12,14 +12,32 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store"; // re
 import { useState } from "react";
-import { Upload, Delete } from "@/hooks/sermonhooks";
 import { useQueryClient } from "react-query";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { setSelectedSeries,setSelectedAuthor,setSelectedScripture,setSelectedTopic } from "@/redux/sermonAdminSelector";
+import { SelectAuthor } from "@/views/admin/sermonadmin/author/selectAuthor";
+import { SelectSeries } from "@/views/admin/sermonadmin/series/selectseries";
+import { SelectScripture } from "@/views/admin/sermonadmin/scriptures/selectscriptures";
+import { SelectTopic } from "@/views/admin/sermonadmin/topic/selecttopic";
+import { SelectSermon } from "@/views/admin/sermonadmin/sermon/selectSermon";
+import { AuthAudio } from "@/views/admin/audiodrop";
+import { Fetch, Upload, Delete} from "@/hooks/sermonhooks";
+
+import {SermonType} from "@/types/sermon";
+import { cn } from "@/lib/utils";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,33 +50,75 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { setSelectedSermon } from "@/redux/sermonAdminSelector";
+import React from "react";
+import { format } from "date-fns";
 
 export function EditSermon() {
+  const dispatch=useDispatch()
   const selectedSermon = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedSermon
+  );
+  const selectedAuthor = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedAuthor
+  );
+  const selectedSeries = useSelector(
     (state: RootState) => state.sermonAdmin.selectedSeries
   );
+  const selectedTopic = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedTopic
+  );
+  const selectedScripture = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedScripture
+  );
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [headForm, setHeadForm] = useState(
+  const [titleForm, setTitleForm] = useState(
     selectedSermon ? selectedSermon.title : ""
   );
-  const [descForm, setDescForm] = useState("");
+
+  const [scriptureForm, setScriptureForm] = useState("")
+  const [scriptreIDForm, setScriptureIDForm] = useState(
+    selectedSermon ? selectedSermon.scripture_id : ""
+  )
+  const [topicForm, setTopicForm] = useState(
+    selectedSermon ? selectedSermon.topic_id : ""
+  );
+  const [seriesForm, setSeriesForm] = useState(
+    selectedSermon ? selectedSermon.series_id : ""
+  );
+  const [authorForm, setAuthorForm] = useState(
+    selectedSermon ? selectedSermon.author_id : ""
+  );
+  const [audioForm, setAudioForm] = useState(
+    selectedSermon ? selectedSermon.audio_path : ""
+  );
+  const [canSubmit, setCanSubmit] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [serverResponse, setServerResponse] = useState<{
     success: boolean;
     message: string;
     messageTitle: string;
   } | null>(null);
-  const { isLoading: isUploading, mutate: upload } = Upload("updateseries");
-  const { isLoading: isDeleting, mutate: deleteItem } = Delete("deleteseries");
+  const { isLoading: isUploading, mutate: upload } = Upload("updatesermon");
+  const { isLoading: isDeleting, mutate: deleteItem } = Delete("deletesermon");
+  const [date, setDate] = useState<Date>();
+  const { data: sermonData } = Fetch<SermonType[]>(
+    "fetchsermons",
+    "SermonData"
+  );
 
-  const handleImageUpdate = (files: File[]) => {
+  useEffect(() => {
+    console.log(selectedSermon)
+    setTitleForm(selectedSermon ? selectedSermon.title : "");
+    setScriptureForm(selectedSermon ? selectedSermon.scripture : "");
+    setTopicForm(selectedSermon ? selectedSermon.topic_id : "");
+    setSeriesForm(selectedSermon ? selectedSermon.series_id : "");
+    setAuthorForm(selectedSermon ? selectedSermon.author_id : "");
+    setDate(selectedSermon ? new Date(selectedSermon.date_delivered) : undefined);
+
+  }, [selectedSermon]);
+  const handleAudioUpdate = (files: File[]) => {
     setUploadedFiles(files);
   };
-  useEffect(() => {
-    setHeadForm(selectedSermon ? selectedSermon.title : "");
-    setDescForm(selectedSermon ? selectedSermon.description : "");
-  }, [selectedSermon]);
-
   const queryClient = useQueryClient();
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -84,18 +144,53 @@ export function EditSermon() {
 
         onSettled: () => {
           // Executes after mutation is either successful or errors out
-       
         },
       });
     }
   };
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => { if (selectedSermon != null) {
+    event.preventDefault();
+    if (sermonData !== undefined&&sermonData.length>1){
+    const filteredTopicsData = sermonData?.filter(
+      (itemData) => itemData.sermon_id !== selectedSermon.sermon_id
+    );
+
+    const isHeadInItems = filteredTopicsData?.some(
+      (itemData) => itemData.title.toLowerCase() === titleForm.toLowerCase()
+    );
+
+    if (isHeadInItems) {
+      setServerResponse({
+        success: false,
+        messageTitle: "Error! Duplicate Topics",
+        message: "Topic already exists",
+      });
+      setIsDialogOpen(true);
+      return;
+    }
+  }
+}
     event.preventDefault();
     const formData = new FormData();
-    formData.append("head", headForm);
-    formData.append("desc", descForm);
-    if (selectedSermon) formData.append("sermon_id", selectedSermon.series_id);
-  
+    formData.append("title", titleForm);
+    formData.append("scripture", scriptureForm);
+    formData.append("audio", uploadedFiles[0]);
+    formData.append("date", date?.toISOString() as string);
+    formData.append(
+      "author_id",
+      selectedAuthor ? selectedAuthor.author_id : ""
+    );
+    formData.append(
+      "series_id",
+      selectedSeries ? selectedSeries.series_id : ""
+    );
+    formData.append("topic_id", selectedTopic ? selectedTopic.topic_id : "");
+    formData.append(
+      "scripture_id",
+      selectedScripture ? selectedScripture.scripture_id : ""
+    );
+    formData.append("sermon_id", selectedSermon ? selectedSermon.sermon_id : "")
+
     upload(formData, {
       onSuccess: () => {
         // Handle successful mutation
@@ -104,7 +199,7 @@ export function EditSermon() {
           messageTitle: "Success!",
           message: "Series added successfully",
         });
-    
+
         queryClient.invalidateQueries("SeriesData");
       },
       onError: () => {
@@ -118,28 +213,60 @@ export function EditSermon() {
       onSettled: () => {
         setSelectedSermon(null);
         // Executes after mutation is either successful or errors out
-     
       },
     });
   };
 
   // Determine if the form can be submitted based on name, ministry, and image presence
-  const canSubmit =
-    headForm !== "" && descForm !== "";
+ 
+  React.useEffect(() => {
+   
+    setCanSubmit(
+      
+      titleForm !== "" &&
+        scriptureForm !== "" &&
+        uploadedFiles.length > 0 &&
+        date!== undefined &&
+        selectedAuthor != null &&
+        selectedSeries != null &&
+        selectedTopic != null &&
+        selectedScripture != null
+    );
+  }, [
+    titleForm,
+    scriptureForm,
+    uploadedFiles,
+    selectedAuthor,
+    selectedSeries,
+    selectedTopic,
+    selectedScripture,
+    date
+  ]);
 
   return (
-    <Dialog>
+    <Dialog onOpenChange={open => {
+      if (!open) {
+        console.log("closed")
+        dispatch(setSelectedSeries(null));
+        dispatch(setSelectedSermon(null));
+        dispatch(setSelectedAuthor(null));
+        dispatch(setSelectedScripture(null))
+        dispatch(setSelectedTopic(null))
+      }
+    
+    }}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          disabled={!selectedSermon}
-          onClick={() => setIsDialogOpen(true)}
-        >
-          Edit/Del Series
+        <Button className="h-5" onClick={() => {setIsDialogOpen(true)
+         dispatch(setSelectedSeries(null));
+         dispatch(setSelectedSermon(null));
+         dispatch(setSelectedAuthor(null));
+         dispatch(setSelectedScripture(null))
+         dispatch(setSelectedTopic(null))}}>
+          Edit/Del
         </Button>
       </DialogTrigger>
       {isDialogOpen && (
-        <DialogContent className="sm:min-w-[225px]">
+        <DialogContent className="sm:min-w-[500px]">
           {serverResponse ? (
             <>
               <DialogHeader>
@@ -162,11 +289,33 @@ export function EditSermon() {
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle>Edit Series</DialogTitle>
+                <DialogTitle>Edit Sermon</DialogTitle>
                 <DialogDescription>
-                  Edit Title, Description, and image, then click Edit Series.
+                  Edit Title, Scripture, and image, then click Edit Series.
                 </DialogDescription>
               </DialogHeader>
+              <SelectSermon />
+              <div className="flex columns-2 justify-evenly pt-5">
+                <div className="flex items-center space-x-4">
+                  <Label className="font-medium">Topic</Label>
+                  <SelectTopic buttonVar="ghost" />
+                </div>
+
+                <div className="flex items-center space-x-4">
+                  <Label className="font-medium">Book</Label>
+                  <SelectScripture buttonVar="ghost" />
+                </div>
+              </div>
+              <div className="flex columns-2 justify-evenly">
+                <div className="flex items-center space-x-4">
+                  <Label className="font-medium">Series</Label>
+                  <SelectSeries buttonVar="ghost" />
+                </div>
+                <div className="flex items-center space-x-4">
+                  <Label className="font-medium">Author</Label>
+                  <SelectAuthor buttonVar="ghost" />
+                </div>
+              </div>
               <div className="grid gap-4 py-4">
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="head" className="text-left">
@@ -174,48 +323,72 @@ export function EditSermon() {
                   </Label>
                   <Input
                     id="head"
-                    placeholder="Enter name"
-                    value={headForm}
-                    onChange={(e) => setHeadForm(e.target.value)}
+                    placeholder="Enter Title"
+                    value={titleForm}
+                    onChange={(e) => setTitleForm(e.target.value)}
                     className="col-span-3"
                   />
                 </div>
                 <div className="grid grid-cols-4 items-center gap-4">
                   <Label htmlFor="desc" className="text-left">
-                    Description
+                    Scripture
                   </Label>
                   <Input
                     id="desc"
-                    placeholder="Enter ministry"
-                    value={descForm}
-                    onChange={(e) => setDescForm(e.target.value)}
+                    placeholder="Enter Scripture"
+                    value={scriptureForm}
+                    onChange={(e) => setScriptureForm(e.target.value)}
                     className="col-span-3"
                   />
                 </div>
-                <div className="grid grid-rows-1 flex justify-center gap-4">
-                  <Label
-                    htmlFor="typeimage"
-                    className="text-center dark:text-white"
-                  >
-                    Insert Series Image
-                  </Label>
-               
-                </div>
+                <div className="flex justify-center">
+      <div className="flex items-left space-x-4">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant={"ghost"}
+              className={cn(
+                "justify-start text-left font-normal",
+                !date && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {date ? format(date, "PPP") : <span>Pick a date</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0">
+            <Calendar
+              mode="single"
+              selected={date}
+              onSelect={setDate}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
+        </div>
+        </div>
+                
+                <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+            <AuthAudio onAudioUpdate={handleAudioUpdate}
+             audiopath={selectedSermon ? selectedSermon.audio_path : ""} />
+          </div>
+          
+                
               </div>
               <DialogFooter>
                 <form onSubmit={handleSubmit}>
                   {isUploading ? (
-                    <Button disabled={!canSubmit}>
+                    <Button >
                       <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                       Editing Series...
                     </Button>
                   ) : (
-                    <Button type="submit">Edit Series</Button>
+                    <Button type="submit" disabled={!canSubmit}>Edit Series</Button>
                   )}
                 </form>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive">Delete Series</Button>
+                    <Button variant="destructive" disabled={!canSubmit}>Delete Series</Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -232,12 +405,12 @@ export function EditSermon() {
                       <AlertDialogAction asChild>
                         <form onSubmit={handleDelete}>
                           {isDeleting ? (
-                            <Button disabled={!canSubmit}>
+                            <Button >
                               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                               Deleting Series...
                             </Button>
                           ) : (
-                            <Button type="submit">Confirm Delete</Button>
+                            <Button type="submit" disabled={!canSubmit}>Confirm Delete</Button>
                           )}
                         </form>
                       </AlertDialogAction>

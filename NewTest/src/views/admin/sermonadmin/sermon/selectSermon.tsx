@@ -1,5 +1,5 @@
 "use client";
-import * as React from "react";
+import {useEffect,useState} from "react";
 import {  ChevronsUpDown } from "lucide-react";
 import {  CheckIcon } from "@radix-ui/react-icons"
 import { Button } from "@/components/ui/button";
@@ -18,26 +18,29 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useDispatch } from 'react-redux';
-import { setSelectedAuthor, setSelectedSeries } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
+import { useDispatch, useSelector } from 'react-redux';
+import { setSelectedAuthor, setSelectedScripture, setSelectedSeries, setSelectedTopic,setSelectedSermon } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
 import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { RootState } from "@/redux/store";
 
-
-
-
-
-export function SelectSermon() {
-  const [open, setOpen] = React.useState(false);
-  const [selectedId, setSelectedId] = React.useState("");
-  const { data: sermonData, error: sermonError, isLoading: sermonIsLoading } = Fetch<SermonFullType[]>(
+export function SelectSermon({buttonVar="outline"}: {buttonVar?: "outline" | "link" | "default" | "destructive" | "secondary" | "ghost" | null | undefined}) {
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState("");
+  const { data: sermonData} = Fetch<SermonFullType[]>(
     "fetchsermons",
     "SermonData"
   );
-
+  const selectedSermon = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedSermon
+  );
+  useEffect(() => {
+    if (selectedSermon !== null) {
+      setSelectedId(selectedSermon.slug);
+    }
+    else setSelectedId("");
+  }, [selectedSermon]);
   const dispatch = useDispatch();
 
-// inside your onSlect function
-    console.log(sermonData)
     
     if (!sermonData||  sermonData===undefined || sermonData.length===0) {
      
@@ -49,13 +52,13 @@ export function SelectSermon() {
         <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
+          variant={buttonVar}
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] pl-0"
+          className='h-5'
         >
           {selectedId
-            ? sermonData.find((sermon) => sermon.SermonType.sermon_id === selectedId)?.SermonType.title
+            ? sermonData.find((sermon) => sermon.SermonType.slug === selectedId)?.SermonType.title
             : `Select Sermon...`}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 " />
         </Button>
@@ -68,20 +71,23 @@ export function SelectSermon() {
           <CommandGroup>
             {sermonData.map((sermon) => (
               <CommandItem
-                key={sermon.SermonType.sermon_id}
-                value={sermon.SermonType.sermon_id}
+                key={sermon.SermonType.slug}
+                value={sermon.SermonType.slug}
                 onSelect={(currentValue) => {
                   setSelectedId(currentValue === selectedId ? "" : currentValue);
                   setOpen(false);
                   dispatch(setSelectedAuthor(currentValue !== selectedId ? sermon.AuthorType : null));
                   dispatch(setSelectedSeries(currentValue !== selectedId ? sermon.SeriesType : null));
+                  dispatch(setSelectedSermon(currentValue !== selectedId ? sermon.SermonType : null));
+                  dispatch(setSelectedScripture(currentValue !== selectedId ? sermon.ScriptureType : null));
+                  dispatch(setSelectedTopic(currentValue !== selectedId ? sermon.TopicType : null));
                 }}
               >
                 {sermon.SermonType.title}
                 <CheckIcon
                   className={cn(
                     "mr-2 h-4 w-4",
-                    selectedId === sermon.SermonType.sermon_id ? "opacity-100" : "opacity-0"
+                    selectedId === sermon.SermonType.slug ? "opacity-100" : "opacity-0"
                   )}
                 />
               </CommandItem>

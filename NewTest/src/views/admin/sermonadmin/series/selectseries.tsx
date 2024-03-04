@@ -21,14 +21,23 @@ import { setSelectedSeries } from '@/redux/sermonAdminSelector'; // replace with
 import { Fetch } from "@/hooks/sermonhooks";
 import { SeriesType } from "@/types/sermon";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 
 
-
-export function SelectSeries() {
+export function SelectSeries({buttonVar="outline"}: {buttonVar?: "outline" | "link" | "default" | "destructive" | "secondary" | "ghost" | null | undefined}) {
   const [open, setOpen] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState("");
-
+  const selectedSeries = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedSeries
+  );
+  React.useEffect(() => {
+    if (selectedSeries !== null) {
+      setSelectedId(selectedSeries.slug);
+    }
+    else setSelectedId("");
+  }, [selectedSeries]);
 
   const dispatch = useDispatch();
 
@@ -51,10 +60,10 @@ const { data: seriesData, error } = Fetch<SeriesType[]>(
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant={buttonVar}
             role="combobox"
             aria-expanded={open}
-            className="w-[200px] pl-0"
+            className='h-5'
           >
             {selectedId
                ? seriesData.find((series) => series.slug === selectedId)?.title

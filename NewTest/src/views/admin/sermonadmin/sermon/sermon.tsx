@@ -5,16 +5,16 @@ import { AuthAudio } from "@/views/admin/audiodrop";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { Separator } from "@/components/ui/separator";
+
 import * as React from "react";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { EditSermon } from "@/views/admin/sermonadmin/sermon/editsermon";
-import { SelectSermon } from "@/views/admin/sermonadmin/sermon/selectSermon";
+
 import { SelectScripture } from "@/views/admin/sermonadmin/scriptures/selectscriptures";
-import {SelectTopic} from "@/views/admin/sermonadmin/topic/selecttopic";
-import {SelectSeries} from "@/views/admin/sermonadmin/series/selectseries";
-import {SelectAuthor} from "@/views/admin/sermonadmin/author/selectAuthor";
+import { SelectTopic } from "@/views/admin/sermonadmin/topic/selecttopic";
+import { SelectSeries } from "@/views/admin/sermonadmin/series/selectseries";
+import { SelectAuthor } from "@/views/admin/sermonadmin/author/selectAuthor";
 import {
   Dialog,
   DialogContent,
@@ -27,31 +27,44 @@ import {
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
 import { useQueryClient } from "react-query";
 import { Upload } from "@/hooks/sermonhooks";
+import { Fetch } from "@/hooks/sermonhooks";
+import { SermonType } from "@/types/sermon";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Select } from "@radix-ui/react-select";
+import { Calendar } from "@/components/ui/calendar";
+
 
 export function Sermon() {
+  const { data: sermonData } = Fetch<SermonType[]>(
+    "fetchsermons",
+    "SermonData"
+  );
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [titleForm, setTitleForm] = useState("");
-  const [scriptureForm, setscriptureForm] = useState("");
-  const selectedAuthor=useSelector((state:RootState)=>state.sermonAdmin.selectedAuthor);
-  const selectedSeries=useSelector((state:RootState)=>state.sermonAdmin.selectedSeries);
-  const selectedTopic=useSelector((state:RootState)=>state.sermonAdmin.selectedTopic);
-  const selectedScripture=useSelector((state:RootState)=>state.sermonAdmin.selectedScripture);
+  const [scriptureForm, setScriptureForm] = useState("");
+  const selectedAuthor = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedAuthor
+  );
+  const selectedSeries = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedSeries
+  );
+  const selectedTopic = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedTopic
+  );
+  const selectedScripture = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedScripture
+  );
 
- 
   const [date, setDate] = React.useState<Date>();
 
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [uploadedFilesCount, setUploadedFilesCount] = useState(0);
+
   const [canSubmit, setCanSubmit] = useState(false);
   const [serverResponse, setServerResponse] = useState<{
     success: boolean;
@@ -60,30 +73,63 @@ export function Sermon() {
   } | null>(null);
   const handleAudioUpdate = (files: File[]) => {
     setUploadedFiles(files);
-    setUploadedFilesCount(files.length);
+  
   };
 
- 
   const { isLoading, mutate } = Upload("uploadsermon".toLowerCase());
   React.useEffect(() => {
     setCanSubmit(
       titleForm !== "" &&
         scriptureForm !== "" &&
         uploadedFiles.length > 0 &&
+        date !== undefined &&
         selectedAuthor != null &&
         selectedSeries != null &&
         selectedTopic != null &&
         selectedScripture != null
     );
-  }, [titleForm, scriptureForm, uploadedFiles, selectedAuthor, selectedSeries, selectedTopic, selectedScripture]);
+  }, [
+    titleForm,
+    scriptureForm,
+    uploadedFiles,
+    selectedAuthor,
+    selectedSeries,
+    selectedTopic,
+    selectedScripture,
+  ]);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const isHeadInItems = sermonData?.some(
+      (itemData) => itemData.title.toLowerCase() === titleForm.toLowerCase()
+    );
+    if (isHeadInItems) {
+      setServerResponse({
+        success: false,
+        messageTitle: "Error! Duplicate Sermons",
+        message: "Sermon name already exists",
+      });
+      setIsDialogOpen(true);
+      return;
+    }
     event.preventDefault();
-
+    console.log(selectedAuthor);
     const formData = new FormData();
     formData.append("title", titleForm);
     formData.append("scripture", scriptureForm);
     formData.append("audio", uploadedFiles[0]);
     formData.append("date", date?.toISOString() as string);
+    formData.append(
+      "author_id",
+      selectedAuthor ? selectedAuthor.author_id : ""
+    );
+    formData.append(
+      "series_id",
+      selectedSeries ? selectedSeries.series_id : ""
+    );
+    formData.append("topic_id", selectedTopic ? selectedTopic.topic_id : "");
+    formData.append(
+      "scripture_id",
+      selectedScripture ? selectedScripture.scripture_id : ""
+    );
 
     mutate(formData, {
       onSuccess: () => {
@@ -106,7 +152,7 @@ export function Sermon() {
       },
 
       onSettled: () => {
-        // Executes after mutation is either successful or errors out
+      
       },
     });
   };
@@ -114,26 +160,31 @@ export function Sermon() {
   return (
     <div className="w-full pt-4">
       <h1 className="text-2xl font-semibold text-center pb-4">Sermons</h1>
-      
-      <Separator />
+
+      <h2 className="text-xl font-bold mb-4 pl-16">Create a new Sermon or  <EditSermon/>  existing</h2>
       <div className="flex columns-2 justify-evenly pt-5">
-      <div className="flex items-center space-x-4">
-          
-          <SelectTopic />
+        <div className="flex items-center space-x-4">
+          <Label className="font-medium">Topic</Label>
+          <SelectTopic buttonVar="ghost" />
+        </div>
+
+        <div className="flex items-center space-x-4">
+          <Label className="font-medium">Book</Label>
+          <SelectScripture buttonVar="ghost" />
+        </div>
+      </div>
+      <div className="flex columns-2 justify-evenly">
+        <div className="flex items-center space-x-4">
+          <Label className="font-medium">Series</Label>
+          <SelectSeries buttonVar="ghost" />
         </div>
         <div className="flex items-center space-x-4">
-          
-          <SelectScripture />
+          <Label className="font-medium">Author</Label>
+          <SelectAuthor buttonVar="ghost" />
         </div>
-        <div className="flex items-center space-x-4">
-          
-          <SelectSeries />
-        </div>
-        <div className="flex items-center space-x-4">
-          
-          <SelectAuthor />
-        </div>
-        </div>
+      </div>
+
+      <div className="flex columns-2 justify-evenly pt-5 pb-5">
         <div className="flex items-center space-x-4">
           <Label htmlFor="title" className="font-medium">
             Title
@@ -146,27 +197,26 @@ export function Sermon() {
             onChange={(e) => setTitleForm(e.target.value)}
           />
         </div>
-        <div className="flex columns-2 justify-evenly pt-5">
         <div className="flex items-center space-x-4">
           <Label className="font-medium">Scripture</Label>
           <Input
-            placeholder="Enter scripture"
+            placeholder="EX: John 3:16-17,Psalm 5:7-8 ect"
             id="scripture"
             value={scriptureForm}
-            onChange={(e) => setscriptureForm(e.target.value)}
+            onChange={(e) => setScriptureForm(e.target.value)}
             className=""
           />
         </div>
-        </div>
-      
+      </div>
 
-      <div className="flex justify-evenly pt-5">
+      <div className="flex columns-2 justify-evenly pt-5 pb-5">
+      <div className="flex items-left space-x-4">
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant={"outline"}
+              variant={"ghost"}
               className={cn(
-                "w-[280px] justify-start text-left font-normal",
+                "justify-start text-left font-normal",
                 !date && "text-muted-foreground"
               )}
             >
@@ -183,9 +233,10 @@ export function Sermon() {
             />
           </PopoverContent>
         </Popover>
+        </div>
         <div className="flex items-center space-x-4">
           <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-            <AuthAudio onAudioUpdate={handleAudioUpdate} />
+            <AuthAudio audiopath='' onAudioUpdate={handleAudioUpdate} />
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -211,7 +262,12 @@ export function Sermon() {
               ) : null}
             </DialogContent>
           </Dialog>
-          <form onSubmit={handleSubmit}>
+         
+        </div>
+        
+      </div>
+      <div className='pt-5 flex justify-center'>
+      <form onSubmit={handleSubmit}>
             {isLoading ? (
               <Button disabled>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -223,13 +279,7 @@ export function Sermon() {
               </Button>
             )}
           </form>
-        </div>
-      </div>
-
-      <div className="flex flex-col">
-        <SelectSermon />
-        <EditSermon />
-      </div>
+          </div>
     </div>
   );
 }

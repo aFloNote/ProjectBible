@@ -17,18 +17,27 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useDispatch } from 'react-redux';
-import { setSelectedAuthor, setSelectedSeries } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
+import { setSelectedAuthor} from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
 import { Fetch } from "@/hooks/sermonhooks";
 import { AuthorType } from "@/types/sermon";
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
 
 
-
-export function SelectAuthor() {
+export function SelectAuthor({buttonVar="outline"}: {buttonVar?: "outline" | "link" | "default" | "destructive" | "secondary" | "ghost" | null | undefined}) {
   const [open, setOpen] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState("");
-
+  const selectedAuthor = useSelector(
+    (state: RootState) => state.sermonAdmin.selectedAuthor
+  );
+  React.useEffect(() => {
+    if (selectedAuthor !== null) {
+      setSelectedId(selectedAuthor.slug);
+    }
+    else setSelectedId("");
+  }, [selectedAuthor]);
 
   const dispatch = useDispatch();
 
@@ -42,7 +51,7 @@ const { data: authorsData, error } = Fetch<AuthorType[]>(
 
 
   if (!authorsData || error ||  authorsData===undefined || authorsData.length===0) {
-    console.log('asdfsd'+error)
+ 
     return <div>Error Finding Authors</div>
   }
   else {
@@ -51,10 +60,10 @@ const { data: authorsData, error } = Fetch<AuthorType[]>(
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant="outline"
+            variant={buttonVar}
             role="combobox"
             aria-expanded={open}
-            className="w-[200px] pl-0"
+            className='h-5'
           >
             {selectedId
                ? authorsData.find((author) => author.slug === selectedId)?.name
@@ -73,16 +82,11 @@ const { data: authorsData, error } = Fetch<AuthorType[]>(
                   key={author.slug}
                   value={author.slug}
                   onSelect={(currentValue) => {
-               
-                 
-              
-                
-                    console.log(currentValue,selectedId)
                     setSelectedId(currentValue === selectedId ? "" : currentValue)
-                    console.log(selectedId)
+                   
                     setOpen(false)
                
-                      dispatch(setSelectedAuthor(currentValue !== selectedId ? author : null));
+                    dispatch(setSelectedAuthor(currentValue !== selectedId ? author : null));
                   
                   }}
                 >

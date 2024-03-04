@@ -23,6 +23,8 @@ import { Upload, Delete } from "@/hooks/sermonhooks";
 import { useQueryClient } from "react-query";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
+import {Fetch} from "@/hooks/sermonhooks";
+import { AuthorType } from "@/types/sermon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,7 +58,13 @@ export function EditAuthor() {
   } | null>(null);
   const { isLoading: isUploading, mutate: upload } = Upload("updateauthor");
   const { isLoading: isDeleting, mutate: deleteItem } = Delete("deleteauthor");
+  const { data: authorsData } = Fetch<AuthorType[]>(
+    "fetchauthors",
+    "AuthorData"
+  );
   const dispatch = useDispatch();
+  
+
   const handleImageUpdate = (files: File[]) => {
     setUploadedFiles(files);
   };
@@ -96,8 +104,27 @@ export function EditAuthor() {
       });
     }
   };
-  console.log(selectedAuthor);
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    if (selectedAuthor != null && authorsData!=undefined && authorsData.length>0) {
+      const filteredAuthorsData = authorsData?.filter(
+        (itemData) => itemData.author_id !== selectedAuthor.author_id
+      );
+  
+      const isHeadInItems = filteredAuthorsData?.some(
+        (itemData) => itemData.name.toLowerCase() === headForm.toLowerCase()
+      );
+  
+      if (isHeadInItems) {
+        setServerResponse({
+          success: false,
+          messageTitle: "Error! Duplicate Authors Name",
+          message: "Author name already exists",
+        });
+        setIsDialogOpen(true);
+        return;
+      }
+    }
     event.preventDefault();
     const formData = new FormData();
     formData.append("head", headForm);
@@ -136,7 +163,9 @@ export function EditAuthor() {
   // Determine if the form can be submitted based on name, ministry, and image presence
   useEffect(() => {
     console.log(headForm !== "" && descForm !== "" && uploadedFiles.length > 0);
+    
     setCanSubmit(
+      
       headForm !== "" &&
         descForm !== "" &&
         uploadedFiles.length > 0 &&
@@ -255,7 +284,7 @@ export function EditAuthor() {
                 </form>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive">Delete Author</Button>
+                    <Button variant="destructive" disabled={!canSubmit}>Delete Author</Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>

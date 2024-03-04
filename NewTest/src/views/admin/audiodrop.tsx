@@ -3,39 +3,51 @@ import { useDropzone } from 'react-dropzone';
 
 interface AuthAudioProps {
   onAudioUpdate: (files: File[]) => void;
+  audiopath: string;
 }
 
 interface AudioWithPreview {
   file: File;
   preview: string;
+ 
 }
 
-export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate }) => {
-  const [audios, setAudios] = useState<AudioWithPreview[]>([]);
+export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath }) => {
+  const [audio, setAudio] = useState<AudioWithPreview[]>([]);
   const prevAudiosRef = useRef<AudioWithPreview[]>([]);
-
+  const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const mappedAudios = acceptedFiles.map(file => ({
       file,
       preview: URL.createObjectURL(file),
     }));
-    setAudios(mappedAudios);
+    setAudio(mappedAudios);
   }, []);
 
   const removeAudio = (event: React.MouseEvent<HTMLButtonElement>, audioSrc: string) => {
     event.stopPropagation();
-    const newAudios = audios.filter(audio => audio.preview !== audioSrc);
-    setAudios(newAudios);
+    const newAudios = audio.filter(audio => audio.preview !== audioSrc);
+    setAudio(newAudios);
     onAudioUpdate(newAudios.map(audio => audio.file)); // Add this line
     URL.revokeObjectURL(audioSrc);
   };
   const memoizedOnAudioUpdate = useCallback(onAudioUpdate, []);
   useEffect(() => {
-    const files = audios.map(audio => audio.file);
+    const files = audio.map(audio => audio.file);
     if (JSON.stringify(prevAudiosRef.current) !== JSON.stringify(files)) {
       onAudioUpdate(files);
     }
-  }, [audios, memoizedOnAudioUpdate]);
+  }, [audio, memoizedOnAudioUpdate]);
+  useEffect(() => {
+    if (audiopath) {
+      setAudio([
+        {
+          file: new File([], b2endpoint + encodeURIComponent(audiopath)),
+          preview: b2endpoint + encodeURIComponent(audiopath),
+        },
+      ]);
+    }
+  }, [audiopath]);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
@@ -46,14 +58,14 @@ export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate }) => {
   return (
     <div {...getRootProps()} className="cursor-pointer text-black dark:text-white">
       <input {...getInputProps()} />
-      {audios.length > 0 ? (
+      {audio.length > 0 ? (
         <div className="flex flex-col items-center justify-center">
-          {audios.map((audio, index) => (
+          {audio.map((audio, index) => (
             <div key={index} className="relative">
-              <audio src={audio.preview} controls className="max-w-xs max-h-32" />
+            <p className="overflow-auto">{decodeURIComponent(audio.file.name).split('/').pop()}</p>
               <button 
                 onClick={(event) => removeAudio(event, audio.preview)} 
-                className="absolute top-0 right-0 p-1 rounded-full text-red-500"
+                className="rounded-full text-red-500"
                 type="button"
               >
                 &times;

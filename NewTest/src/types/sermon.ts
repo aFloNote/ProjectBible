@@ -26,6 +26,8 @@ export interface SermonType{
     slug: string;
     author_slug: string;
     series_slug: string;
+    scripture_id: string;
+    topic_id: string;
   }
 export interface TopicType{
     topic_id: string;

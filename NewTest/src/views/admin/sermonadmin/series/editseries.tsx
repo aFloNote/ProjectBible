@@ -23,6 +23,8 @@ import { Upload, Delete } from "@/hooks/sermonhooks";
 import { useQueryClient } from "react-query";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useEffect } from "react";
+import { Fetch } from "@/hooks/sermonhooks";
+import { SeriesType } from "@/types/sermon";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -39,6 +41,10 @@ import { SelectSeries } from "@/views/admin/sermonadmin/series/selectseries";
 
 
 export function EditSeries() {
+  const { data: seriesData } = Fetch<SeriesType[]>(
+    "fetchseries",
+    "SeriesData"
+  );
   const selectedSeries = useSelector(
     (state: RootState) => state.sermonAdmin.selectedSeries
   );
@@ -97,6 +103,26 @@ export function EditSeries() {
     }
   };
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    
+      if (selectedSeries != null && seriesData != undefined && seriesData.length > 0) {
+        const filteredSeriesData = seriesData?.filter(
+          (itemData) => itemData.series_id !== selectedSeries.series_id
+        );
+    
+        const isHeadInItems = filteredSeriesData?.some(
+          (itemData) => itemData.title.toLowerCase() === headForm.toLowerCase()
+        );
+    
+        if (isHeadInItems) {
+          setServerResponse({
+            success: false,
+            messageTitle: "Error! Duplicate Series Title",
+            message: "Series Title already exists",
+          });
+          setIsDialogOpen(true);
+          return;
+        }
+      }
     event.preventDefault();
     const formData = new FormData();
     formData.append("head", headForm);
@@ -241,7 +267,7 @@ export function EditSeries() {
                 </form>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive">Delete Series</Button>
+                    <Button variant="destructive" disabled={!canSubmit}>Delete Series</Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -258,12 +284,12 @@ export function EditSeries() {
                       <AlertDialogAction asChild>
                         <form onSubmit={handleDelete}>
                           {isDeleting ? (
-                            <Button disabled={!canSubmit}>
+                            <Button >
                               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                               Deleting series...
                             </Button>
                           ) : (
-                            <Button type="submit" variant='destructive'>Confirm Delete</Button>
+                            <Button type="submit" variant='destructive' disabled={!canSubmit}>Confirm Delete</Button>
                           )}
                         </form>
                       </AlertDialogAction>
