@@ -35,7 +35,7 @@ import { SelectSermon } from "@/views/admin/sermonadmin/sermon/selectSermon";
 import { AuthAudio } from "@/views/admin/audiodrop";
 import { Fetch, Upload, Delete} from "@/hooks/sermonhooks";
 
-import {SermonType} from "@/types/sermon";
+import {SermonFullType} from "@/types/sermon";
 import { cn } from "@/lib/utils";
 
 import {
@@ -101,7 +101,7 @@ export function EditSermon() {
   const { isLoading: isUploading, mutate: upload } = Upload("updatesermon");
   const { isLoading: isDeleting, mutate: deleteItem } = Delete("deletesermon");
   const [date, setDate] = useState<Date>();
-  const { data: sermonData } = Fetch<SermonType[]>(
+  const { data: sermonData } = Fetch<SermonFullType[]>(
     "fetchsermons",
     "SermonData"
   );
@@ -123,7 +123,7 @@ export function EditSermon() {
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedSermon) {
-      deleteItem(selectedSermon.series_id, {
+      deleteItem({id:selectedSermon.series_id,slug:selectedSermon.slug },{
         onSuccess: () => {
           // Handle successful mutation
           setServerResponse({
@@ -152,11 +152,11 @@ export function EditSermon() {
     event.preventDefault();
     if (sermonData !== undefined&&sermonData.length>1){
     const filteredTopicsData = sermonData?.filter(
-      (itemData) => itemData.sermon_id !== selectedSermon.sermon_id
+      (itemData) => itemData.SermonType.sermon_id !== selectedSermon.sermon_id
     );
 
     const isHeadInItems = filteredTopicsData?.some(
-      (itemData) => itemData.title.toLowerCase() === titleForm.toLowerCase()
+      (itemData) => itemData.SermonType.title.toLowerCase() === titleForm.toLowerCase()
     );
 
     if (isHeadInItems) {

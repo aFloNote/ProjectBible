@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { useQueryClient } from "react-query";
 import { Upload } from "@/hooks/sermonhooks";
 import { Fetch } from "@/hooks/sermonhooks";
-import { SermonType } from "@/types/sermon";
+import { SermonFullType } from "@/types/sermon";
 import {
   Popover,
   PopoverContent,
@@ -38,9 +38,8 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 
-
 export function Sermon() {
-  const { data: sermonData } = Fetch<SermonType[]>(
+  const { data: sermonData } = Fetch<SermonFullType[]>(
     "fetchsermons",
     "SermonData"
   );
@@ -73,7 +72,6 @@ export function Sermon() {
   } | null>(null);
   const handleAudioUpdate = (files: File[]) => {
     setUploadedFiles(files);
-  
   };
 
   const { isLoading, mutate } = Upload("uploadsermon".toLowerCase());
@@ -98,19 +96,24 @@ export function Sermon() {
     selectedScripture,
   ]);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const isHeadInItems = sermonData?.some(
-      (itemData) => itemData.title.toLowerCase() === titleForm.toLowerCase()
-    );
-    if (isHeadInItems) {
-      setServerResponse({
-        success: false,
-        messageTitle: "Error! Duplicate Sermons",
-        message: "Sermon name already exists",
-      });
-      setIsDialogOpen(true);
-      return;
-    }
+    console.log(titleForm)
+    console.log(sermonData)
     event.preventDefault();
+    if (sermonData !=undefined &&sermonData.length != 0) {
+      const isHeadInItems = sermonData.some(
+        (itemData) => itemData.SermonType.title.toLowerCase() === titleForm.toLowerCase()
+      );
+      if (isHeadInItems) {
+        setServerResponse({
+          success: false,
+          messageTitle: "Error! Duplicate Sermons",
+          message: "Sermon name already exists",
+        });
+        setIsDialogOpen(true);
+        return;
+      }
+    }
+    
     console.log(selectedAuthor);
     const formData = new FormData();
     formData.append("title", titleForm);
@@ -151,9 +154,7 @@ export function Sermon() {
         setIsDialogOpen(true);
       },
 
-      onSettled: () => {
-      
-      },
+      onSettled: () => {},
     });
   };
 
@@ -161,7 +162,9 @@ export function Sermon() {
     <div className="w-full pt-4">
       <h1 className="text-2xl font-semibold text-center pb-4">Sermons</h1>
 
-      <h2 className="text-xl font-bold mb-4 pl-16">Create a new Sermon or  <EditSermon/>  existing</h2>
+      <h2 className="text-xl font-bold mb-4 pl-16">
+        Create a new Sermon or <EditSermon /> existing
+      </h2>
       <div className="flex columns-2 justify-evenly pt-5">
         <div className="flex items-center space-x-4">
           <Label className="font-medium">Topic</Label>
@@ -210,33 +213,33 @@ export function Sermon() {
       </div>
 
       <div className="flex columns-2 justify-evenly pt-5 pb-5">
-      <div className="flex items-left space-x-4">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant={"ghost"}
-              className={cn(
-                "justify-start text-left font-normal",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4" />
-              {date ? format(date, "PPP") : <span>Pick a date</span>}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0">
-            <Calendar
-              mode="single"
-              selected={date}
-              onSelect={setDate}
-              initialFocus
-            />
-          </PopoverContent>
-        </Popover>
+        <div className="flex items-left space-x-4">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={"ghost"}
+                className={cn(
+                  "justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : <span>Pick a date</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
         <div className="flex items-center space-x-4">
           <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-            <AuthAudio audiopath='' onAudioUpdate={handleAudioUpdate} />
+            <AuthAudio audiopath="" onAudioUpdate={handleAudioUpdate} />
           </div>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -262,24 +265,22 @@ export function Sermon() {
               ) : null}
             </DialogContent>
           </Dialog>
-         
         </div>
-        
       </div>
-      <div className='pt-5 flex justify-center'>
-      <form onSubmit={handleSubmit}>
-            {isLoading ? (
-              <Button disabled>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                Adding Sermon...
-              </Button>
-            ) : (
-              <Button type="submit" disabled={!canSubmit}>
-                Add Sermon
-              </Button>
-            )}
-          </form>
-          </div>
+      <div className="pt-5 flex justify-center">
+        <form onSubmit={handleSubmit}>
+          {isLoading ? (
+            <Button disabled>
+              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+              Adding Sermon...
+            </Button>
+          ) : (
+            <Button type="submit" disabled={!canSubmit}>
+              Add Sermon
+            </Button>
+          )}
+        </form>
+      </div>
     </div>
   );
 }

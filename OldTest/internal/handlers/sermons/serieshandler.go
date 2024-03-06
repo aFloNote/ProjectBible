@@ -6,12 +6,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"strings"
-
 	"net/http"
-	"net/url"
 	"os"
-
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
@@ -174,99 +170,29 @@ func UpdateSeriesHandler(minioClient *minio.Client) http.Handler {
         
             title := r.FormValue("head")
             desc := r.FormValue("desc")
-            seriesId := r.FormValue("series_id")
+            ID := r.FormValue("series_id")
             slug := slug.Make(title)
-           
-
-            // Check if image path is alr fmt.Print("Update Author")
-            file, header, contentType, err := fileStorage.ParseFile(r, 10<<20, "image") 
-            if err != nil {
-                fmt.Fprintf(os.Stderr, "Process file error: %v\n", err)
-            w.Write([]byte(`{"Failed to process uploaded file: " + err.Error()}`))
-            return
-            }
-            defer file.Close()
-
-            decodedURL, err := url.QueryUnescape(header.Filename)
-            if err != nil {
-             fmt.Println("Error:", err)
-            return
-            }
+  
             
-            
-          
-            // If image path is in the database, process the new image
-
-            if strings.HasPrefix(decodedURL, "sermons/series") {
-                // Prepare SQL statement to get the current image path
-                
-              
-                //fmt.Println("Image path is in the database")
-                fmt.Println(decodedURL)
-                // Prepare SQL statement
-                query := "UPDATE series SET title = $1, description = $2, slug= $3 WHERE series_id = $4"
-            
-                // Execute SQL statement
-                _, err = db.Exec(query, title, desc,slug, seriesId)
-                if err != nil {
-                    log.Fatal(err)
-                }
-            } else {
-                queryPath := "SELECT image_path FROM series WHERE series_id = $1"
-
-                // Execute SQL statement
-                row := db.QueryRow(queryPath, seriesId)
-
-                // Declare a variable to hold the image path
-                var imagePath string
-
-                // Scan the result into the imagePath variable
-                err := row.Scan(&imagePath)
-                if err != nil {
-                    if err == sql.ErrNoRows {
-                        http.Error(w, err.Error(), http.StatusInternalServerError)
-                    } else {
-                        http.Error(w, err.Error(), http.StatusInternalServerError)
-                    }
-                }
-                fmt.Println("Image path to be removed")
-                fmt.Println(imagePath)
-                errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), imagePath, minio.RemoveObjectOptions{})
-				if errRemove != nil {
-					// Log or handle the error occurred during file removal
-					
-					fmt.Fprintf(os.Stderr, "Failed to remove uploaded file after DB error: %v\n", errRemove)
-				}
-            path:= fmt.Sprintf("sermons/series/%s/image/%s", seriesId, header.Filename)
-			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
-            if err != nil {
-				fmt.Fprintf(os.Stderr, "upload file error: %v %v\n", upLoadInfo,err)
+            imgPath,err:=fileStorage.ProcessPathFiles(minioClient, "series", "image", r, slug)
+            if err!=nil{      
+                fmt.Fprintf(os.Stderr, "upload file error: %v\n", err)
                 http.Error(w, err.Error(), http.StatusInternalServerError)
                 return
+
             }
-            query := "UPDATE series SET title = $1, description = $2, image_path = $3,slug=$4 WHERE series_id = $5"
-            
+            query := "UPDATE series SET title = $1,image_path =$2, description =$3, slug= $4 WHERE series_id = $5"
+            fmt.Println("Image path is in the database")
             // Execute SQL statement
-            _, err = db.Exec(query, title, desc, path,slug,seriesId)
+            _, err = db.Exec(query, title,imgPath,desc,slug,ID)
             if err != nil {
                 log.Fatal(err)
             }
-            }
             doneCh := make(chan struct{})
 
-// Indicate to our routine to exit cleanly upon return.
+
             defer close(doneCh)
 
-            isRecursive := true
-            objectCh := minioClient.ListObjects(context.Background(), os.Getenv("STORAGE_BUCKET"), minio.ListObjectsOptions{Recursive: isRecursive})
-
-            for object := range objectCh {
-                if object.Err != nil {
-                    fmt.Println(object.Err)
-                    return
-                }
-                fmt.Println(object.Key)
-            }
 
             // Write the author string to the response
             if _, err := w.Write([]byte("Series Updated")); err != nil {

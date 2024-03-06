@@ -78,7 +78,7 @@ export function EditAuthor() {
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedAuthor) {
-      deleteItem(selectedAuthor.author_id, {
+      deleteItem({id:selectedAuthor.author_id,slug:selectedAuthor.slug}, {
         onSuccess: () => {
           // Handle successful mutation
           setServerResponse({

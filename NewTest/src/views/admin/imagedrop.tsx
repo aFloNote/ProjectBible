@@ -20,8 +20,10 @@ export const AuthImage: React.FC<AuthImageProps> = ({
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   useEffect(() => {
     if (imgpath) {
+      console.log(b2endpoint + encodeURIComponent(imgpath))
       setImages([
         {
+          
           file: new File([], b2endpoint + encodeURIComponent(imgpath)),
           preview: b2endpoint + encodeURIComponent(imgpath),
         },
@@ -76,7 +78,7 @@ export const AuthImage: React.FC<AuthImageProps> = ({
               <img
                 src={image.preview}
                 alt="preview"
-                className="max-w-xs max-h-32"
+                className="w-full h-full"
               />
               <button
                 onClick={(event) => removeImage(event, image.preview)}

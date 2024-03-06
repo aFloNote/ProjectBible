@@ -4,16 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"log"
-	"strings"
-
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"os"
-
 	"time"
-
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
@@ -37,8 +32,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 
 	params := r.URL.Query()
     sermonID := params.Get("sermon_id")
-	authorID := params.Get("author_id")
-	seriesID := params.Get("series_id") 
+	authorSlug := params.Get("author_slug")
+	seriesSlug := params.Get("series_slug") 
     // Start building the SQL query
     query := `
     SELECT 
@@ -73,10 +68,10 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-    } else if authorID != "" {
+    } else if authorSlug != "" {
 		
-		query += "WHERE sermons.author_id = $1 ORDER BY sermons.date_delivered DESC"
-		rows, err = db.Query(query, authorID)
+		query += "WHERE authors.slug = $1 ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query, authorSlug)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -84,10 +79,10 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		}	
 		
 
-	} else if seriesID != "" {
+	} else if seriesSlug != "" {
 		
-		query += "WHERE sermons.series_id = $1 ORDER BY sermons.date_delivered DESC"
-		rows, err = db.Query(query, seriesID)
+		query += "WHERE series.slug = $1 ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query, seriesSlug)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -212,11 +207,12 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
 			}
             // Get the image file from the form
 			fmt.Printf("Size: %v, Content Type: %s\n", header.Size, contentType)
-			path:= fmt.Sprintf("sermons/sermons/%s/audio/%s", sermonID, header.Filename)
+			path:= fmt.Sprintf("sermons/sermons/%s/audio/%s", slug, header.Filename)
 			// Start the timer
 		
 
 			// Upload the file
+			fmt.Println("Title before database query: ", seriesid)
 			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
 
 			// Stop the timer
@@ -279,7 +275,7 @@ func UpdateSermonHandler(minioClient *minio.Client) http.Handler {
 			authorId := r.FormValue("author_id")
 			topicId := r.FormValue("topic_id")
 			scriptureId := r.FormValue("scripture_id")
-			audio := r.FormValue("audio")
+			
             slug := slug.Make(title)
            
 			
@@ -298,98 +294,29 @@ func UpdateSermonHandler(minioClient *minio.Client) http.Handler {
 				fmt.Fprintf(os.Stderr, "Process time error: %v\n", err)
 				w.Write([]byte(`{""Failed to time " + err.Error()"}`))
 			}
-            // Check if image path is alr fmt.Print("Update Author")
-            file, header,contentType, err := fileStorage.ParseFile(r, 10<<20,"audio") // Use the actual form field name
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Process fil error: %v\n", err)
-				w.Write([]byte(`{""Failed to process uploaded file: " + err.Error()"}`))
-			
-				return
-			}
-            defer file.Close()
+           
 
-            decodedURL, err := url.QueryUnescape(header.Filename)
-            if err != nil {
-             fmt.Println("Error:", err)
-            return
-            }
-            
-            
-          
-            // If image path is in the database, process the new image
-
-            if strings.HasPrefix(decodedURL, "sermons/sermons/") {
-                // Prepare SQL statement to get the current image path
-                
-              
-                //fmt.Println("Image path is in the database")
-                fmt.Println(decodedURL)
-                // Prepare SQL statement
-                query := "UPDATE sermons SET title = $1, scripture = $2, scripture_id=$3, author_id=$4,series_id=$5,topic_id=$6,date_delivered=$7, slug= $8 WHERE sermon_id = $9"
-            
-                // Execute SQL statement
-                _, err = db.Exec(query, title, script,scriptureId,authorId,seriesId,topicId,t,slug, sermonId)
-                if err != nil {
-                    log.Fatal(err)
-                }
-            } else {
-                queryPath := "SELECT audio_path FROM sermon WHERE sermon_id = $1"
-
-                // Execute SQL statement
-                row := db.QueryRow(queryPath, sermonId)
-
-                // Declare a variable to hold the image path
-                var imagePath string
-
-                // Scan the result into the imagePath variable
-                err := row.Scan(&imagePath)
-                if err != nil {
-                    if err == sql.ErrNoRows {
-                        http.Error(w, err.Error(), http.StatusInternalServerError)
-                    } else {
-                        http.Error(w, err.Error(), http.StatusInternalServerError)
-                    }
-                }
-                fmt.Println("Image path to be removed")
-                fmt.Println(imagePath)
-                errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), imagePath, minio.RemoveObjectOptions{})
-				if errRemove != nil {
-					// Log or handle the error occurred during file removal
-					
-					fmt.Fprintf(os.Stderr, "Failed to remove uploaded file after DB error: %v\n", errRemove)
-				}
-            path:= fmt.Sprintf("sermons/series/%s/image/%s", seriesId, header.Filename)
-			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
-            if err != nil {
-				fmt.Fprintf(os.Stderr, "upload file error: %v %v\n", upLoadInfo,err)
+			audioPath,err:=fileStorage.ProcessPathFiles(minioClient, "sermon", "audio", r, slug)
+            if err!=nil{      
+                fmt.Fprintf(os.Stderr, "upload file error: %v\n", err)
                 http.Error(w, err.Error(), http.StatusInternalServerError)
                 return
+
             }
             query := "UPDATE sermons SET title = $1, scripture = $2, scripture_id=$3, author_id=$4,series_id=$5,topic_id=$6,date_delivered=$7,audio_path=$8, slug= $9 WHERE sermon_id = $10"
             
                 // Execute SQL statement
-                _, err = db.Exec(query, title, script,scriptureId,authorId,seriesId,topicId,t,audio,slug, sermonId)
+                _, err = db.Exec(query, title, script,scriptureId,authorId,seriesId,topicId,t,audioPath,slug, sermonId)
                 if err != nil {
                     log.Fatal(err)
                 }
-            }
+            
             doneCh := make(chan struct{})
 
-// Indicate to our routine to exit cleanly upon return.
+
             defer close(doneCh)
 
-            isRecursive := true
-            objectCh := minioClient.ListObjects(context.Background(), os.Getenv("STORAGE_BUCKET"), minio.ListObjectsOptions{Recursive: isRecursive})
-
-            for object := range objectCh {
-                if object.Err != nil {
-                    fmt.Println(object.Err)
-                    return
-                }
-                fmt.Println(object.Key)
-            }
-
-            // Write the author string to the response
+         
             if _, err := w.Write([]byte("Sermon Updated")); err != nil {
                 fmt.Fprintf(os.Stderr, "%v\n", err)
                 http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -409,6 +336,7 @@ func DeleteSermonHandler(minioClient *minio.Client) http.Handler {
             w.Header().Set("Content-Type", "text/plain")
          
             series_id := r.FormValue("id")
+			slug:= r.FormValue("slug")
 
             
             _, err := db.Exec("DELETE FROM series WHERE series_id=$1", series_id)
@@ -417,7 +345,7 @@ func DeleteSermonHandler(minioClient *minio.Client) http.Handler {
                 return
             }
             // Get the prefix for the objects to delete
-            prefix := fmt.Sprintf("sermons/series/%s/", series_id)
+            prefix := fmt.Sprintf("sermons/series/%s/",slug)
 
             fmt.Println("prefix")
             fmt.Println(prefix)

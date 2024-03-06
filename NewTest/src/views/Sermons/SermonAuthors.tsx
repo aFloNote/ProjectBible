@@ -73,11 +73,11 @@ export function Authors() {
         </div>
         <div className="flex justify-evenly pt-2">
           <Button className="mr-2  px-4 py-2 rounded"
-          onClick={() => navigate(`/sermons?author_id=${ author.author_id }`)}>
+          onClick={() => navigate(`/sermons?author=${ author.slug }`)}>
             Sermons
           </Button>
           <Button className="px-4 py-2 rounded"
-           onClick={() => navigate(`/sermonseries?author_id=${ author.author_id }`)}>
+           onClick={() => navigate(`/sermonseries?author=${ author.slug }`)}>
             Series
           </Button>
         </div>

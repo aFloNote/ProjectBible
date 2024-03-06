@@ -141,7 +141,7 @@ func UpdateScripturesHandler(minioClient *minio.Client) http.Handler {
 					
 					fmt.Fprintf(os.Stderr, "Failed to remove uploaded file after DB error: %v\n", errRemove)
 				}
-            path:= fmt.Sprintf("sermons/scriptures/%s/image/%s", scriptureID, header.Filename)
+            path:= fmt.Sprintf("sermons/scriptures/%s/image/%s", slug, header.Filename)
 			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
             if err != nil {
 				fmt.Fprintf(os.Stderr, "upload file error: %v %v\n", upLoadInfo,err)

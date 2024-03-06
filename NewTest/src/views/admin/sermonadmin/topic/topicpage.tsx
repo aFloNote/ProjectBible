@@ -109,7 +109,7 @@ export function Topic() {
           <Label htmlFor="typeimage" className="text-right dark:text-white col-span-2">
             Insert Topic Image
           </Label>
-          <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500 col-span-2">
+          <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500 col-span-2 w-40">
             <AuthImage onImageUpdate={handleImageUpdate} />
           </div>
         </div>

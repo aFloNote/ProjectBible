@@ -76,7 +76,7 @@ export function EditSeries() {
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedSeries) {
-      deleteItem(selectedSeries.series_id, {
+      deleteItem({id:selectedSeries.series_id,slug:selectedSeries.slug}, {
         onSuccess: () => {
           // Handle successful mutation
           setServerResponse({

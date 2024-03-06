@@ -55,7 +55,7 @@ export function Series() {
       >
       {seriesData?.map((series) => (
         <div className="pt-2 px-2" key={series.series_id}>
-          <Link to={`/sermons?series_id=${series.series_id}`}>
+          <Link to={`/sermons?series=${series.slug}`}>
             <Card>
               <CardContent className="pt-5">
                 <div className="flex items-center space-x-4">

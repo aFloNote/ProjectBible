@@ -40,8 +40,8 @@ export function Fetch<TData>(endPoint: string, queryKey: string, requireAuth = t
 export function Delete(endpoint: string) {
   const { deleteApi } = UseApi();
 
-  const deleteData = async (id: string) => {
-    return await deleteApi(`/` + endpoint + `?id=${id}`);
+  const deleteData = async ({id,slug}:{id:string; slug:string}) => {
+    return await deleteApi(`/` + endpoint + `?id=${id}&slug=${slug}`);
   };
 
   // useMutation hook setup correctly

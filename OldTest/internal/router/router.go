@@ -20,7 +20,9 @@ func NewRouter(minio *minio.Client) *http.ServeMux {
 	router := http.NewServeMux()
 	router.Handle("/api/pubfetchsermons", handlerSermon.PubFetchSermonHandler())
 	router.Handle("/api/fetchsermons", handlerSermon.PubFetchSermonHandler())
+	router.Handle("/api/uploadsermon", handlerSermon.AddSermonHandler(minio))
 	router.Handle("/api/updatesermon", handlerSermon.UpdateSermonHandler(minio))
+	router.Handle("/api/deletesermon", handlerSermon.DeleteSermonHandler(minio))
 	
 	router.Handle("/api/fetchseries", handlerSermon.FetchSeriesHandler())
 	router.Handle("/api/pubfetchseries", handlerSermon.PubFetchSeriesHandler())

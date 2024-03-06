@@ -75,7 +75,7 @@ export function EditTopic() {
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedTopic) {
-      deleteItem(selectedTopic.topic_id, {
+      deleteItem({id: selectedTopic.topic_id,slug:selectedTopic.slug}, {
         onSuccess: () => {
           // Handle successful mutation
           setServerResponse({
