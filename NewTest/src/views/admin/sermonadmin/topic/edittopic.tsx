@@ -44,7 +44,7 @@ export function EditTopic() {
   const selectedTopic = useSelector(
     (state: RootState) => state.sermonAdmin.selectedTopic
   );
-  console.log(selectedTopic);
+
   const [canSubmit, setCanSubmit] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [headForm, setHeadForm] = useState(

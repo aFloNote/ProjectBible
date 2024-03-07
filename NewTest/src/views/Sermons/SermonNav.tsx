@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+
 
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { TbPodium } from "react-icons/tb";
@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { MdFormatListBulleted } from 'react-icons/md';
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
 import "@/Styles/SermonNav.css";
 
@@ -19,16 +20,17 @@ function SermonNav() {
   );
 
   return (
-    <div className="flex justify-between w-full">
-      <div className="flex flex-col items-center">
-        <Button
-          variant="ghost"
+    <div className="flex justify-between w-full px-2">
+      <div className="flex flex-col items-center w-1/5">
+        <div
+       className='px-5 w-full'
+         
           onClick={() => {
             navigate("/sermons");
             dispatch(setSelectedSermonPage("sermons")); // Dispatch the action
           }}
         >
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center w-1/5">
             <TbPodium
               size={iconSize}
               className={
@@ -47,10 +49,16 @@ function SermonNav() {
               Sermons
             </span>
           </div>
-        </Button>
+        </div>
       </div>
-      <div className="flex flex-col items-center">
-        <Button variant="ghost">
+      <div className="flex flex-col items-center w-1/5">
+        <div 
+        className='px-0 w-full'
+      
+        onClick={() => {
+          navigate("/sermonscriptures");
+          dispatch(setSelectedSermonPage("scriptures")); 
+        }}>
           <div className="flex flex-col items-center">
             <FaBookOpen
               size={iconSize}
@@ -70,14 +78,16 @@ function SermonNav() {
               Scriptures
             </span>
           </div>
-        </Button>
+        </div>
       </div>
-      <div className="flex flex-col items-center">
-        <Button
-          variant="ghost"
+      <div className="flex flex-col items-center w-1/5 bg-none">
+        <div
+          className='px-0 bg-none w-full'
+          
           onClick={() => {
             navigate("/sermonseries");
-            dispatch(setSelectedSermonPage("sermonseries")); // Dispatch the action
+            dispatch(setSelectedSermonPage("sermonseries"));
+             // Dispatch the action
           }}
         >
           <div className="flex flex-col items-center">
@@ -99,11 +109,42 @@ function SermonNav() {
               Series
             </span>
           </div>
-        </Button>
+        </div>
       </div>
-      <div className="flex flex-col items-center">
-        <Button
-          variant="ghost"
+      <div className="flex flex-col items-center w-1/5">
+        <div
+       className='px-0 w-full'
+          
+          onClick={() => {
+            navigate("/sermontopics");
+            dispatch(setSelectedSermonPage("sermontopics")); // Dispatch the action
+          }}
+        >
+          <div className="flex flex-col items-center">
+            <MdFormatListBulleted
+              size={iconSize}
+              className={
+                selectedSermonPage === "sermontopics"
+                  ? "text-blue-500"
+                  : "text-gray-500"
+              }
+            />
+            <span
+              className={
+                selectedSermonPage === "sermontopics"
+                  ? "text-xs text-center font-normal text-blue-500"
+                  : "text-xs text-center font-normal text-gray-500"
+              }
+            >
+              Topics
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col items-center w-1/5">
+        <div
+      className='px-0 w-full'
+         
           onClick={() => {
             navigate("/sermonauthors");
             dispatch(setSelectedSermonPage("sermonauthors")); // Dispatch the action
@@ -128,7 +169,7 @@ function SermonNav() {
               Authors
             </span>
           </div>
-        </Button>
+        </div>
       </div>
     </div>
   );

@@ -4,12 +4,16 @@ import { Fetch } from "@/hooks/sermonhooks";
 import { SermonFullType } from "@/types/sermon";
 import { SiteImage } from "@/image";
 import { Audio } from "@/components/audioplayer";
+import { setSelectedSermonPage } from "@/redux/sermonSelector";
+import { useDispatch } from "react-redux";
 import 'react-h5-audio-player/lib/styles.css';
 
 export function SermonPage() {
   const navigate = useNavigate();
   const { sermonId } = useParams<{ sermonId: string }>();
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
+  const dispatch=useDispatch();
+  dispatch(setSelectedSermonPage(""))
   console.log(sermonId);
   useEffect(() => {
     if (!sermonId) {
@@ -60,7 +64,7 @@ export function SermonPage() {
         </div>
       </div>
       <div className=""> {/* Audio player container */}
-        <Audio audio_link={sermonFull[0].SermonType.audio_link} sermonFull={sermonFull}/>
+        <Audio audio_link={sermonFull[0].SermonType.audio_path} sermonFull={sermonFull}/>
       </div>
     </div>
   );

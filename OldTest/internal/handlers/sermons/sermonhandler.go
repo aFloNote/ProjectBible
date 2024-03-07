@@ -31,7 +31,7 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 
 
 	params := r.URL.Query()
-    sermonID := params.Get("sermon_id")
+    sermonID := params.Get("sermon_slug")
 	authorSlug := params.Get("author_slug")
 	seriesSlug := params.Get("series_slug") 
     // Start building the SQL query
@@ -58,10 +58,11 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 	
 	var err error
 	var rows *sql.Rows
+	
     if sermonID !="" {
 		
    		
-        query += "WHERE sermons.sermon_id = $1 ORDER BY sermons.date_delivered DESC"
+        query += "WHERE sermons.sermon_slug = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, sermonID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)

@@ -60,7 +60,7 @@ export function Series() {
               <CardContent className="pt-5">
                 <div className="flex items-center space-x-4">
                   <SiteImage
-                    divClass="w-24 h-24 rounded-full"
+                    divClass="w-16 h-16 rounded-full"
                     ratio={1}
                     alt="series Image"
                     source={b2endpoint + encodeURIComponent(series.image_path)}

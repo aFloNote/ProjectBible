@@ -6,6 +6,9 @@ import DateComp from "@/views/formatting/datesermonformat";
 import { useLocation } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
+import { setSelectedSermonPage } from "@/redux/sermonSelector";
+
+import { useDispatch } from "react-redux";
 
 export function Recent() {
   const navigate = useNavigate();
@@ -19,18 +22,44 @@ export function Recent() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const author_slug = queryParams.get("author");
+  const topic_slug = queryParams.get("topic");
   const series_slug = queryParams.get("series");
+  const script_slug = queryParams.get("scripture");
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   let route = "pubfetchsermons";
   let queryKey = "SermonsData";
+  function formatSlug(slug: string): string {
+    return slug
+      .split('-') // Split the slug into words
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
+      .join(' '); // Join the words back together with spaces
+  }
 
+  var title="Sermons";
   if (author_slug) {
     route += "?author_slug=" + author_slug;
-    queryKey = "SermonsData" + author_slug;
+    queryKey = "AuthorsData" + author_slug;
+    title="Author: "+formatSlug(author_slug);
+    
   } else if (series_slug) {
     route += "?series_slug=" + series_slug;
-    queryKey = "SermonsData" + series_slug;
+    queryKey = "SeriessData" + series_slug;
+    title="Series: "+formatSlug(series_slug);
+  } else if (script_slug){
+    route += "?script_slug=" + script_slug;
+    queryKey = "ScriptsData" + script_slug;
+    title="Scriptures: "+formatSlug(script_slug)
+  }else if (topic_slug){
+    route += "?topic_slug=" + topic_slug;
+    queryKey = "TopicsData" + topic_slug;
+    title="Topic: "+formatSlug(topic_slug)
   }
+  else{
+    const dispatch=useDispatch();
+    dispatch(setSelectedSermonPage("sermons"))
+  }
+  
+
   const { data: sermonsData } = Fetch<SermonFullType[]>(route, queryKey, false);
   console.log(sermonsData)
   console.log(state.items)
@@ -59,12 +88,22 @@ export function Recent() {
         loader={<h4>Loading...</h4>}
         scrollThreshold={0.8}
       >
+        <div> 
+        <div className="flex items-center pt-4 pb-4 px-5 space-x-4">        
+          <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-2xl">
+                  {title}
+                </h2>
+                
+          </div>
+          </div>
+          <div className="border-t text-gray-300"></div>
         {state.items.map((SermonFull, index) => (
           <div
             key={index}
             onClick={() => {
               navigate(`/sermonlistening/${SermonFull.SermonType.slug}`);
             }}
+          
           >
             <div className="flex items-center pt-4 pb-4 px-5 space-x-4">
               <div className="">

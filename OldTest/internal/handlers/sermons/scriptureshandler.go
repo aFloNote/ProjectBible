@@ -68,8 +68,52 @@ func fetchScriptures(w http.ResponseWriter, r *http.Request) {
 
 
 }
+func PubFetchScriptures(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Access-Control-Allow-Credentials", "true")
+    w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
+    w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+    w.Header().Set("Content-Type", "application/json")
+
+    // Fetch author data from the database
+    rows, err := db.Query("SELECT s.scripture_id, s.book, s.image_path, s.slug FROM scriptures s INNER JOIN sermons se ON s.scripture_id = se.scripture_id")
+    if err != nil {
+        fmt.Fprintf(os.Stderr,"Error query: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    defer rows.Close()
+
+    scriptures := []types.ScriptureType{}
+    for rows.Next() {
+        var scripture types.ScriptureType
+        err := rows.Scan(&scripture.ScriptureID, &scripture.Book, &scripture.Image_Path, &scripture.Slug)
+        if err != nil {
+            fmt.Fprintf(os.Stderr,"Error scaning rows: %v", err)
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+
+        scriptures = append(scriptures, scripture)
+    }
+
+    // Check for errors from iterating over rows.
+    if err := rows.Err(); err != nil {
+        fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+    // Encode the authors slice to JSON and write it to the response
+    if err := json.NewEncoder(w).Encode(scriptures); err != nil {
+        fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+
+
+}
 func PubFetchScripturesHandler() http.Handler {
-    return http.HandlerFunc(fetchScriptures)
+    return http.HandlerFunc(PubFetchScriptures)
 }
 
 func FetchScripturesHandler() http.Handler {
