@@ -1,8 +1,16 @@
-# Use an official Node.js runtime as a parent image
 FROM node:21 as build
 
 # Set the working directory in the container to /app
 WORKDIR /app
+
+# Declare the environment variables
+ARG VITE_REACT_APP_REDIRECT_URI
+ARG VITE_REACT_APP_AUD
+ARG VITE_REACT_APP_SCOPE
+ARG VITE_REACT_APP_CLIENT_ID
+ARG VITE_REACT_APP_DOMAIN
+ARG VITE_REACT_AUTH_DOMAIN
+ARG VITE_REACT_B2_ENDPOINT
 
 # Copy the package.json and package-lock.json (if available)
 COPY package*.json ./
@@ -14,7 +22,9 @@ RUN npm ci
 COPY . .
 
 # Build the application for production
-RUN npm run build
+RUN  npm run build
+
+
 
 # Start a new stage for a smaller final image
 FROM node:21-alpine
@@ -30,8 +40,11 @@ RUN npm ci --only=production
 # Copy the built application from the previous stage
 COPY --from=build /app/dist ./dist
 
+#RUN echo $VITE_REACT_APP_REDIRECT_URI
+RUN npm install -g serve
+
+# Serve the application
+
 # Expose the application's default port
 EXPOSE 3000
-
-# Start the application
-CMD ["npm", "start"]
+CMD ["serve", "-s", "-l", "5173", "dist"]

@@ -4,7 +4,7 @@ import { Fetch } from "@/hooks/sermonhooks";
 import { SermonFullType } from "@/types/sermon";
 import DateComp from "@/views/formatting/datesermonformat";
 import { useLocation } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
 
@@ -26,7 +26,8 @@ export function Recent() {
   const topic_slug = queryParams.get("topic");
   const series_slug = queryParams.get("series");
   const script_slug = queryParams.get("scripture");
-  const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
+  const b2endpoint =import.meta.env.VITE_REACT_B2_ENDPOINT
+  console.log('b2endpount '+b2endpoint)
   let route = "pubfetchsermons";
   let queryKey = "SermonsData";
   function formatSlug(slug: string): string {
@@ -60,11 +61,12 @@ export function Recent() {
     title="Topic: "+formatSlug(topic_slug)
   }
  
-  
+  console.log("here +" + route + " " + queryKey)
 
   const { data: sermonsData } = Fetch<SermonFullType[]>(route, queryKey, false);
-  console.log(sermonsData)
-  console.log(state.items)
+  console.log("here +" + route + " " + queryKey)
+  console.log('sermonData '+sermonsData)
+  console.log("state.items "+state.items)
   const fetchMoreData = () => {
     if (sermonsData) {
       const newItems = sermonsData.slice(

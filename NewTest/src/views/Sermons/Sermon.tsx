@@ -13,7 +13,12 @@ export function SermonPage() {
   const { sermonId } = useParams<{ sermonId: string }>();
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const dispatch=useDispatch();
-  dispatch(setSelectedSermonPage(""))
+  
+  useEffect(() => {
+   
+      dispatch(setSelectedSermonPage(""))
+    
+  }, [dispatch]);
   console.log(sermonId);
   useEffect(() => {
     if (!sermonId) {

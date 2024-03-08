@@ -76,21 +76,19 @@ export function EditSermon() {
   );
 
   const [scriptureForm, setScriptureForm] = useState("")
-  const [scriptreIDForm, setScriptureIDForm] = useState(
-    selectedSermon ? selectedSermon.scripture_id : ""
-  )
+  // @ts-ignore
   const [topicForm, setTopicForm] = useState(
     selectedSermon ? selectedSermon.topic_id : ""
   );
+  // @ts-ignore
   const [seriesForm, setSeriesForm] = useState(
     selectedSermon ? selectedSermon.series_id : ""
   );
+  // @ts-ignore
   const [authorForm, setAuthorForm] = useState(
     selectedSermon ? selectedSermon.author_id : ""
   );
-  const [audioForm, setAudioForm] = useState(
-    selectedSermon ? selectedSermon.audio_path : ""
-  );
+
   const [canSubmit, setCanSubmit] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [serverResponse, setServerResponse] = useState<{

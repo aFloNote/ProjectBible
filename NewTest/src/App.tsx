@@ -9,11 +9,12 @@ import { Auth0Provider } from "@auth0/auth0-react";
 
 
 function App() {
-  const redirect = import.meta.env.VITE_REACT_APP_REDIRECT_URI;
-  const aud = import.meta.env.VITE_REACT_APP_AUD;
-  const scope = import.meta.env.VITE_REACT_APP_SCOPE;
-  const domain = import.meta.env.VITE_REACT_AUTH_DOMAIN;
-  const clientId = import.meta.env.VITE_REACT_APP_CLIENT_ID;
+  const redirect = import.meta.env.VITE_REACT_APP_REDIRECT_URI
+  const aud = import.meta.env.VITE_REACT_APP_AUD
+  const scope = import.meta.env.VITE_REACT_APP_SCOPE
+  const domain = import.meta.env.VITE_REACT_APP_DOMAIN
+  const clientId = import.meta.env.VITE_REACT_APP_CLIENT_ID
+ 
   const queryClient = new QueryClient();
 
   return (

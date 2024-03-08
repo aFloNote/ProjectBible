@@ -16,20 +16,19 @@ import { useState } from "react";
 import { Upload } from "@/hooks/sermonhooks";
 import { useQueryClient } from "react-query";
 import { ReloadIcon } from "@radix-ui/react-icons";
-import { Fetch } from "@/hooks/sermonhooks";
-import { SermonType } from "@/types/sermon";
+
 import {EditSermon} from "@/views/admin/sermonadmin/sermon/editsermon";
-import { UseSelector } from "react-redux";
-import { RootState } from "@/redux/store";
+
 import {SelectTopic} from "@/views/admin/sermonadmin/topic/selecttopic";
-import {SelectScripture} from "@/views/admin/sermonadmin/scriptures/selectscriptures";
 
 import React from "react";
 
 export function Series() {
   const [titleForm, setTitleForm] = useState("");
   const [scriptureForm, setScriptureForm] = useState("");
+  // @ts-ignore
   const [topicForm, setTopicForm] = useState("");
+  // @ts-ignore
   const [date, setDate] = React.useState<Date>();
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
