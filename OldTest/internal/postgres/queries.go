@@ -40,3 +40,16 @@ func Query(query string, args ...interface{}) (*sql.Rows, error) {
 
     return rows, nil
 }
+func QueryRow(query string, args ...interface{}) (*sql.Row) {
+    db := GetDB()
+    stmt, err := db.Prepare(query)
+    if err != nil {
+        return nil
+    }
+    defer stmt.Close()
+
+    // Execute the SQL statement with variable parameters.
+    row := stmt.QueryRow(args...)
+
+    return row
+}

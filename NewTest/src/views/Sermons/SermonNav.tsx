@@ -1,81 +1,176 @@
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 
-import { useTheme } from "@/components/theme-provider";
+
 import { IoPersonCircleOutline } from "react-icons/io5";
-import { MdUpdate } from "react-icons/md";
-import { FaLayerGroup, FaBookOpen} from "react-icons/fa";
-import React from "react";
-
+import { TbPodium } from "react-icons/tb";
+import { FaLayerGroup, FaBookOpen } from "react-icons/fa";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { MdFormatListBulleted } from 'react-icons/md';
+import { setSelectedSermonPage } from "@/redux/sermonSelector";
 import "@/Styles/SermonNav.css";
 
-const NAV_ITEMS = [
-  {
-    href: "https://github.com/radix-ui",
-
-    icon: MdUpdate,
-    desc: "Recent",
-  },
-  {
-    href: "https://github.com/radix-ui",
-
-    icon: FaBookOpen,
-
-    desc: "Scripture",
-  },
-  {
-    href: "https://github.com/radix-ui",
-
-    icon: FaLayerGroup,
-
-    desc: "Series",
-  },
-  {
-    href: "https://github.com/radix-ui",
-
-    icon: IoPersonCircleOutline,
-
-    desc: "Speaker",
-  },
- 
- 
-];
-
 function SermonNav() {
-  const { theme } = useTheme();
-
-  const iconSize = 20;
+  const iconSize = 30;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const selectedSermonPage = useSelector(
+    (state: RootState) => state.sermon.selectedSermonPage
+  );
 
   return (
-    <div>
-      <NavigationMenu className="sm:hidden block">
-        <NavigationMenuList
-          className={`NavigationMenuList ${theme} text-center fixed bottom-0 inset-x-0 pt-2 flex justify-between`}
+    <div className="flex justify-between w-full px-2">
+      <div className="flex flex-col items-center w-1/5">
+        <div
+       className='px-5 w-full'
+         
+          onClick={() => {
+            navigate("/sermons");
+            dispatch(setSelectedSermonPage("sermons")); // Dispatch the action
+          }}
         >
-          {NAV_ITEMS.map((item, index) => (
-            <React.Fragment key={index}>
-              <NavigationMenuItem className="flex-1">
-                <NavigationMenuLink
-                  href={item.href}
-                  className={`${navigationMenuTriggerStyle()} flex flex-col items-center justify-center`}
-                >
-                  <div className="flex flex-col items-center justify-center">
-                    <item.icon size={iconSize} />
-                    <span className="text-xs text-center font-normal">
-                      {item.desc}
-                    </span>
-                  </div>
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </React.Fragment>
-          ))}
-        </NavigationMenuList>
-      </NavigationMenu>
+          <div className="flex flex-col items-center w-1/5">
+            <TbPodium
+              size={iconSize}
+              className={
+                selectedSermonPage === "sermons"
+                  ? "text-black dark:text-blue-500"
+                  : "text-gray-500"
+              }
+            />
+            <span
+              className={
+                selectedSermonPage === "sermons"
+                  ? "text-xs text-center font-normal dark:text-blue-500"
+                  : "text-xs text-center font-normal text-gray-500"
+              }
+            >
+              Sermons
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col items-center w-1/5">
+        <div 
+        className='px-0 w-full'
+      
+        onClick={() => {
+          navigate("/sermonscriptures");
+          dispatch(setSelectedSermonPage("scriptures")); 
+        }}>
+          <div className="flex flex-col items-center">
+            <FaBookOpen
+              size={iconSize}
+              className={
+                selectedSermonPage === "scriptures"
+                  ? "text-blue-500"
+                  : "text-gray-500"
+              }
+            />
+            <span
+              className={
+                selectedSermonPage === "scriptures"
+                  ? "text-xs text-center font-normal text-blue-500"
+                  : "text-xs text-center font-normal text-gray-500"
+              }
+            >
+              Scriptures
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col items-center w-1/5 bg-none">
+        <div
+          className='px-0 bg-none w-full'
+          
+          onClick={() => {
+            navigate("/sermonseries");
+            dispatch(setSelectedSermonPage("sermonseries"));
+             // Dispatch the action
+          }}
+        >
+          <div className="flex flex-col items-center">
+            <FaLayerGroup
+              size={iconSize}
+              className={
+                selectedSermonPage === "sermonseries"
+                  ? "text-blue-500"
+                  : "text-gray-500"
+              }
+            />
+            <span
+              className={
+                selectedSermonPage === "sermonseries"
+                  ? "text-xs text-center font-normal text-blue-500"
+                  : "text-xs text-center font-normal text-gray-500"
+              }
+            >
+              Series
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col items-center w-1/5">
+        <div
+       className='px-0 w-full'
+          
+          onClick={() => {
+            navigate("/sermontopics");
+            dispatch(setSelectedSermonPage("sermontopics")); // Dispatch the action
+          }}
+        >
+          <div className="flex flex-col items-center">
+            <MdFormatListBulleted
+              size={iconSize}
+              className={
+                selectedSermonPage === "sermontopics"
+                  ? "text-blue-500"
+                  : "text-gray-500"
+              }
+            />
+            <span
+              className={
+                selectedSermonPage === "sermontopics"
+                  ? "text-xs text-center font-normal text-blue-500"
+                  : "text-xs text-center font-normal text-gray-500"
+              }
+            >
+              Topics
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col items-center w-1/5">
+        <div
+      className='px-0 w-full'
+         
+          onClick={() => {
+            navigate("/sermonauthors");
+            dispatch(setSelectedSermonPage("sermonauthors")); // Dispatch the action
+          }}
+        >
+          <div className="flex flex-col items-center">
+            <IoPersonCircleOutline
+              size={iconSize}
+              className={
+                selectedSermonPage === "sermonauthors"
+                  ? "text-blue-500"
+                  : "text-gray-500"
+              }
+            />
+            <span
+              className={
+                selectedSermonPage === "sermonauthors"
+                  ? "text-xs text-center font-normal text-blue-500"
+                  : "text-xs text-center font-normal text-gray-500"
+              }
+            >
+              Authors
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

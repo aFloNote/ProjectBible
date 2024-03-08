@@ -1,0 +1,4 @@
+name = "file-download-handler"
+type = "javascript"
+account_id = "eb9518b4b9651f52fb683d7c1357f81f"
+workers_dev = true

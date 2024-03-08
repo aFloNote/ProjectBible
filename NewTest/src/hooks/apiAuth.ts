@@ -3,45 +3,61 @@ import { useAuth0 } from '@auth0/auth0-react';
 export const UseApi = () => {
     const { getAccessTokenSilently } = useAuth0();
   
-    const fetchApi = async <T>(endpoint: string, config: AxiosRequestConfig = {}): Promise<T> => {
-      const token = await getAccessTokenSilently();
-      
-      // Setup default headers if not provided
+    const fetchApi = async <T>(endpoint: string, requireAuth = true,config: AxiosRequestConfig = {}): Promise<T> => {
+      const domain = import.meta.env.VITE_REACT_APP_DOMAIN;
+    
       if (!config.headers) {
         config.headers = {};
       }
-  
-      // Append the Authorization header with the Bearer token
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+    
+      if (requireAuth) {
+        const token = await getAccessTokenSilently();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
       }
-      console.log('gsd')
-      const response = await axios.get<T>('https://localhost/api'+endpoint, config);
+      console.log(domain+'/api'+endpoint)
+      const response = await axios.get<T>(domain+'/api'+endpoint, config);
+      return response.data;
+    };
+    
+    const uploadApi = async <T, R>(endpoint: string, data: T, config: AxiosRequestConfig = {}, requireAuth = true): Promise<R> => {
+      const domain = import.meta.env.VITE_REACT_APP_DOMAIN;  
+    
+      if (!config.headers) {
+        config.headers = {};
+      }
+    
+      if (requireAuth) {
+        const token = await getAccessTokenSilently();
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
+    
+      const response = await axios.post<R>(domain +'/api'+ endpoint, data, {
+        ...config,
+      });
       return response.data;
     };
 
-    const uploadApi = async <T, R>(endpoint: string, data: T, config: AxiosRequestConfig = {}): Promise<R> => {
-      const token = await getAccessTokenSilently();
-      
-      // Setup default headers if not provided
+    const deleteApi = async <R>(endpoint: string, config: AxiosRequestConfig = {}): Promise<R> => {
+      const domain = import.meta.env.VITE_REACT_APP_DOMAIN;
+    
       if (!config.headers) {
         config.headers = {};
       }
-  
-      // Append the Authorization header with the Bearer token
+    
+      const token = await getAccessTokenSilently();
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
-  
-      const response = await axios.post<R>('https://localhost/api' + endpoint, data, {
-        ...config,
-      
-      });
-      console.log('response',response);
+    
+      const response = await axios.delete<R>(domain + '/api' + endpoint, config);
       return response.data;
     };
-  
-   
-  
-    return {fetchApi,uploadApi};
+    
+    return { fetchApi, uploadApi, deleteApi };
   };
+
+  
