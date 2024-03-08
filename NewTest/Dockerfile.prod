@@ -1,0 +1,37 @@
+# Use an official Node.js runtime as a parent image
+FROM node:21 as build
+
+# Set the working directory in the container to /app
+WORKDIR /app
+
+# Copy the package.json and package-lock.json (if available)
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy the local package files to the container's workspace
+COPY . .
+
+# Build the application for production
+RUN npm run build
+
+# Start a new stage for a smaller final image
+FROM node:21-alpine
+
+WORKDIR /app
+
+# Copy the package.json and package-lock.json (if available)
+COPY package*.json ./
+
+# Install only production dependencies
+RUN npm ci --only=production
+
+# Copy the built application from the previous stage
+COPY --from=build /app/dist ./dist
+
+# Expose the application's default port
+EXPOSE 3000
+
+# Start the application
+CMD ["npm", "start"]

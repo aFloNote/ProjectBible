@@ -35,7 +35,11 @@ export function Recent() {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
       .join(' '); // Join the words back together with spaces
   }
-
+  useEffect(() => {
+    if (!author_slug && !series_slug && !script_slug && !topic_slug) {
+      dispatch(setSelectedSermonPage("sermons"));
+    }
+  }, [author_slug, series_slug, script_slug, topic_slug, dispatch]);
   var title="Sermons";
   if (author_slug) {
     route += "?author_slug=" + author_slug;
@@ -55,9 +59,7 @@ export function Recent() {
     queryKey = "TopicsData" + topic_slug;
     title="Topic: "+formatSlug(topic_slug)
   }
-  else{
-    dispatch(setSelectedSermonPage("sermons"))
-  }
+ 
   
 
   const { data: sermonsData } = Fetch<SermonFullType[]>(route, queryKey, false);
