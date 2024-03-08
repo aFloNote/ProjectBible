@@ -20,6 +20,7 @@ export function Recent() {
     hasMoreItems: true,
   });
   const location = useLocation();
+  const dispatch=useDispatch();
   const queryParams = new URLSearchParams(location.search);
   const author_slug = queryParams.get("author");
   const topic_slug = queryParams.get("topic");
@@ -55,7 +56,6 @@ export function Recent() {
     title="Topic: "+formatSlug(topic_slug)
   }
   else{
-    const dispatch=useDispatch();
     dispatch(setSelectedSermonPage("sermons"))
   }
   
