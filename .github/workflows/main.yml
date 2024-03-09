@@ -20,5 +20,5 @@ jobs:
         username: ${{ secrets.DO_USER }}
         key: ${{ secrets.DO_SSH}}
         script: |
-          cd /prod/ProjectBible
+          /home/ck5150/prod/ProjectBible
           git pull
