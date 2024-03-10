@@ -1,0 +1,57 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v1 
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PW }}
+
+    - name: Build and push Docker image for oldtest
+      uses: docker/build-push-action@v2
+      with:
+        context: ./OldTest
+        dockerfile: Dockerfile.prod
+        push: true
+        tags: ck5150/oldtest:latest
+        build-args: |
+          DB_USER=${{ secrets.DB_USER }}
+          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          DB_HOST=${{ secrets.DB_HOST }}
+          DB_PORT=${{ secrets.DB_PORT }}
+          DB_NAME=${{ secrets.DB_NAME }}
+          DB_URL=${{ secrets.DB_URL }}
+          STORAGE_ENDPOINT=${{ secrets.STORAGE_ENDPOINT }}
+          STORAGE_ACCESS_KEY=${{ secrets.STORAGE_ACCESS_KEY }}
+          STORAGE_SECRET_KEY=${{ secrets.STORAGE_SECRET_KEY }}
+          STORAGE_BUCKET=${{ secrets.STORAGE_BUCKET }}
+          CORS_ORIGIN=${{ variables.CORS_ORIGIN }}
+          AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
+          AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
+          URL_HOST=${{ variables.URL_HOST }}
+
+    - name: Build and push Docker image for newtest
+      uses: docker/build-push-action@v2
+      with:
+        context: ./NewTest
+        dockerfile: Dockerfile.Prod
+        push: true
+        tags: user/newtest:latest
+        build-args: |
+              VITE_REACT_APP_REDIRECT_URI=${{ secrets.VITE_REACT_APP_REDIRECT_URI }}
+              VITE_REACT_APP_AUD=${{ secrets.VITE_REACT_APP_AUD }}
+              VITE_REACT_APP_SCOPE=${{ secrets.VITE_REACT_APP_SCOPE }}
+              VITE_REACT_APP_CLIENT_ID=${{ secrets.VITE_REACT_APP_CLIENT_ID }}
+              VITE_REACT_APP_DOMAIN=${{ secrets.VITE_REACT_APP_DOMAIN }}
+              VITE_REACT_AUTH_DOMAIN=${{ secrets.VITE_REACT_AUTH_DOMAIN }}
+              VITE_REACT_B2_ENDPOINT=${{ secrets.VITE_REACT_B2_ENDPOINT }}
