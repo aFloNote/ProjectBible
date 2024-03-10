@@ -6,7 +6,15 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {Link} from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 export function Scriptures() {
+	const dispatch=useDispatch();
+	useEffect(() => {
+		
+		  dispatch(setSelectedSermonPage("sermons"));
+		
+	  }, [dispatch]);
   const bibleOrder = [
     "Genesis",
     "Exodus",

@@ -13,12 +13,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useDispatch } from "react-redux";
+import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 export function Authors() {
   const navigate = useNavigate();
   const [items, setItems] = useState<AuthorType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
-
+const dispatch=useDispatch();
+  useEffect(() => {
+  
+      dispatch(setSelectedSermonPage("sermonauthors"));
+    
+  }, [dispatch]);
   const { data: authorsData } = Fetch<AuthorType[]>(
     "pubfetchauthors",
     "AuthorData",
