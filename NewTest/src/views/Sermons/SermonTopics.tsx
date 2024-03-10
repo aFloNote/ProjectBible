@@ -73,3 +73,4 @@ export function Topics() {
     </div>
   );
 }
+export default Topics

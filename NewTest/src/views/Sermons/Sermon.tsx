@@ -74,3 +74,4 @@ export function SermonPage() {
     </div>
   );
 }
+export default SermonPage;

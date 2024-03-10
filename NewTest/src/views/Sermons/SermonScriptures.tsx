@@ -143,3 +143,4 @@ export function Scriptures() {
     </div>
   );
 }
+export default Scriptures;

@@ -92,3 +92,4 @@ export function Authors() {
   );
 
 }
+export default Authors
