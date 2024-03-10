@@ -35,10 +35,10 @@ jobs:
           STORAGE_ACCESS_KEY=${{ secrets.STORAGE_ACCESS_KEY }}
           STORAGE_SECRET_KEY=${{ secrets.STORAGE_SECRET_KEY }}
           STORAGE_BUCKET=${{ secrets.STORAGE_BUCKET }}
-          CORS_ORIGIN=${{ variables.CORS_ORIGIN }}
+          CORS_ORIGIN=${{ env.CORS_ORIGIN }}
           AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
           AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
-          URL_HOST=${{ variables.URL_HOST }}
+          URL_HOST=${{ env.URL_HOST }}
 
     - name: Build and push Docker image for newtest
       uses: docker/build-push-action@v2
