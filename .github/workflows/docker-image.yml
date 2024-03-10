@@ -44,7 +44,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./NewTest
-        file: Dockerfile.Prod
+        file: Dockerfile.prod
         push: true
         tags: ck5150/newtest:latest
         build-args: |
