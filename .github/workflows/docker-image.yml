@@ -24,21 +24,6 @@ jobs:
         file: ./OldTest/Dockerfile.prodold
         push: true
         tags: ck5150/oldtest:latest
-        build-args: |
-          DB_USER=${{ secrets.DB_USER }}
-          DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          DB_HOST=${{ secrets.DB_HOST }}
-          DB_PORT=${{ secrets.DB_PORT }}
-          DB_NAME=${{ secrets.DB_NAME }}
-          DB_URL=${{ secrets.DB_URL }}
-          STORAGE_ENDPOINT=${{ secrets.STORAGE_ENDPOINT }}
-          STORAGE_ACCESS_KEY=${{ secrets.STORAGE_ACCESS_KEY }}
-          STORAGE_SECRET_KEY=${{ secrets.STORAGE_SECRET_KEY }}
-          STORAGE_BUCKET=${{ secrets.STORAGE_BUCKET }}
-          CORS_ORIGIN=${{ env.CORS_ORIGIN }}
-          AUTH0_DOMAIN=${{ secrets.AUTH0_DOMAIN }}
-          AUTH0_AUDIENCE=${{ secrets.AUTH0_AUDIENCE }}
-          URL_HOST=${{ env.URL_HOST }}
 
     - name: Build and push Docker image for newtest
       uses: docker/build-push-action@v5
