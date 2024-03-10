@@ -46,7 +46,7 @@ jobs:
         context: ./NewTest
         dockerfile: Dockerfile.Prod
         push: true
-        tags: user/newtest:latest
+        tags: ck5150/newtest:latest
         build-args: |
               VITE_REACT_APP_REDIRECT_URI=${{ secrets.VITE_REACT_APP_REDIRECT_URI }}
               VITE_REACT_APP_AUD=${{ secrets.VITE_REACT_APP_AUD }}
