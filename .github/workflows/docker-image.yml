@@ -21,7 +21,7 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./OldTest
-        file: ./OldTest/Dockerfile.prod
+        file: ./OldTest/Dockerfile.prodold
         push: true
         tags: ck5150/oldtest:latest
         build-args: |
@@ -44,14 +44,14 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: ./NewTest
-        file: ./NewTest/Dockerfile.prod
+        file: ./NewTest/Dockerfile.prodnew
         push: true
         tags: ck5150/newtest:latest
         build-args: |
-              VITE_REACT_APP_REDIRECT_URI=${{ secrets.VITE_REACT_APP_REDIRECT_URI }}
-              VITE_REACT_APP_AUD=${{ secrets.VITE_REACT_APP_AUD }}
-              VITE_REACT_APP_SCOPE=${{ secrets.VITE_REACT_APP_SCOPE }}
-              VITE_REACT_APP_CLIENT_ID=${{ secrets.VITE_REACT_APP_CLIENT_ID }}
-              VITE_REACT_APP_DOMAIN=${{ secrets.VITE_REACT_APP_DOMAIN }}
-              VITE_REACT_AUTH_DOMAIN=${{ secrets.VITE_REACT_AUTH_DOMAIN }}
-              VITE_REACT_B2_ENDPOINT=${{ secrets.VITE_REACT_B2_ENDPOINT }}
+            VITE_REACT_APP_REDIRECT_URI=${{ secrets.VITE_REACT_APP_REDIRECT_URI }}
+            VITE_REACT_APP_AUD=${{ secrets.VITE_REACT_APP_AUD }}
+            VITE_REACT_APP_SCOPE=${{ secrets.VITE_REACT_APP_SCOPE }}
+            VITE_REACT_APP_CLIENT_ID=${{ secrets.VITE_REACT_APP_CLIENT_ID }}
+            VITE_REACT_APP_DOMAIN=${{ secrets.VITE_REACT_APP_DOMAIN }}
+            VITE_REACT_AUTH_DOMAIN=${{ secrets.VITE_REACT_AUTH_DOMAIN }}
+            VITE_REACT_B2_ENDPOINT=${{ secrets.VITE_REACT_B2_ENDPOINT }}
