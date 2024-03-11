@@ -6,6 +6,8 @@ import {useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useLocation } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+import { useDispatch } from "react-redux";
+import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 
 
 
@@ -16,7 +18,20 @@ export function Series() {
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const queryParams = new URLSearchParams(location.search);
   const author_id = queryParams.get('author_id');
+ 
+  const dispatch = useDispatch();
 
+  useEffect(() => {
+    const currentPath = location.pathname;
+    let pageName = currentPath.substring(1); // remove the leading slash
+
+    // If the path is nested, you might want to get only the first part
+    if (pageName.includes('/')) {
+      pageName = pageName.split('/')[0];
+    }
+
+    dispatch(setSelectedSermonPage(pageName));
+  }, [location, dispatch]);
   let route='pubfetchseries';
   let queryKey='SeriesData';
   if (author_id)  {

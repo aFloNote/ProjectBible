@@ -3,6 +3,7 @@ module github.com/aFloNote/ProjectBible/OldTest
 go 1.21.3
 
 require (
+	github.com/algolia/algoliasearch-client-go/v3 v3.31.1
 	github.com/gosimple/slug v1.14.0
 	github.com/lib/pq v1.10.9
 )

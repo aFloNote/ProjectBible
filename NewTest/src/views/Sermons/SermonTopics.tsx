@@ -5,7 +5,7 @@ import { SiteImage } from "@/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
 import { useDispatch } from "react-redux";
 export function Topics() {
@@ -14,12 +14,20 @@ export function Topics() {
   const [items, setItems] = useState<TopicType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
-  const dispatch=useDispatch();
+  const location = useLocation();
+  const dispatch = useDispatch();
+
   useEffect(() => {
- 
-      dispatch(setSelectedSermonPage("sermontopics"));
-    
-  }, [dispatch]);
+    const currentPath = location.pathname;
+    let pageName = currentPath.substring(1); // remove the leading slash
+
+    // If the path is nested, you might want to get only the first part
+    if (pageName.includes('/')) {
+      pageName = pageName.split('/')[0];
+    }
+
+    dispatch(setSelectedSermonPage(pageName));
+  }, [location, dispatch]);
   const { data: topicsData } = Fetch<TopicType[]>(
     "pubfetchtopics",
     "TopicData",

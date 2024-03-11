@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
@@ -95,7 +96,7 @@ func FetchSeriesHandler() http.Handler {
     )
 }
 
-func AddSeriesHandler(minioClient *minio.Client) http.Handler {
+func AddSeriesHandler(minioClient *minio.Client,index *search.Index) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             // CORS Headers.
@@ -159,7 +160,7 @@ func AddSeriesHandler(minioClient *minio.Client) http.Handler {
     )
 }
 
-func UpdateSeriesHandler(minioClient *minio.Client) http.Handler {
+func UpdateSeriesHandler(minioClient *minio.Client,index *search.Index) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
       
@@ -204,7 +205,7 @@ func UpdateSeriesHandler(minioClient *minio.Client) http.Handler {
     )
 }
 
-func DeleteSeriesHandler(minioClient *minio.Client) http.Handler {
+func DeleteSeriesHandler(minioClient *minio.Client,index *search.Index) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             fmt.Print("Inside handler function") // New print statement

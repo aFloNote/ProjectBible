@@ -10,7 +10,7 @@ import (
 	"net/http"
 
 	"os"
-
+	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
@@ -79,7 +79,7 @@ func FetchTopicsHandler() http.Handler {
 }
 
 
-func AddTopicsHandler(minioClient *minio.Client) http.Handler {
+func AddTopicsHandler(minioClient *minio.Client,index *search.Index) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             // CORS Headers.
@@ -131,8 +131,16 @@ func AddTopicsHandler(minioClient *minio.Client) http.Handler {
 				return
 			}
 			// Example: Get the ID of the last inserted row (if supported by your DB)
-		
-			
+			record := types.TopicSearch{
+				ObjectID:  slug,
+                Name:      name,   
+			}
+			_, err = index.SaveObject(record)
+            if err != nil {
+                fmt.Fprintf(os.Stderr, "Failed to add topic to Algolia index: %v\n", err)
+                http.Error(w, "Failed to add topic to Algolia index: "+err.Error(), http.StatusInternalServerError)
+                return
+            }
 
             // Write the author string to the response
             if _, err := w.Write([]byte("Topic Added")); err != nil {
@@ -143,7 +151,7 @@ func AddTopicsHandler(minioClient *minio.Client) http.Handler {
         }),
     )
 }
-func UpdateTopicsHandler(minioClient *minio.Client) http.Handler {
+func UpdateTopicsHandler(minioClient *minio.Client,index *search.Index) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
       
@@ -182,7 +190,7 @@ func UpdateTopicsHandler(minioClient *minio.Client) http.Handler {
     )
 }
 
-func DeleteTopicsHandler(minioClient *minio.Client) http.Handler {
+func DeleteTopicsHandler(minioClient *minio.Client,index *search.Index) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
      

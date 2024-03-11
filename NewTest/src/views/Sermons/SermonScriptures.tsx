@@ -5,10 +5,25 @@ import { SiteImage } from "@/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {Link} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
+import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
+import { useDispatch } from "react-redux";
 
 export function Scriptures() {
-	
+	const location = useLocation();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    let pageName = currentPath.substring(1); // remove the leading slash
+
+    // If the path is nested, you might want to get only the first part
+    if (pageName.includes('/')) {
+      pageName = pageName.split('/')[0];
+    }
+
+    dispatch(setSelectedSermonPage(pageName));
+  }, [location, dispatch]);
   const bibleOrder = [
     "Genesis",
     "Exodus",

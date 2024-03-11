@@ -13,18 +13,33 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { useLocation } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { setSelectedSermonPage } from "@/redux/sermonSelector";
 
 export function Authors() {
   const navigate = useNavigate();
   const [items, setItems] = useState<AuthorType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
-
+  const location = useLocation();
+  const dispatch = useDispatch();
   const { data: authorsData } = Fetch<AuthorType[]>(
     "pubfetchauthors",
     "AuthorData",
     false
   );
+  useEffect(() => {
+    const currentPath = location.pathname;
+    let pageName = currentPath.substring(1); // remove the leading slash
+
+    // If the path is nested, you might want to get only the first part
+    if (pageName.includes('/')) {
+      pageName = pageName.split('/')[0];
+    }
+	console.log(pageName)
+    dispatch(setSelectedSermonPage(pageName));
+  }, [location, dispatch]);
   useEffect(() => {
     if (authorsData) {
       setItems(authorsData.slice(0, 200));

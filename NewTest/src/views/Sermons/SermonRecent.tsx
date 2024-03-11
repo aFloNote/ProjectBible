@@ -27,7 +27,19 @@ export function Recent() {
   const series_slug = queryParams.get("series");
   const script_slug = queryParams.get("scripture");
   const b2endpoint =import.meta.env.VITE_REACT_B2_ENDPOINT
-  console.log('b2endpount '+b2endpoint)
+  
+
+  useEffect(() => {
+    const currentPath = location.pathname;
+    let pageName = currentPath.substring(1); // remove the leading slash
+
+    // If the path is nested, you might want to get only the first part
+    if (pageName.includes('/')) {
+      pageName = pageName.split('/')[0];
+    }
+
+    dispatch(setSelectedSermonPage(pageName));
+  }, [location, dispatch]);
   let route = "pubfetchsermons";
   let queryKey = "SermonsData";
   function formatSlug(slug: string): string {
