@@ -29,7 +29,7 @@ yarn-error.log*
 # Test files
 /coverage
 /.nyc_output
-
+/OldTest/tmp
 # Golang specific
 # -------------------------------------
 /bin/
