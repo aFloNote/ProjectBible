@@ -4,8 +4,6 @@ import { Fetch } from "@/hooks/sermonhooks";
 import { SermonFullType } from "@/types/sermon";
 import { SiteImage } from "@/image";
 import { Audio } from "@/components/audioplayer";
-import { setSelectedSermonPage } from "@/redux/sermonSelector";
-import { useDispatch } from "react-redux";
 import 'react-h5-audio-player/lib/styles.css';
 
 export function SermonPage() {
@@ -13,14 +11,10 @@ export function SermonPage() {
   const navigate = useNavigate();
   const { sermonId } = useParams<{ sermonId: string }>();
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
-  const dispatch=useDispatch();
+
   
-  useEffect(() => {
-   
-      dispatch(setSelectedSermonPage(""))
-    
-  }, [dispatch]);
-  console.log(sermonId);
+
+
   useEffect(() => {
     if (!sermonId) {
       navigate("/"); // redirect to home page if no sermon is selected
