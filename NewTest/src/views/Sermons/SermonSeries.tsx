@@ -8,6 +8,7 @@ import { useLocation } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 
 
+
 export function Series() {
     const [items, setItems] = useState<SeriesType[]>([]);
     const [hasMoreItems, setHasMoreItems] = useState(true);
@@ -15,6 +16,7 @@ export function Series() {
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const queryParams = new URLSearchParams(location.search);
   const author_id = queryParams.get('author_id');
+
   let route='pubfetchseries';
   let queryKey='SeriesData';
   if (author_id)  {
@@ -79,3 +81,4 @@ export function Series() {
     </div>
   );
 }
+export default Series;

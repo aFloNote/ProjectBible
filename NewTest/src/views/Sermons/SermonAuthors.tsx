@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
+
 export function Authors() {
   const navigate = useNavigate();
   const [items, setItems] = useState<AuthorType[]>([]);
@@ -92,3 +93,4 @@ export function Authors() {
   );
 
 }
+export default Authors

@@ -6,6 +6,7 @@ interface DateComponentProps {
     let date = new Date(dateString);
     let month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
     let day = date.getUTCDate();
+    // @ts-ignore
     let year = date.getUTCFullYear();
   
     return (

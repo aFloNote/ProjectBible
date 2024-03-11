@@ -12,6 +12,7 @@ import { setSelectedSermonPage } from "@/redux/sermonSelector";
 import "@/Styles/SermonNav.css";
 
 function SermonNav() {
+  
   const iconSize = 30;
   const navigate = useNavigate();
   const dispatch = useDispatch();

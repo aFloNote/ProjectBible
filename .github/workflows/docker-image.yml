@@ -1,0 +1,56 @@
+name: Build and Push Docker Images
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USER }}
+        password: ${{ secrets.DOCKER_PW }}
+
+    - name: Build and push Docker image for oldtest
+      uses: docker/build-push-action@v5
+      with:
+        context: ./OldTest
+        file: ./OldTest/Dockerfile.prodold
+        push: true
+        tags: ck5150/oldtest:latest
+
+    - name: Build and push Docker image for newtest
+      uses: docker/build-push-action@v5
+      with:
+        context: ./NewTest
+        file: ./NewTest/Dockerfile.prodnew
+        push: true
+        tags: ck5150/newtest:latest
+        build-args: |
+            VITE_REACT_APP_REDIRECT_URI=${{ secrets.VITE_REACT_APP_REDIRECT_URI }}
+            VITE_REACT_APP_AUD=${{ secrets.VITE_REACT_APP_AUD }}
+            VITE_REACT_APP_SCOPE=${{ secrets.VITE_REACT_APP_SCOPE }}
+            VITE_REACT_APP_CLIENT_ID=${{ secrets.VITE_REACT_APP_CLIENT_ID }}
+            VITE_REACT_APP_DOMAIN=${{ secrets.VITE_REACT_APP_DOMAIN }}
+            VITE_REACT_AUTH_DOMAIN=${{ secrets.VITE_REACT_AUTH_DOMAIN }}
+            VITE_REACT_B2_ENDPOINT=${{ secrets.VITE_REACT_B2_ENDPOINT }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Execute remote ssh commands to deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DO_IP }}
+        username: ${{ secrets.DO_USER }}
+        key: ${{ secrets.DO_SSH }}
+        script: |
+          cd /home/ck5150/prod
+          docker compose pull oldtest newtest
+          docker compose -f docker-compose.prod.yml up -d --no-deps --build oldtest newtest

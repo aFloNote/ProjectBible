@@ -4,7 +4,7 @@ import { Fetch } from "@/hooks/sermonhooks";
 import { SermonFullType } from "@/types/sermon";
 import DateComp from "@/views/formatting/datesermonformat";
 import { useLocation } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
 
@@ -26,7 +26,8 @@ export function Recent() {
   const topic_slug = queryParams.get("topic");
   const series_slug = queryParams.get("series");
   const script_slug = queryParams.get("scripture");
-  const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
+  const b2endpoint =import.meta.env.VITE_REACT_B2_ENDPOINT
+  console.log('b2endpount '+b2endpoint)
   let route = "pubfetchsermons";
   let queryKey = "SermonsData";
   function formatSlug(slug: string): string {
@@ -35,7 +36,11 @@ export function Recent() {
       .map(word => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
       .join(' '); // Join the words back together with spaces
   }
-
+  useEffect(() => {
+    if (!author_slug && !series_slug && !script_slug && !topic_slug) {
+      dispatch(setSelectedSermonPage("sermons"));
+    }
+  }, [author_slug, series_slug, script_slug, topic_slug, dispatch]);
   var title="Sermons";
   if (author_slug) {
     route += "?author_slug=" + author_slug;
@@ -55,14 +60,13 @@ export function Recent() {
     queryKey = "TopicsData" + topic_slug;
     title="Topic: "+formatSlug(topic_slug)
   }
-  else{
-    dispatch(setSelectedSermonPage("sermons"))
-  }
-  
+ 
+  console.log("here +" + route + " " + queryKey)
 
   const { data: sermonsData } = Fetch<SermonFullType[]>(route, queryKey, false);
-  console.log(sermonsData)
-  console.log(state.items)
+  console.log("here +" + route + " " + queryKey)
+  console.log('sermonData '+sermonsData)
+  console.log("state.items "+state.items)
   const fetchMoreData = () => {
     if (sermonsData) {
       const newItems = sermonsData.slice(
@@ -133,3 +137,4 @@ export function Recent() {
     </div>
   );
 }
+export default Recent;

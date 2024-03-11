@@ -6,13 +6,20 @@ import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import {Link} from "react-router-dom";
+import { setSelectedSermonPage } from "@/redux/sermonSelector";
+import { useDispatch } from "react-redux";
 export function Topics() {
   
  
   const [items, setItems] = useState<TopicType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
-
+  const dispatch=useDispatch();
+  useEffect(() => {
+ 
+      dispatch(setSelectedSermonPage("sermontopics"));
+    
+  }, [dispatch]);
   const { data: topicsData } = Fetch<TopicType[]>(
     "pubfetchtopics",
     "TopicData",
@@ -73,3 +80,4 @@ export function Topics() {
     </div>
   );
 }
+export default Topics

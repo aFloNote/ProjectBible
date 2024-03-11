@@ -20,7 +20,7 @@ import { setSelectedScripture } from "@/redux/sermonAdminSelector";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { SelectScripture } from "@/views/admin/sermonadmin/scriptures/selectscriptures";
-import { set } from "date-fns";
+
 
 export function Scripture() {
   const selectedScripture = useSelector(
