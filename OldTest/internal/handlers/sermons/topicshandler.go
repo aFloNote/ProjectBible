@@ -8,9 +8,8 @@ import (
 	"fmt"
 
 	"net/http"
-
+	"github.com/typesense/typesense-go/typesense"
 	"os"
-	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
@@ -79,7 +78,7 @@ func FetchTopicsHandler() http.Handler {
 }
 
 
-func AddTopicsHandler(minioClient *minio.Client,index *search.Index) http.Handler {
+func AddTopicsHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             // CORS Headers.
@@ -131,16 +130,25 @@ func AddTopicsHandler(minioClient *minio.Client,index *search.Index) http.Handle
 				return
 			}
 			// Example: Get the ID of the last inserted row (if supported by your DB)
-			record := types.TopicSearch{
-				ObjectID:  slug,
-                Name:      name,   
+			topicDocument := types.TopicType{
+				TopicID:   topicID.String(),
+				Name:      name,
+				Image_Path: path,
+				Slug:      slug,
 			}
-			_, err = index.SaveObject(record)
-            if err != nil {
-                fmt.Fprintf(os.Stderr, "Failed to add topic to Algolia index: %v\n", err)
-                http.Error(w, "Failed to add topic to Algolia index: "+err.Error(), http.StatusInternalServerError)
-                return
-            }
+			
+			_, err = client.Collection("topics").Documents().Create(context.Background(), topicDocument)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
+			
+				// Optionally, you could also remove the topic from your database if you want to keep the database and Typesense in sync
+				// For example:
+				// _, err = db.Exec("DELETE FROM topics WHERE topic_id = $1", topicID)
+				// Handle this error as needed...
+			
+				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
 
             // Write the author string to the response
             if _, err := w.Write([]byte("Topic Added")); err != nil {
@@ -151,7 +159,7 @@ func AddTopicsHandler(minioClient *minio.Client,index *search.Index) http.Handle
         }),
     )
 }
-func UpdateTopicsHandler(minioClient *minio.Client,index *search.Index) http.Handler {
+func UpdateTopicsHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
       
@@ -190,7 +198,7 @@ func UpdateTopicsHandler(minioClient *minio.Client,index *search.Index) http.Han
     )
 }
 
-func DeleteTopicsHandler(minioClient *minio.Client,index *search.Index) http.Handler {
+func DeleteTopicsHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
      

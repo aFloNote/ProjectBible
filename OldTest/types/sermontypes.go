@@ -54,8 +54,3 @@ type ScriptureType struct {
 	Image_Path  string `json:"image_path"`
 	Slug 	 string `json:"slug"`
 }
-type TopicSearch struct {
-	ObjectID  string   `json:"topic_id"`
-	Name      string `json:"name"`
-	Slug 	 string `json:"slug"`
-}

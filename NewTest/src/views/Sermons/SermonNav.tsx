@@ -1,11 +1,12 @@
-import { IoPersonCircleOutline } from "react-icons/io5";
-import { TbPodium } from "react-icons/tb";
-import { FaLayerGroup, FaBookOpen } from "react-icons/fa";
+
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { MdFormatListBulleted } from "react-icons/md";
+import { IoPersonCircleOutline } from "react-icons/io5";
+import { TbPodium } from "react-icons/tb";
+import { FaLayerGroup, FaBookOpen } from "react-icons/fa";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
 import "@/Styles/SermonNav.css";
 

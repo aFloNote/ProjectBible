@@ -49,3 +49,10 @@ export interface SermonFullType{
   TopicType: TopicType;
   ScriptureType: ScriptureType;
 }
+export interface SearchType{
+  SermonType: SermonType;
+  AuthorType: AuthorType;
+  SeriesType: SeriesType;
+  TopicType: TopicType;
+  ScriptureType: ScriptureType;
+}

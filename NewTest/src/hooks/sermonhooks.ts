@@ -20,22 +20,18 @@ export function Upload(endpoint: string) {
   return { data, error, isLoading, mutate };
 }
 
-export function Fetch<TData>(endPoint: string, queryKey: string, requireAuth = true) {
-  const fetchApi = UseApi().fetchApi;
-
-  // Async function to fetch data
-  const fetchData = async () => {
-    console.log('endPoint ' + endPoint);
-    const response = await fetchApi<TData>('/' + endPoint, requireAuth);
-    return response;
-  };
-
-  // Using useQuery hook to fetch data
-  const { data, error, isLoading } = useQuery<TData>(queryKey, fetchData);
-
-  // Return data, error, and loading state
-  return { data, error, isLoading };
-}
+export function Fetch<TData>(endPoint: string, queryKey: string, requireAuth = true, enabled = true) {
+	const fetchApi = UseApi().fetchApi;
+	console.log(requireAuth)
+	const fetchData = async () => {
+	  const response = await fetchApi<TData>('/' + endPoint, requireAuth);
+	  return response;
+	};
+  
+	const { data, error, isLoading } = useQuery<TData>(queryKey, fetchData, { enabled });
+  
+	return { data, error, isLoading };
+  }
 
 export function Delete(endpoint: string) {
   const { deleteApi } = UseApi();
@@ -49,4 +45,26 @@ export function Delete(endpoint: string) {
 
   // Return data, error, and loading state
   return { data, error, isLoading, mutate };
-}
+} 
+
+export function SearchFetch<TData>(endPoint: string, queryKey: string, requireAuth = true, isDialogOpen: boolean) {
+	const fetchApi = UseApi().fetchApi;
+  
+	const fetchData = async (): Promise<TData> => {
+	  // Check if the 'query' parameter in the endPoint is not empty
+	  const url = new URL(endPoint, 'http://dummy.com'); // Use a dummy base URL to create a URL object
+	  const query = url.searchParams.get('query');
+  
+	  if (query && query.trim() !== '') {
+		const response = await fetchApi<TData>('/' + endPoint, requireAuth);
+		return response;
+	  }
+  
+	  // Return a default value if the query parameter is empty
+	  return Promise.resolve({} as TData);
+	};
+  
+	const { data, error, isLoading, refetch } = useQuery<TData>(queryKey, fetchData, { enabled: isDialogOpen });
+  
+	return { data, error, isLoading, refetch };
+  }

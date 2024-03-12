@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
+
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
@@ -163,7 +163,7 @@ func FetchSermonHandler() http.Handler {
     )
 }
 
-func AddSermonHandler(minioClient *minio.Client,index *search.Index) http.Handler {
+func AddSermonHandler(minioClient *minio.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             // CORS Headers.
@@ -258,7 +258,7 @@ func AddSermonHandler(minioClient *minio.Client,index *search.Index) http.Handle
     )
 }
 
-func UpdateSermonHandler(minioClient *minio.Client,index *search.Index) http.Handler {
+func UpdateSermonHandler(minioClient *minio.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
       
@@ -328,7 +328,7 @@ func UpdateSermonHandler(minioClient *minio.Client,index *search.Index) http.Han
     )
 }
 
-func DeleteSermonHandler(minioClient *minio.Client,index *search.Index) http.Handler {
+func DeleteSermonHandler(minioClient *minio.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             fmt.Print("Inside handler function") // New print statement

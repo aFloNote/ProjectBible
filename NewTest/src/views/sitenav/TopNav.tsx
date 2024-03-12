@@ -1,20 +1,13 @@
-import {
-  NavigationMenu,
-  
- 
-  NavigationMenuItem,
- 
-  NavigationMenuList,
- 
 
-} from "@/components/ui/navigation-menu"
 import { ModeToggle } from "@/components/mode-toggle";
 import {Logo} from "@/Logos/SiteLogo";
+import  ErrorBoundary  from "@/components/error";
 
 
+import Search from "@/components/search";
 
 function TopNav() {
-
+	
 
 
 
@@ -23,25 +16,16 @@ return (
       
       <Logo ratio={16/9} size="6em"/>
  
-  <NavigationMenu>
-  <NavigationMenuList className="">
-
   
-  
-   
-
-    <NavigationMenuItem>
-  
-    </NavigationMenuItem>
-
-    <NavigationMenuItem>
-    
-    </NavigationMenuItem>
-    
-    
-  </NavigationMenuList>
-</NavigationMenu>
 <div className='flex justify-end'>
+<div className='pt-2 pr-2 pt-3'>
+     
+<ErrorBoundary>
+  <Search />
+</ErrorBoundary>
+    
+   
+    </div>
   <div className='pt-2 pr-2'> 
   <ModeToggle/>
   </div>

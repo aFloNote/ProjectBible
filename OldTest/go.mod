@@ -3,13 +3,16 @@ module github.com/aFloNote/ProjectBible/OldTest
 go 1.21.3
 
 require (
-	github.com/algolia/algoliasearch-client-go/v3 v3.31.1
 	github.com/gosimple/slug v1.14.0
 	github.com/lib/pq v1.10.9
+	github.com/typesense/typesense-go v1.0.0
 )
 
 require (
+	github.com/apapsch/go-jsonmerge/v2 v2.0.0 // indirect
+	github.com/deepmap/oapi-codegen v1.12.3 // indirect
 	github.com/gosimple/unidecode v1.0.1 // indirect
+	github.com/sony/gobreaker v0.5.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	gopkg.in/go-jose/go-jose.v2 v2.6.2 // indirect
 )

@@ -16,7 +16,7 @@ import (
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/types"
-	"github.com/algolia/algoliasearch-client-go/v3/algolia/search"
+	
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
 	// Import other necessary packages
@@ -121,7 +121,7 @@ func FetchScripturesHandler() http.Handler {
 	)
 }
 
-func UpdateScripturesHandler(minioClient *minio.Client, index *search.Index) http.Handler {
+func UpdateScripturesHandler(minioClient *minio.Client) http.Handler {
 	return middleware.EnsureValidToken()(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
