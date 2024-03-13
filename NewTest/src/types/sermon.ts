@@ -9,7 +9,7 @@ export interface  AuthorType{
 export interface SeriesType{
     series_id: string;
     title: string;
-    description:string;
+    desc:string;
     date_published: string;
     image_path: string;
     slug: string;

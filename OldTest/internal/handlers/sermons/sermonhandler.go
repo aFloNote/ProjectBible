@@ -17,6 +17,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
+	"github.com/typesense/typesense-go/typesense"
+	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	// Import other necessary packages
 )
 
@@ -35,6 +37,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
     sermonID := params.Get("sermon_slug")
 	authorSlug := params.Get("author_slug")
 	seriesSlug := params.Get("series_slug") 
+	topicSlug := params.Get("topic_slug")
+	scriptureSlug:= params.Get("script_slug")
     // Start building the SQL query
     query := `
     SELECT 
@@ -85,6 +89,24 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		
 		query += "WHERE series.slug = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, seriesSlug)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}else if topicSlug != "" {
+		
+		query += "WHERE topics.slug = $1 ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query, topicSlug)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}	else if scriptureSlug != "" {
+		
+		query += "WHERE scriptures.slug = $1 ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query, scriptureSlug)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -163,7 +185,7 @@ func FetchSermonHandler() http.Handler {
     )
 }
 
-func AddSermonHandler(minioClient *minio.Client) http.Handler {
+func AddSermonHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             // CORS Headers.
@@ -246,10 +268,64 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
 				http.Error(w, "Failed to insert author into database: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
-			// Example: Get the ID of the last inserted row (if supported by your DB
+			
+			
+			type SermonTypeForTypesense struct {
+				SermonID       string `json:"sermon_id"`
+				Scripture    string `json:"scripture"`
+				SeriesID    string `json:"series_id"`
+				AuthorID    string `json:"author_id"`
+				TopicID     string `json:"topic_id"`
+				ScriptureID string `json:"scripture_id"`
+				DateDelivered string `json:"date_delivered"`
+				Title          string `json:"title"`
+				Desc           string `json:"desc"`
+				Image_Path     string `json:"image_path"`
+				Audio_Path     string `json:"audio_path"`
+				Slug           string `json:"slug"`
+			}
+			sermonDocument := types.SermonType{
+				SermonID:   sermonID.String(),
+				Scripture: 	scripture,
+				SeriesID:  seriesid,
+				AuthorID:  authid,
+				TopicID:   topicid,
+				ScriptureID: scriptid,
+				DateDelivered: t,
+				Title:      title,
+				Desc:	"",
+				Audio_Path: path,
+				Image_Path: "",
+				Slug:      slug,
+			}
+			formattedDateDel := sermonDocument.DateDelivered.Format(time.RFC3339)
+			documentForTypesense := SermonTypeForTypesense{
+				SermonID:       sermonDocument.SermonID,
+				Scripture:    sermonDocument.Scripture,
+				SeriesID:    sermonDocument.SeriesID,
+				AuthorID:    sermonDocument.AuthorID,
+				TopicID:     sermonDocument.TopicID,
+				ScriptureID: sermonDocument.ScriptureID,
+				DateDelivered: formattedDateDel,
+				Title:          sermonDocument.Title,
+				Desc:           sermonDocument.Desc,
+				Audio_Path:	 sermonDocument.Audio_Path,
+				Image_Path:     sermonDocument.Image_Path,
+				Slug:           sermonDocument.Slug,
+			}
+			
+			_, err = client.Collection("sermons").Documents().Create(context.Background(), documentForTypesense)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
 
-            // Write the author string to the response
-            if _, err := w.Write([]byte("Author Added")); err != nil {
+				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			
+
+
+
+            if _, err := w.Write([]byte("Sermon Added")); err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
                 http.Error(w, err.Error(), http.StatusInternalServerError)
                 return
@@ -258,7 +334,7 @@ func AddSermonHandler(minioClient *minio.Client) http.Handler {
     )
 }
 
-func UpdateSermonHandler(minioClient *minio.Client) http.Handler {
+func UpdateSermonHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
       
@@ -317,7 +393,19 @@ func UpdateSermonHandler(minioClient *minio.Client) http.Handler {
 
 
             defer close(doneCh)
-
+		
+			updateData := map[string]interface{}{
+				"'sermon_id":   sermonId,
+				"title":      title,
+				"scripture": script,
+				"scripture_id": scriptureId,
+				"author_id": authorId,
+				"series_id": seriesId,
+				"topic_id": topicId,
+				"audio_path": audioPath,
+				"slug":      slug,
+			}
+			search.UpdateDocument(client, sermonId, "sermon_id", "sermons", updateData)
          
             if _, err := w.Write([]byte("Sermon Updated")); err != nil {
                 fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -328,7 +416,7 @@ func UpdateSermonHandler(minioClient *minio.Client) http.Handler {
     )
 }
 
-func DeleteSermonHandler(minioClient *minio.Client) http.Handler {
+func DeleteSermonHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             fmt.Print("Inside handler function") // New print statement
@@ -337,11 +425,11 @@ func DeleteSermonHandler(minioClient *minio.Client) http.Handler {
             w.Header().Set("Access-Control-Allow-Headers", "Authorization")
             w.Header().Set("Content-Type", "text/plain")
          
-            series_id := r.FormValue("id")
+            sermon_id := r.FormValue("id")
 			slug:= r.FormValue("slug")
 
             
-            _, err := db.Exec("DELETE FROM series WHERE series_id=$1", series_id)
+            _, err := db.Exec("DELETE FROM sermons WHERE sermon_id=$1", sermon_id)
             if err != nil {
                 http.Error(w, "Failed to delete series", http.StatusInternalServerError)
                 return
@@ -364,6 +452,7 @@ func DeleteSermonHandler(minioClient *minio.Client) http.Handler {
                     fmt.Fprintf(os.Stderr, "Failed to remove object: %v\n", errRemove)
                 }
             }
+			search.DeleteDocument(client, sermon_id, "sermon_id","sermons")
             w.WriteHeader(http.StatusOK)
             w.Write([]byte("Series deleted successfully"))
         }),

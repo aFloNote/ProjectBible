@@ -15,6 +15,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
+	"github.com/typesense/typesense-go/typesense"
+	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	// Import other necessary packages
 )
 
@@ -76,7 +78,7 @@ func FetchAuthorsHandler() http.Handler {
 }
 
 
-func AddAuthorsHandler(minioClient *minio.Client) http.Handler {
+func AddAuthorsHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             // CORS Headers.
@@ -130,8 +132,20 @@ func AddAuthorsHandler(minioClient *minio.Client) http.Handler {
 			}
 			// Example: Get the ID of the last inserted row (if supported by your DB)
 		
+			topicDocument := types.AuthorType{
+				AuthorID:   authorID.String(),
+				Name:      name,
+				Ministry: ministry,
+				Image_Path: path,
+				Slug:      slug,
+			}
 			
-
+			_, err = client.Collection("authors").Documents().Create(context.Background(), topicDocument)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
+				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
             // Write the author string to the response
             if _, err := w.Write([]byte("Author Added")); err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -141,7 +155,7 @@ func AddAuthorsHandler(minioClient *minio.Client) http.Handler {
         }),
     )
 }
-func UpdateAuthorsHandler(minioClient *minio.Client) http.Handler {
+func UpdateAuthorsHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
       
@@ -175,7 +189,14 @@ func UpdateAuthorsHandler(minioClient *minio.Client) http.Handler {
 
 
             defer close(doneCh)
-
+			updateData := map[string]interface{}{
+				"'author_id":   ID,
+				"name":      name,
+				"ministry": ministry,
+				"image_path": imgPath,
+				"slug":      slug,
+			}
+			search.UpdateDocument(client, ID, "author_id", "authors", updateData)
             // Write the author string to the response
             if _, err := w.Write([]byte("Author Updated")); err != nil {
                 fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -186,7 +207,7 @@ func UpdateAuthorsHandler(minioClient *minio.Client) http.Handler {
     )
 }
 
-func DeleteAuthorsHandler(minioClient *minio.Client) http.Handler {
+func DeleteAuthorsHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
     return middleware.EnsureValidToken()(
         http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             fmt.Print("Inside handler function") // New print statement
@@ -221,6 +242,7 @@ func DeleteAuthorsHandler(minioClient *minio.Client) http.Handler {
                     fmt.Fprintf(os.Stderr, "Failed to remove object: %v\n", errRemove)
                 }
             }
+			search.DeleteDocument(client, author_id, "author_id","authors")
             w.WriteHeader(http.StatusOK)
             w.Write([]byte("Author deleted successfully"))
         }),

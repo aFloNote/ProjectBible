@@ -8,15 +8,19 @@ import (
 	"fmt"
 
 	"net/http"
-	"github.com/typesense/typesense-go/typesense"
 	"os"
+
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
+	
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/types"
+	
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
+	"github.com/typesense/typesense-go/typesense"
+	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	// Import other necessary packages
 )
 
@@ -140,12 +144,7 @@ func AddTopicsHandler(minioClient *minio.Client,client *typesense.Client) http.H
 			_, err = client.Collection("topics").Documents().Create(context.Background(), topicDocument)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
-			
-				// Optionally, you could also remove the topic from your database if you want to keep the database and Typesense in sync
-				// For example:
-				// _, err = db.Exec("DELETE FROM topics WHERE topic_id = $1", topicID)
-				// Handle this error as needed...
-			
+
 				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
@@ -182,6 +181,7 @@ func UpdateTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
                 return
 
             }
+		
             query := "UPDATE topics SET name = $1,image_path =$2, slug= $3 WHERE topic_id = $4"
             fmt.Println("Image path is in the database")
             // Execute SQL statement
@@ -190,8 +190,15 @@ func UpdateTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
                 log.Fatal(err)
             }
             doneCh := make(chan struct{})
-
-// Indicate to our routine to exit cleanly upon return.
+			updateData := map[string]interface{}{
+				"'topic_id":   ID,
+				"name":      name,
+				"image_path": imgPath,
+				"slug":      slug,
+			}
+			search.UpdateDocument(client, ID, "topic_id", "topics", updateData)
+		
+			//call UpdateDocument
             defer close(doneCh)
 
         }),
@@ -213,14 +220,13 @@ func DeleteTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
           
             _, err := db.Exec("DELETE FROM topics WHERE topic_id=$1", topicID)
             if err != nil {
-                http.Error(w, "Failed to delete author", http.StatusInternalServerError)
+                http.Error(w, "Failed to delete topic", http.StatusInternalServerError)
                 return
             }
             // Get the prefix for the objects to delete
             prefix := fmt.Sprintf("sermons/topics/%s/",slug )
 
-            fmt.Println("prefix")
-            fmt.Println(prefix)
+         
             for object := range minioClient.ListObjects(context.Background(), os.Getenv("STORAGE_BUCKET"), minio.ListObjectsOptions{Prefix: prefix, Recursive: true}) {
                 fmt.Println(object.Key)
                 if object.Err != nil {
@@ -234,6 +240,7 @@ func DeleteTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
                     fmt.Fprintf(os.Stderr, "Failed to remove object: %v\n", errRemove)
                 }
             }
+			search.DeleteDocument(client, topicID, "topic_id","topics")
             w.WriteHeader(http.StatusOK)
             w.Write([]byte("Topic deleted successfully"))
         }),

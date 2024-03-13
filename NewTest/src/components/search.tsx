@@ -23,17 +23,20 @@ type SearchResult = {
 };
 
 // Define your components
-const SermonResult = ({ data }: { data: SermonType, setIsDialogOpen: (open: boolean) => void }) => (
-	<Link to={`/sermonlistening/${data.slug}`}>
-	<div className="flex items-center border-b pb-4 pl-2 space-x-4">
+const SermonResult = ({ data,setIsDialogOpen }: { data: SermonType, setIsDialogOpen: (open: boolean) => void }) => (
+	<Link to={`/sermonlistening/${data.slug}`} onClick={() => setIsDialogOpen(false)}>
+	<div className="flex items-center border-b pb-4 pt-4 pl-2 space-x-4">
 	<div>
-	<TbPodium className='text-blue-500'/> 
+	<TbPodium size='30px' className='text-blue-500'/> 
 	</div>
-	<div className="flex-grow min-w-0">
-	<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	
-	{data.title}
-	</h2>
-	</div>
+	<div className="flex-grow min-w-0 leading-none">
+                    <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	
+                        {data.title}
+                    </h2>
+					<p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm">	
+                        {data.scripture}
+                    </p>
+                </div>
 	<div className="border-b text-gray-300"></div>
 	</div>
 	</Link>
@@ -41,42 +44,50 @@ const SermonResult = ({ data }: { data: SermonType, setIsDialogOpen: (open: bool
 
 const AuthorResult = ({ data,setIsDialogOpen }: { data: AuthorType, setIsDialogOpen: (open: boolean) => void }) => (
 	<Link to={`/sermons?series=${data.slug}`} onClick={() => setIsDialogOpen(false)}>
-	<div className="flex items-center border-b pb-4 pl-2 space-x-4">
+	<div className="flex items-center border-b pb-4 pt-4  pl-2 space-x-4">
 	<div>
-	<IoPersonCircleOutline  className='text-blue-500'/> 
+	<IoPersonCircleOutline size='30px'  className='text-blue-500'/> 
 	</div>
-	<div className="flex-grow min-w-0">
-	<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	
-	{data.name}
-	</h2>
-	</div>
+	<div className="flex-grow min-w-0 leading-none">
+                    <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	
+                        {data.name}
+                    </h2>
+					<p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm">	
+                        {data.ministry}
+                    </p>
+                </div>
 	<div className="border-b text-gray-300"></div>
 	</div>
 	</Link>
 );
 
-const SeriesResult = ({ data,setIsDialogOpen}: { data: SeriesType, setIsDialogOpen: (open: boolean) => void }) => (
-	<Link to={`/sermons?series=${data.slug}`} onClick={() => setIsDialogOpen(false)}>
-	<div className="flex items-center border-b pb-4 pl-2 space-x-4">
-	<div>
-	<FaLayerGroup  className='text-blue-500'/> 
-	</div>
-	<div className="flex-grow min-w-0">
-	<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	
-	{data.title}
-	</h2>
-	</div>
-	<div className="border-b text-gray-300"></div>
-	</div>
-	</Link>
-
-);
+const SeriesResult = ({ data,setIsDialogOpen}: { data: SeriesType, setIsDialogOpen: (open: boolean) => void }) => {
+    console.log(data); // Add this line
+    return (
+        <Link to={`/sermons?series=${data.slug}`} onClick={() => setIsDialogOpen(false)}>
+            <div className="flex items-center border-b pb-4 pt-4  pl-2 space-x-4">
+                <div>
+                    <FaLayerGroup size='30px' className='text-blue-500'/> 
+                </div>
+                <div className="flex-grow min-w-0 leading-none">
+                    <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	
+                        {data.title}
+                    </h2>
+					<p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm">	
+                        {data.desc}
+                    </p>
+                </div>
+                <div className="border-b text-gray-300"></div>
+            </div>
+        </Link>
+    );
+};
 
 const TopicResult = ({ data, setIsDialogOpen }: { data: TopicType, setIsDialogOpen: (open: boolean) => void }) => (
 	<Link to={`/sermons?topic=${data.slug}`} onClick={() => setIsDialogOpen(false)}>
-	<div className="flex items-center border-b pb-4 pl-2 space-x-4">
+	<div className="flex items-center border-b pb-4 pt-4  pl-2 space-x-4">
 	<div>
-	<MdFormatListBulleted  className='text-blue-500'/> 
+	<MdFormatListBulleted size='30px' className='text-blue-500'/> 
 	</div>
 	<div className="flex-grow min-w-0">
 	<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	
@@ -93,9 +104,9 @@ const TopicResult = ({ data, setIsDialogOpen }: { data: TopicType, setIsDialogOp
 
 const ScriptureResult = ({ data, setIsDialogOpen }: { data: ScriptureType, setIsDialogOpen: (open: boolean) => void }) => (
 	<Link to={`/sermons?sciprture=${data.slug}`} onClick={() => setIsDialogOpen(false)}>
-	<div className="flex items-center border-b pb-4 pl-2 space-x-4">
+	<div className="flex items-center border-b pt-4  pb-4 pl-2 space-x-4">
 	<div>
-	<FaBookOpen className='text-blue-500'/> 
+	<FaBookOpen size='30px' className='text-blue-500'/> 
 	</div>
 	<div className="flex-grow min-w-0">
 	<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	

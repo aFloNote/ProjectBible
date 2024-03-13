@@ -27,6 +27,11 @@ func createTypesenseClient() *typesense.Client {
 			typesense.WithCircuitBreakerInterval(2*time.Minute),
 			typesense.WithCircuitBreakerTimeout(1*time.Minute),
 		)
+	//	client.Collection("topics").Delete(context.Background())
+		//client.Collection("scriptures").Delete(context.Background())
+		//client.Collection("sermons").Delete(context.Background())
+		//client.Collection("series").Delete(context.Background())
+		//client.Collection("authors").Delete(context.Background())
 		
 		// Attempt a simple operation like fetching the health status
 		_, err := client.Health(context.Background(), 10*time.Second)

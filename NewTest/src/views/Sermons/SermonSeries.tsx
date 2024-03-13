@@ -84,7 +84,7 @@ export function Series() {
                   />
                   <div>
                     <h2 className="text-xl">{series.title}</h2>
-                    <p className='text-gray-600'>{series.description}</p>
+                    <p className='text-gray-600'>{series.desc}</p>
                   </div>
                 </div>
               </CardContent>
