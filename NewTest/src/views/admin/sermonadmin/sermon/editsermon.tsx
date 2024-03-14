@@ -121,13 +121,13 @@ export function EditSermon() {
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedSermon) {
-      deleteItem({id:selectedSermon.series_id,slug:selectedSermon.slug },{
+      deleteItem({id:selectedSermon.sermon_id,slug:selectedSermon.slug },{
         onSuccess: () => {
           // Handle successful mutation
           setServerResponse({
             success: true,
             messageTitle: "Success!",
-            message: "Series Deleted successfully",
+            message: "Sermon Deleted successfully",
           });
           queryClient.invalidateQueries("SermonData");
         },
@@ -136,7 +136,7 @@ export function EditSermon() {
             success: false,
             messageTitle: "Error!",
             message:
-              "Error Deleting Series, ensure all sermons and series are deleted for this Series",
+              "Error Deleting Sermon, Contact admin if error persists",
           });
         },
 
@@ -289,7 +289,7 @@ export function EditSermon() {
               <DialogHeader>
                 <DialogTitle>Edit Sermon</DialogTitle>
                 <DialogDescription>
-                  Edit Title, Scripture, and image, then click Edit Series.
+                  Make Edits, then click Edit Sermon.
                 </DialogDescription>
               </DialogHeader>
               <SelectSermon />
@@ -378,15 +378,15 @@ export function EditSermon() {
                   {isUploading ? (
                     <Button >
                       <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                      Editing Series...
+                      Editing Sermon...
                     </Button>
                   ) : (
-                    <Button type="submit" disabled={!canSubmit}>Edit Series</Button>
+                    <Button type="submit" disabled={!canSubmit}>Edit Sermon</Button>
                   )}
                 </form>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" disabled={!canSubmit}>Delete Series</Button>
+                    <Button variant="destructive" disabled={!canSubmit}>Delete Sermon</Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
@@ -405,7 +405,7 @@ export function EditSermon() {
                           {isDeleting ? (
                             <Button >
                               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                              Deleting Series...
+                              Deleting Sermon...
                             </Button>
                           ) : (
                             <Button type="submit" disabled={!canSubmit}>Confirm Delete</Button>

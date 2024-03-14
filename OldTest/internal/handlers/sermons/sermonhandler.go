@@ -3,44 +3,42 @@ package handlerSermon
 import (
 	"context"
 	"database/sql"
-	"log"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
+	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/types"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
 	"github.com/typesense/typesense-go/typesense"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	// Import other necessary packages
 )
 
-
 func fetchSermons(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Hello, World!")
-    w.Header().Set("Access-Control-Allow-Credentials", "true")
-    w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
-    w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-    w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Credentials", "true")
+	w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
+	w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+	w.Header().Set("Content-Type", "application/json")
 
-    // Get sermon ID from the request parameters, if present
-
+	// Get sermon ID from the request parameters, if present
 
 	params := r.URL.Query()
-    sermonID := params.Get("sermon_slug")
+	sermonID := params.Get("sermon_slug")
 	authorSlug := params.Get("author_slug")
-	seriesSlug := params.Get("series_slug") 
+	seriesSlug := params.Get("series_slug")
 	topicSlug := params.Get("topic_slug")
-	scriptureSlug:= params.Get("script_slug")
-    // Start building the SQL query
-    query := `
+	scriptureSlug := params.Get("script_slug")
+	// Start building the SQL query
+	query := `
     SELECT 
         sermons.sermon_id, sermons.title, sermons.date_delivered, sermons.scripture, sermons.audio_path, sermons.series_id, sermons.author_id,sermons.scripture_id, sermons.slug,
         authors.author_id, authors.name, authors.ministry, authors.image_path, authors.slug,
@@ -59,34 +57,32 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
         scriptures ON sermons.scripture_id = scriptures.scripture_id
     `
 
-    // If a sermon ID was provided, add a WHERE clause to the query
-	
+	// If a sermon ID was provided, add a WHERE clause to the query
+
 	var err error
 	var rows *sql.Rows
-	
-    if sermonID !="" {
-		
-   		
-        query += "WHERE sermons.sermon_slug = $1 ORDER BY sermons.date_delivered DESC"
+
+	if sermonID != "" {
+
+		query += "WHERE sermons.sermon_slug = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, sermonID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-    } else if authorSlug != "" {
-		
+	} else if authorSlug != "" {
+
 		query += "WHERE authors.slug = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, authorSlug)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
-		}	
-		
+		}
 
 	} else if seriesSlug != "" {
-		
+
 		query += "WHERE series.slug = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, seriesSlug)
 		if err != nil {
@@ -94,8 +90,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-	}else if topicSlug != "" {
-		
+	} else if topicSlug != "" {
+
 		query += "WHERE topics.slug = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, topicSlug)
 		if err != nil {
@@ -103,8 +99,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-	}	else if scriptureSlug != "" {
-		
+	} else if scriptureSlug != "" {
+
 		query += "WHERE scriptures.slug = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, scriptureSlug)
 		if err != nil {
@@ -112,19 +108,17 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-	}	else {
-			query += "ORDER BY sermons.date_delivered DESC"
-				rows, err = db.Query(query)
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Error querying the database for Sermons no param: %v\n", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+	} else {
+		query += "ORDER BY sermons.date_delivered DESC"
+		rows, err = db.Query(query)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons no param: %v\n", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 
-
-    // Execute the query
-   
+	// Execute the query
 
 	defer rows.Close()
 
@@ -133,14 +127,14 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 	for rows.Next() {
 		var sermon types.SermonType
 		var author types.AuthorType
-		var series types.SeriesType 
+		var series types.SeriesType
 		var topic types.TopicType
 		var scripture types.ScriptureType
 
 		err := rows.Scan(
 			&sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.ScriptureID, &sermon.Slug,
 			&author.AuthorID, &author.Name, &author.Ministry, &author.Image_Path, &author.Slug,
-			&series.SeriesID, &series.Title, &series.Desc, &series.Image_Path, &series.Date_Published, &series.Slug,
+			&series.SeriesID, &series.Title, &series.Description, &series.Image_Path, &series.Date_Published, &series.Slug,
 			&topic.TopicID, &topic.Name, &topic.Image_Path, &topic.Slug,
 			&scripture.ScriptureID, &scripture.Book, &scripture.Image_Path, &scripture.Slug,
 		)
@@ -150,97 +144,93 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		}
 
 		sermons = append(sermons, types.SermonFull{
-			SermonType: sermon,
-			AuthorType: author,
-			SeriesType: series,
-			TopicType: topic,
+			SermonType:    sermon,
+			AuthorType:    author,
+			SeriesType:    series,
+			TopicType:     topic,
 			ScriptureType: scripture,
-			
 		})
 	}
-		fmt.Println("Sermons: ", sermons)
-		// Check for errors from iterating over rows.
-		if err = rows.Err(); err != nil {
-			fmt.Fprintf(os.Stderr,"Error getting rows: %v", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		
-		// Encode the authors slice to JSON and write it to the response
-		if err= json.NewEncoder(w).Encode(sermons); err != nil {
-			fmt.Fprintf(os.Stderr,"Error encorder: %v", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+	fmt.Println("Sermons: ", sermons)
+	// Check for errors from iterating over rows.
+	if err = rows.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting rows: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Encode the authors slice to JSON and write it to the response
+	if err = json.NewEncoder(w).Encode(sermons); err != nil {
+		fmt.Fprintf(os.Stderr, "Error encorder: %v", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
-
 func PubFetchSermonHandler() http.Handler {
-    return http.HandlerFunc(fetchSermons)
+	return http.HandlerFunc(fetchSermons)
 }
 
 func FetchSermonHandler() http.Handler {
-    return middleware.EnsureValidToken()(
-        http.HandlerFunc(fetchSermons),
-    )
+	return middleware.EnsureValidToken()(
+		http.HandlerFunc(fetchSermons),
+	)
 }
 
-func AddSermonHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
-    return middleware.EnsureValidToken()(
-        http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            // CORS Headers.
-            w.Header().Set("Access-Control-Allow-Credentials", "true")
-            w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
-            w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-            w.Header().Set("Content-Type", "text/plain") // Change this to text/plain
-			
-            file, header,contentType, err := fileStorage.ParseFile(r, 10<<20,"audio") // Use the actual form field name
+func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.Handler {
+	return middleware.EnsureValidToken()(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// CORS Headers.
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ORIGIN"))
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+			w.Header().Set("Content-Type", "text/plain") // Change this to text/plain
+
+			file, header, contentType, err := fileStorage.ParseFile(r, 10<<20, "audio") // Use the actual form field name
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Process fil error: %v\n", err)
 				w.Write([]byte(`{""Failed to process uploaded file: " + err.Error()"}`))
-			
+
 				return
 			}
 			defer file.Close()
 
-            // Get form data
-            title := r.FormValue("title")
-            scripture := r.FormValue("scripture")
+			// Get form data
+			title := r.FormValue("title")
+			scripture := r.FormValue("scripture")
 			seriesid := r.FormValue("series_id")
-			authid:= r.FormValue("author_id")
-			topicid:= r.FormValue("topic_id")
-			scriptid:= r.FormValue("scripture_id")
-			
+			authid := r.FormValue("author_id")
+			topicid := r.FormValue("topic_id")
+			scriptid := r.FormValue("scripture_id")
+
 			sermonID := uuid.New()
-            slug := slug.Make(title)
-            
+			slugTitle := slug.Make(title)
+
 			dateStr := r.FormValue("date") // assuming this is your date field
 			layout := "2006-01-02T15:04:05Z"
-			
+
 			location, err := time.LoadLocation("America/Denver") // Mountain Time
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Process timezone error: %v\n", err)
 				w.Write([]byte(`{""Failed to process timezone " + err.Error()"}`))
 				// handle error
 			}
-			
+
 			t, err := time.ParseInLocation(layout, dateStr, location)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Process time error: %v\n", err)
 				w.Write([]byte(`{""Failed to time " + err.Error()"}`))
 			}
-            // Get the image file from the form
+			// Get the image file from the form
 			fmt.Printf("Size: %v, Content Type: %s\n", header.Size, contentType)
-			path:= fmt.Sprintf("sermons/sermons/%s/audio/%s", slug, header.Filename)
+			path := fmt.Sprintf("sermons/sermons/%s/audio/%s", slugTitle, header.Filename)
 			// Start the timer
-		
 
 			// Upload the file
 			fmt.Println("Title before database query: ", seriesid)
 			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
 
 			// Stop the timer
-			
 
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to upload file to MinIO. Upload info: %+v, Error: %v\n", upLoadInfo, err)
@@ -248,72 +238,69 @@ func AddSermonHandler(minioClient *minio.Client,client *typesense.Client) http.H
 				return
 			}
 
-		
-			
-			 // Attempt to insert author information into the database
-            fmt.Println("Title before database query: ", seriesid)
+			// Attempt to insert author information into the database
+			fmt.Println("Title before database query: ", seriesid)
 			query := "INSERT INTO sermons (sermon_id,title, date_delivered, audio_path, series_id, author_id, scripture, scripture_id,topic_id, slug) VALUES ($1, $2, $3,$4,$5,$6,$7,$8,$9,$10)"
-			_, err = db.Exec(query, sermonID,title, t,path, seriesid,authid,scripture,scriptid,topicid,slug) // Note: Using path as MinIO doesn't return a URL in uploadInfo
+			_, err = db.Exec(query, sermonID, title, t, path, seriesid, authid, scripture, scriptid, topicid, slugTitle) // Note: Using path as MinIO doesn't return a URL in uploadInfo
 			if err != nil {
 				// If the query fails, attempt to remove the uploaded file from MinIO
 				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, minio.RemoveObjectOptions{})
 				if errRemove != nil {
 					// Log or handle the error occurred during file removal
-					
+
 					fmt.Fprintf(os.Stderr, "Failed to remove uploaded file after DB error: %v\n", errRemove)
 				}
 
 				// Return or handle the original database error
-			
+
 				http.Error(w, "Failed to insert author into database: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
-			
-			
+
 			type SermonTypeForTypesense struct {
-				SermonID       string `json:"sermon_id"`
-				Scripture    string `json:"scripture"`
-				SeriesID    string `json:"series_id"`
-				AuthorID    string `json:"author_id"`
-				TopicID     string `json:"topic_id"`
-				ScriptureID string `json:"scripture_id"`
+				SermonID      string `json:"sermon_id"`
+				Scripture     string `json:"scripture"`
+				SeriesID      string `json:"series_id"`
+				AuthorID      string `json:"author_id"`
+				TopicID       string `json:"topic_id"`
+				ScriptureID   string `json:"scripture_id"`
 				DateDelivered string `json:"date_delivered"`
-				Title          string `json:"title"`
-				Desc           string `json:"desc"`
-				Image_Path     string `json:"image_path"`
-				Audio_Path     string `json:"audio_path"`
-				Slug           string `json:"slug"`
+				Title         string `json:"title"`
+				Description          string `json:"desc"`
+				Image_Path    string `json:"image_path"`
+				Audio_Path    string `json:"audio_path"`
+				Slug          string `json:"slug"`
 			}
 			sermonDocument := types.SermonType{
-				SermonID:   sermonID.String(),
-				Scripture: 	scripture,
-				SeriesID:  seriesid,
-				AuthorID:  authid,
-				TopicID:   topicid,
-				ScriptureID: scriptid,
+				SermonID:      sermonID.String(),
+				Scripture:     scripture,
+				SeriesID:      seriesid,
+				AuthorID:      authid,
+				TopicID:       topicid,
+				ScriptureID:   scriptid,
 				DateDelivered: t,
-				Title:      title,
-				Desc:	"",
-				Audio_Path: path,
-				Image_Path: "",
-				Slug:      slug,
+				Title:         title,
+				Description:          "",
+				Audio_Path:    path,
+				Image_Path:    "",
+				Slug:          slugTitle,
 			}
 			formattedDateDel := sermonDocument.DateDelivered.Format(time.RFC3339)
 			documentForTypesense := SermonTypeForTypesense{
-				SermonID:       sermonDocument.SermonID,
-				Scripture:    sermonDocument.Scripture,
-				SeriesID:    sermonDocument.SeriesID,
-				AuthorID:    sermonDocument.AuthorID,
-				TopicID:     sermonDocument.TopicID,
-				ScriptureID: sermonDocument.ScriptureID,
+				SermonID:      sermonDocument.SermonID,
+				Scripture:     sermonDocument.Scripture,
+				SeriesID:      sermonDocument.SeriesID,
+				AuthorID:      sermonDocument.AuthorID,
+				TopicID:       sermonDocument.TopicID,
+				ScriptureID:   sermonDocument.ScriptureID,
 				DateDelivered: formattedDateDel,
-				Title:          sermonDocument.Title,
-				Desc:           sermonDocument.Desc,
-				Audio_Path:	 sermonDocument.Audio_Path,
-				Image_Path:     sermonDocument.Image_Path,
-				Slug:           sermonDocument.Slug,
+				Title:         sermonDocument.Title,
+				Description:          sermonDocument.Description,
+				Audio_Path:    sermonDocument.Audio_Path,
+				Image_Path:    sermonDocument.Image_Path,
+				Slug:          sermonDocument.Slug,
 			}
-			
+
 			_, err = client.Collection("sermons").Documents().Create(context.Background(), documentForTypesense)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
@@ -321,141 +308,152 @@ func AddSermonHandler(minioClient *minio.Client,client *typesense.Client) http.H
 				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
+			rows := db.QueryRow("SELECT book FROM scriptures WHERE scripture_id=$1", scriptid)
+			var book string
+			err = rows.Scan(&book)
+
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error scanning row: %v", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			slugBook:= slug.Make(book)
+			scriptDocument := types.ScriptureType{
+				ScriptureID: scriptid,
+				Book:        book,
+				Image_Path:  "",
+				Slug:        slugBook,
+			}
 			
+			_, err = client.Collection("scriptures").Documents().Create(context.Background(), scriptDocument)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
 
-
-
-            if _, err := w.Write([]byte("Sermon Added")); err != nil {
+				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if _, err := w.Write([]byte("Sermon Added")); err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
-        }),
-    )
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}),
+	)
 }
 
-func UpdateSermonHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
-    return middleware.EnsureValidToken()(
-        http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-      
-            w.Header().Set("Access-Control-Allow-Credentials", "true")
-            w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ALLOWED_ORIGIN"))
-            w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-            w.Header().Set("Content-Type", "text/plain")
-			
+func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) http.Handler {
+	return middleware.EnsureValidToken()(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ALLOWED_ORIGIN"))
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+			w.Header().Set("Content-Type", "text/plain")
 
-
-            title := r.FormValue("title")
-            script := r.FormValue("scripture")
-            seriesId := r.FormValue("series_id")
+			title := r.FormValue("title")
+			script := r.FormValue("scripture")
+			seriesId := r.FormValue("series_id")
 			sermonId := r.FormValue("sermon_id")
 			authorId := r.FormValue("author_id")
 			topicId := r.FormValue("topic_id")
 			scriptureId := r.FormValue("scripture_id")
-			
-            slug := slug.Make(title)
-           
-			
+
+			slug := slug.Make(title)
+
 			dateStr := r.FormValue("date") // assuming this is your date field
 			layout := "2006-01-02T15:04:05Z"
-			
+
 			location, err := time.LoadLocation("America/Denver") // Mountain Time
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Process timezone error: %v\n", err)
 				w.Write([]byte(`{""Failed to process timezone " + err.Error()"}`))
 				// handle error
 			}
-			
+
 			t, err := time.ParseInLocation(layout, dateStr, location)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Process time error: %v\n", err)
 				w.Write([]byte(`{""Failed to time " + err.Error()"}`))
 			}
-           
 
-			audioPath,err:=fileStorage.ProcessPathFiles(minioClient, "sermon", "audio", r, slug)
-            if err!=nil{      
-                fmt.Fprintf(os.Stderr, "upload file error: %v\n", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
+			audioPath, err := fileStorage.ProcessPathFiles(minioClient, "sermon", "audio", r, slug)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "upload file error: %v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
 
-            }
-            query := "UPDATE sermons SET title = $1, scripture = $2, scripture_id=$3, author_id=$4,series_id=$5,topic_id=$6,date_delivered=$7,audio_path=$8, slug= $9 WHERE sermon_id = $10"
-            
-                // Execute SQL statement
-                _, err = db.Exec(query, title, script,scriptureId,authorId,seriesId,topicId,t,audioPath,slug, sermonId)
-                if err != nil {
-                    log.Fatal(err)
-                }
-            
-            doneCh := make(chan struct{})
+			}
+			query := "UPDATE sermons SET title = $1, scripture = $2, scripture_id=$3, author_id=$4,series_id=$5,topic_id=$6,date_delivered=$7,audio_path=$8, slug= $9 WHERE sermon_id = $10"
 
+			// Execute SQL statement
+			_, err = db.Exec(query, title, script, scriptureId, authorId, seriesId, topicId, t, audioPath, slug, sermonId)
+			if err != nil {
+				log.Fatal(err)
+			}
 
-            defer close(doneCh)
-		
+			doneCh := make(chan struct{})
+
+			defer close(doneCh)
+
 			updateData := map[string]interface{}{
 				"'sermon_id":   sermonId,
-				"title":      title,
-				"scripture": script,
+				"title":        title,
+				"scripture":    script,
 				"scripture_id": scriptureId,
-				"author_id": authorId,
-				"series_id": seriesId,
-				"topic_id": topicId,
-				"audio_path": audioPath,
-				"slug":      slug,
+				"author_id":    authorId,
+				"series_id":    seriesId,
+				"topic_id":     topicId,
+				"audio_path":   audioPath,
+				"slug":         slug,
 			}
 			search.UpdateDocument(client, sermonId, "sermon_id", "sermons", updateData)
-         
-            if _, err := w.Write([]byte("Sermon Updated")); err != nil {
-                fmt.Fprintf(os.Stderr, "%v\n", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
-        }),
-    )
+
+			if _, err := w.Write([]byte("Sermon Updated")); err != nil {
+				fmt.Fprintf(os.Stderr, "%v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}),
+	)
 }
 
-func DeleteSermonHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
-    return middleware.EnsureValidToken()(
-        http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-            fmt.Print("Inside handler function") // New print statement
-            w.Header().Set("Access-Control-Allow-Credentials", "true")
-            w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ALLOWED_ORIGIN"))
-            w.Header().Set("Access-Control-Allow-Headers", "Authorization")
-            w.Header().Set("Content-Type", "text/plain")
-         
-            sermon_id := r.FormValue("id")
-			slug:= r.FormValue("slug")
+func DeleteSermonHandler(minioClient *minio.Client, client *typesense.Client) http.Handler {
+	return middleware.EnsureValidToken()(
+		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Print("Inside handler function") // New print statement
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+			w.Header().Set("Access-Control-Allow-Origin", os.Getenv("CORS_ALLOWED_ORIGIN"))
+			w.Header().Set("Access-Control-Allow-Headers", "Authorization")
+			w.Header().Set("Content-Type", "text/plain")
 
-            
-            _, err := db.Exec("DELETE FROM sermons WHERE sermon_id=$1", sermon_id)
-            if err != nil {
-                http.Error(w, "Failed to delete series", http.StatusInternalServerError)
-                return
-            }
-            // Get the prefix for the objects to delete
-            prefix := fmt.Sprintf("sermons/series/%s/",slug)
+			sermon_id := r.FormValue("id")
+			slug := r.FormValue("slug")
 
-            fmt.Println("prefix")
-            fmt.Println(prefix)
-            for object := range minioClient.ListObjects(context.Background(), os.Getenv("STORAGE_BUCKET"), minio.ListObjectsOptions{Prefix: prefix, Recursive: true}) {
-                fmt.Println(object.Key)
-                if object.Err != nil {
-                    fmt.Fprintf(os.Stderr, "Error listing objects for deletion: %v\n", object.Err)
-                    return
-                }
+			_, err := db.Exec("DELETE FROM sermons WHERE sermon_id=$1", sermon_id)
+			if err != nil {
+				http.Error(w, "Failed to delete series", http.StatusInternalServerError)
+				return
+			}
+			// Get the prefix for the objects to delete
+			prefix := fmt.Sprintf("sermons/sermons/%s/", slug)
 
-                
-                errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), object.Key, minio.RemoveObjectOptions{})
-                if errRemove != nil {
-                    fmt.Fprintf(os.Stderr, "Failed to remove object: %v\n", errRemove)
-                }
-            }
-			search.DeleteDocument(client, sermon_id, "sermon_id","sermons")
-            w.WriteHeader(http.StatusOK)
-            w.Write([]byte("Series deleted successfully"))
-        }),
-    )
+			fmt.Println("prefix")
+			fmt.Println(prefix)
+			for object := range minioClient.ListObjects(context.Background(), os.Getenv("STORAGE_BUCKET"), minio.ListObjectsOptions{Prefix: prefix, Recursive: true}) {
+				fmt.Println(object.Key)
+				if object.Err != nil {
+					fmt.Fprintf(os.Stderr, "Error listing objects for deletion: %v\n", object.Err)
+					return
+				}
+
+				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), object.Key, minio.RemoveObjectOptions{})
+				if errRemove != nil {
+					fmt.Fprintf(os.Stderr, "Failed to remove object: %v\n", errRemove)
+				}
+			}
+			search.DeleteDocument(client, sermon_id, "sermon_id", "sermons")
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte("Series deleted successfully"))
+		}),
+	)
 }
-

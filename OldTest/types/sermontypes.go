@@ -23,7 +23,7 @@ type AuthorType struct {
 type SeriesType struct {
     SeriesID          string    `json:"series_id"`
     Title       string `json:"title"`
-    Desc string `json:"description"`
+    Description string `json:"description"`
     Image_Path   string `json:"image_path"`
 	Date_Published time.Time `json:"date_published"`
 	Slug 	 string `json:"slug"`
@@ -38,7 +38,7 @@ type SermonType struct {
 	ScriptureID string `json:"scripture_id"`
 	TopicID string `json:"topic_id"`
 	Scripture string `json:"scripture"`
-    Desc string `json:"description"`
+    Description string `json:"description"`
     Image_Path  string `json:"image_path"`
 	Slug string `json:"slug"`
 }

@@ -27,7 +27,7 @@ func createTypesenseClient() *typesense.Client {
 			typesense.WithCircuitBreakerInterval(2*time.Minute),
 			typesense.WithCircuitBreakerTimeout(1*time.Minute),
 		)
-	//	client.Collection("topics").Delete(context.Background())
+		//client.Collection("topics").Delete(context.Background())
 		//client.Collection("scriptures").Delete(context.Background())
 		//client.Collection("sermons").Delete(context.Background())
 		//client.Collection("series").Delete(context.Background())

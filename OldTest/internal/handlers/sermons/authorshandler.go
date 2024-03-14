@@ -105,7 +105,7 @@ func AddAuthorsHandler(minioClient *minio.Client,client *typesense.Client) http.
 
             // Get the image file from the form
             
-			path:= fmt.Sprintf("sermons/author/%s/image/%s", authorID, header.Filename)
+			path:= fmt.Sprintf("sermons/author/%s/image/%s", slug, header.Filename)
 			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
             if err != nil {
 				fmt.Fprintf(os.Stderr, "upload file error: %v %v\n", upLoadInfo,err)

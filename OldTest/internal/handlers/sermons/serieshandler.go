@@ -64,7 +64,7 @@ func fetchSeries(w http.ResponseWriter, r *http.Request) {
 	allseries := []types.SeriesType{}
 	for rows.Next() {
 		var series types.SeriesType
-		err := rows.Scan(&series.SeriesID, &series.Title, &series.Desc, &series.Image_Path, &series.Slug)
+		err := rows.Scan(&series.SeriesID, &series.Title, &series.Description, &series.Image_Path, &series.Slug)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error scanning rows: %v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -123,7 +123,7 @@ func AddSeriesHandler(minioClient *minio.Client, client *typesense.Client) http.
 			seriesID := uuid.New()
 			slug := slug.Make(title)
 
-			path := fmt.Sprintf("sermons/series/%s/image/%s", seriesID, header.Filename)
+			path := fmt.Sprintf("sermons/series/%s/image/%s", slug, header.Filename)
 			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "upload file error: %v %v\n", upLoadInfo, err)
@@ -159,7 +159,7 @@ func AddSeriesHandler(minioClient *minio.Client, client *typesense.Client) http.
 			type SeriesTypeForTypesense struct {
 				SeriesID       string `json:"series_id"`
 				Title          string `json:"title"`
-				Desc           string `json:"desc"`
+				Description           string `json:"description"`
 				Image_Path     string `json:"image_path"`
 				Date_Published string `json:"date_published"`
 				Slug           string `json:"slug"`
@@ -167,7 +167,7 @@ func AddSeriesHandler(minioClient *minio.Client, client *typesense.Client) http.
 			seriesDocument := types.SeriesType{
 				SeriesID:   seriesID.String(),
 				Title:      title,
-				Desc:       desc,
+				Description:       desc,
 				Image_Path: path,
 				Date_Published: datePublished,
 				Slug:       slug,
@@ -176,7 +176,7 @@ func AddSeriesHandler(minioClient *minio.Client, client *typesense.Client) http.
 			documentForTypesense := SeriesTypeForTypesense{
 				SeriesID:       seriesDocument.SeriesID,
 				Title:          seriesDocument.Title,
-				Desc:           seriesDocument.Desc,
+				Description:           seriesDocument.Description,
 				Image_Path:     seriesDocument.Image_Path,
 				Date_Published: formattedDatePublished, // Use the formatted string
 				Slug:           seriesDocument.Slug,
@@ -209,7 +209,7 @@ func UpdateSeriesHandler(minioClient *minio.Client, client *typesense.Client) ht
 			desc := r.FormValue("desc")
 			ID := r.FormValue("series_id")
 			slug := slug.Make(title)
-
+			fmt.Println(desc)
 			imgPath, err := fileStorage.ProcessPathFiles(minioClient, "series", "image", r, slug)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "upload file error: %v\n", err)
@@ -230,7 +230,7 @@ func UpdateSeriesHandler(minioClient *minio.Client, client *typesense.Client) ht
 			updateData := map[string]interface{}{
 				"series_id":   ID,
 				"title":      title,
-				"desc":	   desc,
+				"Description":	   desc,
 				"image_path": imgPath,
 				"slug":      slug,
 			}
@@ -255,14 +255,14 @@ func DeleteSeriesHandler(minioClient *minio.Client, client *typesense.Client) ht
 			w.Header().Set("Content-Type", "text/plain")
 
 			series_id := r.FormValue("id")
-
+			slug:=r.FormValue("slug")
 			_, err := db.Exec("DELETE FROM series WHERE series_id=$1", series_id)
 			if err != nil {
 				http.Error(w, "Failed to delete series", http.StatusInternalServerError)
 				return
 			}
 			// Get the prefix for the objects to delete
-			prefix := fmt.Sprintf("sermons/series/%s/", series_id)
+			prefix := fmt.Sprintf("sermons/series/%s/", slug)
 
 			fmt.Println("prefix")
 			fmt.Println(prefix)

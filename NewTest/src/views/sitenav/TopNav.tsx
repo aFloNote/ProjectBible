@@ -16,14 +16,18 @@ return (
       
       <Logo ratio={16/9} size="6em"/>
  
-  
+	  <div className='pt-2 pr-2 pt-3'>
+     
+	 <ErrorBoundary>
+	   <Search />
+	 </ErrorBoundary>
+		 
+		
+		 </div>
 <div className='flex justify-end'>
 <div className='pt-2 pr-2 pt-3'>
      
-<ErrorBoundary>
-  <Search />
-</ErrorBoundary>
-    
+
    
     </div>
   <div className='pt-2 pr-2'> 

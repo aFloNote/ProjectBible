@@ -42,7 +42,7 @@ func InitCollect(client *typesense.Client) {
 			Fields: []api.Field{
 				{Name: "series_id", Type: "string"},
 				{Name: "title", Type: "string"},
-				{Name: "desc", Type: "string"},
+				{Name: "description", Type: "string"},
 				{Name: "image_path", Type: "string"},
 				{Name: "date_published", Type: "string"},
 				{Name: "slug", Type: "string"},
@@ -66,7 +66,7 @@ func InitCollect(client *typesense.Client) {
 			Fields: []api.Field{
 				{Name: "sermon_id", Type: "string"},
 				{Name: "title", Type: "string"},
-				{Name: "desc", Type: "string"},
+				{Name: "description", Type: "string"},
 				{Name: "image_path", Type: "string"},
 				{Name: "author_id", Type: "string"},
 				{Name: "series_id", Type: "string"},
@@ -84,7 +84,6 @@ func InitCollect(client *typesense.Client) {
 			Fields: []api.Field{
 				{Name: "scripture_id", Type: "string"},
 				{Name: "book", Type: "string"},
-				{Name: "scripture", Type: "string"},
 				{Name: "image_path", Type: "string"},
 				{Name: "slug", Type: "string"},
 				// Add other fields as needed

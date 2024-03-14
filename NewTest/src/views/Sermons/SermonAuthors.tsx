@@ -16,7 +16,7 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
-
+import {SearchPage} from "@/components/searchpage";
 export function Authors() {
   const navigate = useNavigate();
   const [items, setItems] = useState<AuthorType[]>([]);
@@ -61,20 +61,22 @@ export function Authors() {
   
 
   return (
-    <div className='pb-16'>
+    <div className='pb-16 overflow-hidden'>
+		<SearchPage/>
     <InfiniteScroll
        dataLength={items.length}
        next={fetchMoreData}
        hasMore={hasMoreItems}
-       loader={<h4>Loading...</h4>}
+       loader={<h4></h4>}
        scrollThreshold={0.8}>
+			<div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64">
     {authorsData?.map((author) => (
-        <div className='pt-2 px-2' key={author.author_id}>
+        <div className="pt-2 px-2 lg:w-1/3 lg:px-15"  key={author.author_id}>
           <Card>
-      <CardContent className='pt-5'>
-        <div className="flex items-center space-x-4">
+		  <CardContent className="pt-5 lg:px-10">
+          <div className="flex lg:flex-col items-center space-x-4">
           <SiteImage
-            divClass='w-24 h-24 rounded-full'
+            divClass="w-20 h-20 lg:h-32 lg:w-32 rounded-full"
             ratio={1}
             alt='Author Image'
             source={
@@ -87,22 +89,26 @@ export function Authors() {
             <p className='text-gray-500'>{author.ministry}</p>
           </div>
         </div>
-        <div className="flex justify-evenly pt-2">
+		<div className='lg:border-b text-gray-600'></div>
+
+        <div className="flex justify-start lg:justify-center pt-2">
           <Button className="mr-2  px-4 py-2 rounded"
           onClick={() => navigate(`/sermons?author=${ author.slug }`)}>
             Sermons
           </Button>
-          <Button className="px-4 py-2 rounded"
+		  <div className='pl-2'>
+          <Button className=" rounded"
            onClick={() => navigate(`/sermonseries?author=${ author.slug }`)}>
             Series
           </Button>
+		  </div>
         </div>
       </CardContent>
     </Card>
         </div>
       ))}
    
-  
+   </div>
   </InfiniteScroll>
   </div>
   );

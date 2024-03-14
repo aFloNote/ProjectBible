@@ -30,10 +30,10 @@ const SermonResult = ({ data,setIsDialogOpen }: { data: SermonType, setIsDialogO
 	<TbPodium size='30px' className='text-blue-500'/> 
 	</div>
 	<div className="flex-grow min-w-0 leading-none">
-                    <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md">	
+                    <h2 className="whitespace-nowrap overflow-ellipsis font-bold overflow-hidden text-lg">	
                         {data.title}
                     </h2>
-					<p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm">	
+					<p className="whitespace-nowrap overflow-ellipsis overflow-hidden font-medium text-md">	
                         {data.scripture}
                     </p>
                 </div>
@@ -43,7 +43,7 @@ const SermonResult = ({ data,setIsDialogOpen }: { data: SermonType, setIsDialogO
 );
 
 const AuthorResult = ({ data,setIsDialogOpen }: { data: AuthorType, setIsDialogOpen: (open: boolean) => void }) => (
-	<Link to={`/sermons?series=${data.slug}`} onClick={() => setIsDialogOpen(false)}>
+	<Link to={`/sermons?author=${data.slug}`} onClick={() => setIsDialogOpen(false)}>
 	<div className="flex items-center border-b pb-4 pt-4  pl-2 space-x-4">
 	<div>
 	<IoPersonCircleOutline size='30px'  className='text-blue-500'/> 
@@ -74,7 +74,7 @@ const SeriesResult = ({ data,setIsDialogOpen}: { data: SeriesType, setIsDialogOp
                         {data.title}
                     </h2>
 					<p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm">	
-                        {data.desc}
+                        {data.description}
                     </p>
                 </div>
                 <div className="border-b text-gray-300"></div>
@@ -103,7 +103,7 @@ const TopicResult = ({ data, setIsDialogOpen }: { data: TopicType, setIsDialogOp
 
 
 const ScriptureResult = ({ data, setIsDialogOpen }: { data: ScriptureType, setIsDialogOpen: (open: boolean) => void }) => (
-	<Link to={`/sermons?sciprture=${data.slug}`} onClick={() => setIsDialogOpen(false)}>
+	<Link to={`/sermons?scripture=${data.book}`} onClick={() => setIsDialogOpen(false)}>
 	<div className="flex items-center border-b pt-4  pb-4 pl-2 space-x-4">
 	<div>
 	<FaBookOpen size='30px' className='text-blue-500'/> 
@@ -170,7 +170,7 @@ export function Search() {
         </Button>
       </DialogTrigger>
 	  <DialogOverlay className='fixed inset-0 bg-slate-50 bg-opacity-50'>
-      <DialogContent className='px-0 min-h-80'>
+      <DialogContent className='px-0 min-h-80 max-h-96 overflow-auto'>
 	  	<div>
         <div className="flex items-center border-b pl-5">
           <FaSearch className="text-muted-foreground"></FaSearch>

@@ -5,14 +5,16 @@ import { SermonFullType } from "@/types/sermon";
 import { SiteImage } from "@/image";
 import { Audio } from "@/components/audioplayer";
 import 'react-h5-audio-player/lib/styles.css';
+import { useDispatch } from "react-redux";
+import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 
 export function SermonPage() {
 	//blah
   const navigate = useNavigate();
   const { sermonId } = useParams<{ sermonId: string }>();
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
-
-  
+  const dispatch=useDispatch();
+  dispatch(setSelectedSermonPage(""));
 
 
   useEffect(() => {
@@ -54,7 +56,7 @@ export function SermonPage() {
             </h2>
             <div className="text-center">
               <p className="text-gray-500 text-sm text-center font-medium">
-                {sermonFull[0].SeriesType.description}
+                {sermonFull[0].SeriesType.desc}
               </p>
             </div>
             <div className="text-gray-500 text-center font-bold text-xs">

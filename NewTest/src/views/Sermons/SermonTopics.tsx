@@ -58,32 +58,41 @@ export function Topics() {
         dataLength={items.length}
         next={fetchMoreData}
         hasMore={hasMoreItems}
-        loader={<h4>Loading...</h4>}
+        loader={<h4></h4>}
         scrollThreshold={0.8}
       >
+		<div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64">
+
         {topicsData?.map((topic) => (
-          <div className="pt-2 px-2" key={topic.topic_id}>
+          <div className="pt-2 px-2 lg:w-1/2 lg:px-15" key={topic.topic_id}>
                <Link to={`/sermons?topic=${topic.slug}`}>
             <Card>
-              <CardContent className="pt-5">
-                <div className="flex items-center space-x-4">
+              <CardContent className="pt-5 lg:px-10">
+			  <div className="flex lg:flex-col items-center space-x-4">
                   {topic.image_path !== "default" && (
                     <SiteImage
-                      divClass="w-16 h-16 rounded-full"
+					divClass="w-16 h-16 lg:h-32 lg:w-32 rounded-full"
                       ratio={1}
-                      alt="Author Image"
+                      alt="Topic Image"
                       source={
                         b2endpoint + encodeURIComponent(topic.image_path)
                       }
                     />
                   )}
-                  <h2 className="text-xl">{topic.name}</h2>
-                </div>
+				 
+				 <h2 className="text-xl lg:hidden">{topic.name}</h2>
+				</div>
+				<div className=' lg:border-b lg:text-gray-600 lg:pt-2'></div>
+				  <div className="lg:flex lg:justify-center lg:pt-2">
+				  <h2 className="lg:text-xl lg:text-center hidden lg:block">{topic.name}</h2>
+				  </div>
               </CardContent>
             </Card>
             </Link>
           </div>
+
         ))}
+		</div>
       </InfiniteScroll>
     </div>
   );

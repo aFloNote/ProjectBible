@@ -63,7 +63,7 @@ export function Topic() {
         setServerResponse({
           success: true,
           messageTitle: "Success!",
-          message: "Series added successfully",
+          message: "Topic added successfully",
         });
         setIsDialogOpen(true);
         queryClient.invalidateQueries("TopicData");

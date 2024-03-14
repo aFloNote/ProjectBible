@@ -7,7 +7,7 @@ import { useLocation } from "react-router-dom";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { useNavigate } from "react-router-dom";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
-
+import {SearchPage} from "@/components/searchpage";
 import { useDispatch } from "react-redux";
 
 export function Recent() {
@@ -49,11 +49,12 @@ export function Recent() {
       .join(' '); // Join the words back together with spaces
   }
   useEffect(() => {
-    if (!author_slug && !series_slug && !script_slug && !topic_slug) {
+   
       dispatch(setSelectedSermonPage("sermons"));
-    }
+   
+
   }, [author_slug, series_slug, script_slug, topic_slug, dispatch]);
-  var title="Sermons";
+  var title="";
   if (author_slug) {
     route += "?author_slug=" + author_slug;
     queryKey = "AuthorsData" + author_slug;
@@ -96,7 +97,14 @@ export function Recent() {
   }, [sermonsData]);
 
   return (
-    <div className="pt-4 pb-16 no-scrollbar overflow-auto">
+    <div className="pt-4 pb-16 no-scrollbar overflow-hidden">
+		<SearchPage/>
+		   <div className="flex items-center pt-4 pb-4 px-5 space-x-4">        
+          <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-2xl">
+                  {title}
+                </h2>
+                
+          </div>
       <InfiniteScroll
         dataLength={state.items.length}
         next={fetchMoreData}
@@ -104,21 +112,17 @@ export function Recent() {
         loader={<h4>Loading...</h4>}
         scrollThreshold={0.8}
       >
-        <div> 
-        <div className="flex items-center pt-4 pb-4 px-5 space-x-4">        
-          <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-2xl">
-                  {title}
-                </h2>
-                
-          </div>
-          </div>
-          <div className="border-t text-gray-300"></div>
+       
+     
+        
+          <div className="border-t text-gray-300 "></div>
         {state.items.map((SermonFull, index) => (
           <div
             key={index}
             onClick={() => {
               navigate(`/sermonlistening/${SermonFull.SermonType.slug}`);
             }}
+			className='cursor-pointer'
           
           >
             <div className="flex items-center pt-4 pb-4 px-5 space-x-4">
@@ -126,7 +130,7 @@ export function Recent() {
                 <DateComp date={SermonFull.SermonType.date_delivered} />
               </div>
               <div>
-                <Avatar>
+                <Avatar className='w-16 h-16'>
                   <AvatarImage
                     src={
                       b2endpoint +
@@ -135,11 +139,13 @@ export function Recent() {
                   />
                 </Avatar>
               </div>
-              <div className="flex-grow min-w-0">
-                <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-lg">
+              <div className="flex-grow min-w-0 leading-none">
+                <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl leading-none">
                   {SermonFull.SermonType.title}
                 </h2>
-                <p className="text-gray-600">{SermonFull.SeriesType.title}</p>
+                <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600 text-lg font-medium pl-1">{SermonFull.SeriesType.title}</p>
+				<div></div>
+				<p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600 text-md pl-1">{SermonFull.SermonType.scripture}</p>
               </div>
             </div>
             <div className="border-t text-gray-300"></div>
