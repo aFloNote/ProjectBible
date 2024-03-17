@@ -12,13 +12,13 @@ import (
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/types"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
 	"github.com/typesense/typesense-go/typesense"
+	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	// Import other necessary packages
 )
 
@@ -266,7 +266,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				ScriptureID   string `json:"scripture_id"`
 				DateDelivered string `json:"date_delivered"`
 				Title         string `json:"title"`
-				Description          string `json:"desc"`
+				Description          string `json:"description"`
 				Image_Path    string `json:"image_path"`
 				Audio_Path    string `json:"audio_path"`
 				Slug          string `json:"slug"`
@@ -308,9 +308,10 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
-			rows := db.QueryRow("SELECT book FROM scriptures WHERE scripture_id=$1", scriptid)
+			rows := db.QueryRow("SELECT book, image_path FROM scriptures WHERE scripture_id=$1", scriptid)
 			var book string
-			err = rows.Scan(&book)
+			var bookPath string
+			err = rows.Scan(&book,&bookPath)
 
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error scanning row: %v", err)
@@ -321,7 +322,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 			scriptDocument := types.ScriptureType{
 				ScriptureID: scriptid,
 				Book:        book,
-				Image_Path:  "",
+				Image_Path:  bookPath,
 				Slug:        slugBook,
 			}
 			

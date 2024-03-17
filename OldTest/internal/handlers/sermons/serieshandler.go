@@ -33,6 +33,7 @@ func fetchSeries(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := r.URL.Query()
 	authorID := params.Get("author_id")
+	fmt.Println("Author ID: ", authorID) // Print author id to console
 	// Fetch author data from the database
 	query := `SELECT DISTINCT ON (s.series_id) s.series_id, s.title, s.description, s.image_path, s.slug 
           FROM series s `
@@ -41,7 +42,7 @@ func fetchSeries(w http.ResponseWriter, r *http.Request) {
 	var rows *sql.Rows
 	if authorID != "" {
 		fmt.Println("Author ID: ", authorID) // Print author id to console
-		query += "INNER JOIN sermons se ON s.series_id = se.series_id WHERE se.author_id = $1 ORDER BY s.series_id ASC"
+		query += "INNER JOIN sermons se ON s.series_id = se.series_id INNER JOIN authors a ON se.author_id = a.author_id WHERE a.slug = $1 ORDER BY s.series_id ASC"
 
 		rows, err = db.Query(query, authorID)
 		if err != nil {

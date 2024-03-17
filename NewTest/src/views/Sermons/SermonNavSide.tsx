@@ -8,10 +8,11 @@ import { IoPersonCircleOutline } from "react-icons/io5";
 import { TbPodium } from "react-icons/tb";
 import { FaLayerGroup, FaBookOpen } from "react-icons/fa";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 import "@/Styles/SermonNav.css";
 
 function SermonNavSide() {
-  const iconSize = 50;
+  const iconSize = 25;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const selectedSermonPage = useSelector(
@@ -19,29 +20,31 @@ function SermonNavSide() {
   );
 
   return (
+	
    <div className="flex flex-col justify-start h-screen">
-      <div className="flex flex-col">
+	<ScrollArea className='flex-1 overflow-auto'>
+      <div className="flex flex-row">
         <div
-          className="px-5"
+          className="px-0 pt-5"
           onClick={() => {
             navigate("/sermons");
             dispatch(setSelectedSermonPage("sermons")); // Dispatch the action
           }}
         >
-          <div className="flex flex-col">
+          <div className="flex flex-row">
             <TbPodium
-              size={iconSize}
+              size={28}
               className={
                 selectedSermonPage === "sermons"
-                  ? "text-blue-500"
-                  : "text-gray-500"
+                  ? "text-blue-500 "
+                  : "text-gray-500 "
               }
             />
             <span
               className={
                 selectedSermonPage === "sermons"
-                  ? "text-xs text-center font-normal text-blue-500"
-                  : "text-xs text-center font-normal text-gray-500"
+				? "text-lg pl-1 text-center font-normal text-blue-500"
+				: "text-lg pl-1 text-center font-normal text-gray-500"
               }
             >
               Sermons
@@ -49,28 +52,28 @@ function SermonNavSide() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-row">
         <div
-          className="px-0 pt-10"
+          className="px-0 pt-5"
           onClick={() => {
-            navigate("/sermonscriptures");
-            dispatch(setSelectedSermonPage("sermonscriptures"));
+            navigate("/scriptures");
+            dispatch(setSelectedSermonPage("scriptures"));
           }}
         >
-          <div className="flex flex-col items-center">
+          <div className="flex flex-row">
             <FaBookOpen
               size={iconSize}
               className={
-                selectedSermonPage === "sermonscriptures"
+                selectedSermonPage === "scriptures"
                   ? "text-blue-500"
                   : "text-gray-500"
               }
             />
             <span
               className={
-                selectedSermonPage === "sermonscriptures"
-                  ? "text-xs text-center font-normal text-blue-500"
-                  : "text-xs text-center font-normal text-gray-500"
+                selectedSermonPage === "scriptures"
+				? "text-lg pl-2 text-center font-normal text-blue-500"
+				: "text-lg pl-2 text-center font-normal text-gray-500"
               }
             >
               Scriptures
@@ -78,29 +81,29 @@ function SermonNavSide() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-row">
         <div
-          className="px-0 bg-none pt-10"
+          className="px-0 bg-none pt-5"
           onClick={() => {
-            navigate("/sermonseries");
-            dispatch(setSelectedSermonPage("sermonseries"));
+            navigate("/series");
+            dispatch(setSelectedSermonPage("series"));
             // Dispatch the action
           }}
         >
-          <div className="flex flex-col items-center">
+          <div className="flex flex-row ">
             <FaLayerGroup
               size={iconSize}
               className={
-                selectedSermonPage === "sermonseries"
+                selectedSermonPage === "series"
                   ? "text-blue-500"
                   : "text-gray-500"
               }
             />
             <span
               className={
-                selectedSermonPage === "sermonseries"
-                  ? "text-xs text-center font-normal text-blue-500"
-                  : "text-xs text-center font-normal text-gray-500"
+                selectedSermonPage === "series"
+                  ? "text-lg pl-2 text-center font-normal text-blue-500"
+                  : "text-lg pl-2 text-center font-normal text-gray-500"
               }
             >
               Series
@@ -108,28 +111,28 @@ function SermonNavSide() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col pt-10">
+      <div className="flex flex-row pt-5">
         <div
-          className="px-0 w-full"
+          className="px-0"
           onClick={() => {
-            navigate("/sermontopics");
-            dispatch(setSelectedSermonPage("sermontopics")); // Dispatch the action
+            navigate("/topics");
+            dispatch(setSelectedSermonPage("topics")); // Dispatch the action
           }}
         >
-          <div className="flex flex-col items-center">
+          <div className="flex flex-row">
             <MdFormatListBulleted
               size={iconSize}
               className={
-                selectedSermonPage === "sermontopics"
+                selectedSermonPage === "topics"
                   ? "text-blue-500"
                   : "text-gray-500"
               }
             />
             <span
               className={
-                selectedSermonPage === "sermontopics"
-                  ? "text-xs text-center font-normal text-blue-500"
-                  : "text-xs text-center font-normal text-gray-500"
+                selectedSermonPage === "topics"
+				? "text-lg pl-2 text-center font-normal text-blue-500"
+				: "text-lg pl-2 text-center font-normal text-gray-500"
               }
             >
               Topics
@@ -137,28 +140,28 @@ function SermonNavSide() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col pt-10">
+      <div className="flex flex-row pt-5">
         <div
-          className="px-0 w-full"
+          className="px-0"
           onClick={() => {
-            navigate("/sermonauthors");
-            dispatch(setSelectedSermonPage("sermonauthors")); // Dispatch the action
+            navigate("/authors");
+            dispatch(setSelectedSermonPage("authors")); // Dispatch the action
           }}
         >
-          <div className="flex flex-col items-center">
+          <div className="flex flex-row">
             <IoPersonCircleOutline
               size={iconSize}
               className={
-                selectedSermonPage === "sermonauthors"
+                selectedSermonPage === "authors"
                   ? "text-blue-500"
                   : "text-gray-500"
               }
             />
             <span
               className={
-                selectedSermonPage === "sermonauthors"
-                  ? "text-xs text-center font-normal text-blue-500"
-                  : "text-xs text-center font-normal text-gray-500"
+                selectedSermonPage === "authors"
+				? "text-lg pl-2 text-center font-normal text-blue-500"
+				: "text-lg pl-2 text-center font-normal text-gray-500"
               }
             >
               Authors
@@ -166,7 +169,9 @@ function SermonNavSide() {
           </div>
         </div>
       </div>
+	  </ScrollArea>
     </div>
+	
   );
 }
 

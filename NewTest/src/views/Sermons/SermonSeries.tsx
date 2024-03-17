@@ -1,4 +1,4 @@
-import { Fetch } from "@/hooks/sermonhooks";
+import { SearchPageFetch } from "@/hooks/sermonhooks";
 import { SeriesType } from "@/types/sermon";
 import { Link } from "react-router-dom";
 import { SiteImage } from "@/image";
@@ -8,17 +8,19 @@ import { useLocation } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { useDispatch } from "react-redux";
 import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
-
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store'; 
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 export function Series() {
   const [items, setItems] = useState<SeriesType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const location = useLocation();
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const queryParams = new URLSearchParams(location.search);
-  const author_id = queryParams.get("author_id");
-
+  const author_id = queryParams.get("author");
+  const searchResults = useSelector((state: RootState) => state.search.results);
   const dispatch = useDispatch();
-
+  
   useEffect(() => {
     const currentPath = location.pathname;
     let pageName = currentPath.substring(1); // remove the leading slash
@@ -27,7 +29,8 @@ export function Series() {
     if (pageName.includes("/")) {
       pageName = pageName.split("/")[0];
     }
-
+	console.log(author_id)
+	if (!author_id)
     dispatch(setSelectedSermonPage(pageName));
   }, [location, dispatch]);
   let route = "pubfetchseries";
@@ -36,27 +39,49 @@ export function Series() {
     route += "?author_id=" + author_id;
     queryKey = "SeriesData" + author_id;
   }
-  const { data: seriesData } = Fetch<SeriesType[]>(route, queryKey, false);
-  console.log(seriesData);
+  const { data: seriesData } = SearchPageFetch<SeriesType[]>(route, queryKey);
+  const searchTerm = useSelector((state: RootState) => state.search.input);
+  
   useEffect(() => {
-    if (seriesData) {
-      setItems(seriesData.slice(0, 200));
-    }
-  }, [seriesData]);
+	
+	if (searchResults && searchResults.length > 0 && searchTerm !== "") {
+	  const seriesResults = searchResults
+		.filter(result => result.collection === 'series')
+		.map(result => result.document as SeriesType);
+	  setItems(seriesResults.slice(0, 200));
+	} else {
+	  if(seriesData)
+	  setItems(seriesData.slice(0, 200));
+	}
+  }, [searchResults, seriesData]);
+  
   const fetchMoreData = () => {
-    if (seriesData) {
-      const newItems = seriesData.slice(items.length, items.length + 10);
-
-      setItems((prevItems) => [...prevItems, ...newItems]);
-
-      if (items.length + 10 >= seriesData.length) {
-        setHasMoreItems(false);
-      }
-    }
+	if (searchResults && searchResults.length > 0) {
+	  const newItems = searchResults
+		.filter(result => result.collection === 'series')
+		.map(result => result.document as SeriesType)
+		.slice(items.length, items.length + 10);
+  
+	  setItems((prevItems) => [...prevItems, ...newItems]);
+  
+	  if (items.length + 10 >= searchResults.length) {
+		setHasMoreItems(false);
+	  }
+	} else {
+	  if (!seriesData) return;
+	  const newItems = seriesData.slice(items.length, items.length + 10);
+	  setItems((prevItems) => [...prevItems, ...newItems]);
+  
+	  if (items.length + 10 >= seriesData.length) {
+		setHasMoreItems(false);
+	  }
+	}
   };
+ 
 
   return (
-    <div className="pb-16">
+    <div className="flex flex-col pb-24 lg:pb-10 h-full">
+		<ScrollArea className="flex-1 overflow-auto">
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}
@@ -65,37 +90,40 @@ export function Series() {
         scrollThreshold={0.8}
       >
         <div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64">
-          {seriesData?.map((series) => (
+          {items?.map((series) => (
             <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={series.series_id}>
               <Link to={`/sermons?series=${series.slug}`}>
                 <Card>
                   <CardContent className="pt-5 lg:px-10">
                     <div className="flex lg:flex-col items-center space-x-4">
                       <SiteImage
-                        divClass="w-16 h-16 lg:h-32 lg:w-32 rounded-full"
+                        divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
                         ratio={1}
                         alt="Series Image"
                         source={
                           b2endpoint + encodeURIComponent(series.image_path)
                         }
                       />
-                    <div className="flex flex-col lg:hidden">
+                    <div className="flex flex-col lg:hidden overflow-hidden w-full">
 						
-                        <h2 className="text-xl text-center ">
+                        <h2 className="text-xl">
                           {series.title}
                         </h2>
-                        <p className="text-gray-600">
+                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600">
                           {series.description}
                         </p>
                       </div>
                     </div>
+
+
+
                     <div className=" lg:border-b lg:text-gray-600 lg:pt-2"></div>
                     <div className="lg:flex lg:justify-center lg:pt-2">
                       <div className="flex flex-col">
                         <h2 className="lg:text-xl lg:text-center hidden lg:block">
                           {series.title}
                         </h2>
-                        <p className="text-gray-600 hidden lg:block">
+                        <p className="text-gray-600 hidden lg:block text-center">
                           {series.description}
                         </p>
                       </div>
@@ -107,6 +135,7 @@ export function Series() {
           ))}
         </div>
       </InfiniteScroll>
+	  </ScrollArea>
     </div>
   );
 }

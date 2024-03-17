@@ -8,6 +8,9 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import {Link, useLocation} from "react-router-dom";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
 import { useDispatch } from "react-redux";
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store'; 
+import {ScrollArea} from "@/components/ui/scroll-area";
 export function Topics() {
   
  
@@ -16,7 +19,8 @@ export function Topics() {
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const location = useLocation();
   const dispatch = useDispatch();
-
+  const searchResults = useSelector((state: RootState) => state.search.results);
+  const searchTerm = useSelector((state: RootState) => state.search.input);
   useEffect(() => {
     const currentPath = location.pathname;
     let pageName = currentPath.substring(1); // remove the leading slash
@@ -33,27 +37,48 @@ export function Topics() {
     "TopicData",
     false
   );
-  useEffect(() => {
-    if (topicsData) {
-      setItems(topicsData.slice(0, 200));
-    }
-  }, [topicsData]);
-  const fetchMoreData = () => {
-    if (topicsData) {
-      const newItems = topicsData.slice(items.length, items.length + 10);
 
-      setItems((prevItems) => [...prevItems, ...newItems]);
+useEffect(() => {
+	
+  if (searchResults && searchResults.length > 0 && searchTerm !== "") {
+    const topicResults = searchResults
+      .filter(result => result.collection === 'topics')
+      .map(result => result.document as TopicType);
+    setItems(topicResults.slice(0, 200));
+  } else {
+	if(topicsData)
+    setItems(topicsData.slice(0, 200));
+  }
+}, [searchResults, topicsData]);
 
-      if (items.length + 10 >= topicsData.length) {
-        setHasMoreItems(false);
-      }
+const fetchMoreData = () => {
+  if (searchResults && searchResults.length > 0) {
+    const newItems = searchResults
+      .filter(result => result.collection === 'topics')
+      .map(result => result.document as TopicType)
+      .slice(items.length, items.length + 10);
+
+    setItems((prevItems) => [...prevItems, ...newItems]);
+
+    if (items.length + 10 >= searchResults.length) {
+      setHasMoreItems(false);
     }
-  };
+  } else {
+	if (!topicsData) return;
+    const newItems = topicsData.slice(items.length, items.length + 10);
+    setItems((prevItems) => [...prevItems, ...newItems]);
+
+    if (items.length + 10 >= topicsData.length) {
+      setHasMoreItems(false);
+    }
+  }
+};
 
   
 
   return (
-    <div className="pb-16">
+    <div className="flex flex-col h-full pb-24 lg:pb-10">
+	<ScrollArea className="flex-1 overflow-auto">
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}
@@ -61,10 +86,11 @@ export function Topics() {
         loader={<h4></h4>}
         scrollThreshold={0.8}
       >
-		<div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64">
+		
+		<div className="h-full  lg:flex lg:flex-wrap lg:h-full">
 
-        {topicsData?.map((topic) => (
-          <div className="pt-2 px-2 lg:w-1/2 lg:px-15" key={topic.topic_id}>
+        {items?.map((topic) => (
+          <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={topic.topic_id}>
                <Link to={`/sermons?topic=${topic.slug}`}>
             <Card>
               <CardContent className="pt-5 lg:px-10">
@@ -93,7 +119,9 @@ export function Topics() {
 
         ))}
 		</div>
+	
       </InfiniteScroll>
+	  </ScrollArea>
     </div>
   );
 }

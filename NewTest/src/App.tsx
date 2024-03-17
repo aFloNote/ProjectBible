@@ -20,7 +20,7 @@ function App() {
   const queryClient = new QueryClient();
   console.log(redirect, aud, scope, domain, clientId)
   return (
-    <div id="root" className="">
+   
       <Auth0Provider
         domain={domain as string}
         clientId={clientId as string}
@@ -47,7 +47,7 @@ function App() {
           </QueryClientProvider>
         </Provider>
       </Auth0Provider>
-    </div>
+  
   );
 }
 

@@ -53,22 +53,22 @@ function SermonNav() {
         <div
           className="px-0 w-full"
           onClick={() => {
-            navigate("/sermonscriptures");
-            dispatch(setSelectedSermonPage("sermonscriptures"));
+            navigate("/scriptures");
+            dispatch(setSelectedSermonPage("scriptures"));
           }}
         >
           <div className="flex flex-col items-center">
             <FaBookOpen
               size={iconSize}
               className={
-                selectedSermonPage === "sermonscriptures"
+                selectedSermonPage === "scriptures"
                   ? "text-blue-500"
                   : "text-gray-500"
               }
             />
             <span
               className={
-                selectedSermonPage === "sermonscriptures"
+                selectedSermonPage === "scriptures"
                   ? "text-xs text-center font-normal text-blue-500"
                   : "text-xs text-center font-normal text-gray-500"
               }
@@ -82,8 +82,8 @@ function SermonNav() {
         <div
           className="px-0 bg-none w-full"
           onClick={() => {
-            navigate("/sermonseries");
-            dispatch(setSelectedSermonPage("sermonseries"));
+            navigate("/series");
+            dispatch(setSelectedSermonPage("series"));
             // Dispatch the action
           }}
         >
@@ -91,14 +91,14 @@ function SermonNav() {
             <FaLayerGroup
               size={iconSize}
               className={
-                selectedSermonPage === "sermonseries"
+                selectedSermonPage === "series"
                   ? "text-blue-500"
                   : "text-gray-500"
               }
             />
             <span
               className={
-                selectedSermonPage === "sermonseries"
+                selectedSermonPage === "series"
                   ? "text-xs text-center font-normal text-blue-500"
                   : "text-xs text-center font-normal text-gray-500"
               }
@@ -112,15 +112,15 @@ function SermonNav() {
         <div
           className="px-0 w-full"
           onClick={() => {
-            navigate("/sermontopics");
-            dispatch(setSelectedSermonPage("sermontopics")); // Dispatch the action
+            navigate("/topics");
+            dispatch(setSelectedSermonPage("topics")); // Dispatch the action
           }}
         >
           <div className="flex flex-col items-center">
             <MdFormatListBulleted
               size={iconSize}
               className={
-                selectedSermonPage === "sermontopics"
+                selectedSermonPage === "topics"
                   ? "text-blue-500"
                   : "text-gray-500"
               }
@@ -141,22 +141,22 @@ function SermonNav() {
         <div
           className="px-0 w-full"
           onClick={() => {
-            navigate("/sermonauthors");
-            dispatch(setSelectedSermonPage("sermonauthors")); // Dispatch the action
+            navigate("/authors");
+            dispatch(setSelectedSermonPage("authors")); // Dispatch the action
           }}
         >
           <div className="flex flex-col items-center">
             <IoPersonCircleOutline
               size={iconSize}
               className={
-                selectedSermonPage === "sermonauthors"
+                selectedSermonPage === "authors"
                   ? "text-blue-500"
                   : "text-gray-500"
               }
             />
             <span
               className={
-                selectedSermonPage === "sermonauthors"
+                selectedSermonPage === "authors"
                   ? "text-xs text-center font-normal text-blue-500"
                   : "text-xs text-center font-normal text-gray-500"
               }

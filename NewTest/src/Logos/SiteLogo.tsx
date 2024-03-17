@@ -13,7 +13,7 @@ export function Logo({ ratio, size }: LogoProps) {
     const logo = isDark ? logoDark : logoLight;
     
     return (
-        <div style={{ width: size }}>
+        <div className='w-28 lg:w-40'>
             <AspectRatio ratio={ratio}>
                 <img src={logo} alt="Logo" className="rounded-md object-cover" style={{ width: '100%', height: '100%' }} />
             </AspectRatio>

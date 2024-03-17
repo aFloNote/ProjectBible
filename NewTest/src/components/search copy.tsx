@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTrigger,DialogOverlay,DialogHeader} from "@/components/SearchDialog";
+import { Dialog, DialogContent, DialogTrigger,DialogOverlay,DialogHeader } from "@/components/SearchDialog";
 import { FaSearch } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 
@@ -17,7 +17,6 @@ import { MdFormatListBulleted } from "react-icons/md";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { TbPodium } from "react-icons/tb";
 import { FaLayerGroup, FaBookOpen } from "react-icons/fa";
-
 type SearchResult = {
   collection: string;
   document: SermonType | AuthorType | SeriesType | TopicType | ScriptureType;
@@ -121,32 +120,16 @@ const ScriptureResult = ({ data, setIsDialogOpen }: { data: ScriptureType, setIs
 export function Search() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
-  const searchInputRef = useRef<HTMLInputElement>(null); 
+
   const searchResult = SearchFetch<SearchResult[]>(
     `fetchsearch?query=${searchTerm}`,
     "SearchData",
     false,
     isDialogOpen
   );
-  const [isSafari, setIsSafari] = useState(false);
- 
-  useEffect(() => {
-	console.log('here')
-    const detectSafari = () => {
-      const userAgent = navigator.userAgent;
-      const isChrome = userAgent.indexOf('Chrome') > -1;
-      const isSafari = userAgent.indexOf('Safari') > -1;
-	  console.log(isSafari && !isChrome)
-      return isSafari && !isChrome;
-    };
 
-    setIsSafari(detectSafari());
-  }, []);
- 
-  
   const timeoutId = useRef<NodeJS.Timeout | null>(null);
-  const inputRef = useRef(null);
+
   useEffect(() => {
 	if (isDialogOpen && searchResult != undefined && searchResult.data !== undefined) {
 	  // Clear the previous timer
@@ -167,33 +150,6 @@ export function Search() {
 	  }
 	};
   }, [searchTerm, isDialogOpen, searchResult?.refetch]);
- 
-  
-
-  useEffect(() => {
-	const handleResize = () => {
-	  const vh = window.innerHeight * 0.01;
-	  document.documentElement.style.setProperty('--vh', `${vh}px`);
-		console.log(vh)
-	  if (window.visualViewport) {
-		const keyboardShown = window.visualViewport.height < window.innerHeight;
-		setKeyboardVisible(keyboardShown);
-  
-		// Prevent scrolling when keyboard is open
-		
-		  document.body.style.overflow = ' relative hidden';
-		
-	  }
-	};
-  
-	window.addEventListener('resize', handleResize);
-  
-	return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
-
-  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
@@ -208,31 +164,9 @@ export function Search() {
 	  return acc;
 	}, {} as Record<string, SearchResult[]>);
   };
-  useEffect(() => {
-	// Get the DOM element of the ScrollArea component
-	const scrollAreaElement = scrollAreaRef.current;
   
-	// Define the touchmove event handler
-	const handleTouchMove = () => {
-	  if (searchInputRef.current) {
-		(searchInputRef.current as any).blur();
-	  }
-	};
-  
-	// Add the touchmove event listener to the ScrollArea element
-	if (scrollAreaElement) {
-	  scrollAreaElement.addEventListener('touchmove', handleTouchMove);
-	}
-  
-	// Remove the event listener when the component unmounts
-	return () => {
-	  if (scrollAreaElement) {
-		scrollAreaElement.removeEventListener('touchmove', handleTouchMove);
-	  }
-	};
-  }, []);
   return (
-	<>
+	
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
 		
       <DialogTrigger asChild>
@@ -241,37 +175,30 @@ export function Search() {
           variant="outline"
         >
           <FaSearch className="gray-500/50"></FaSearch>
-          <span className="pl-1"> Site</span>
+          <span className="pl-1"></span>
         </Button>
       </DialogTrigger>
-	  <div className='overflow-hidden'>
-    <DialogOverlay className='bg-slate-50 bg-opacity-50 fixed'>
-      <DialogContent className={'overflow-hidden -translate-y-80'}>
-        <div className="sticky top-0 z-10">
-		<DialogHeader>
-	
+	  <DialogOverlay className='bg-slate-50 bg-opacity-50'>
+      <DialogContent className='px-0 h-96 overflow-auto'>
+		<DialogHeader className='bg-background'>
 		<header className="flex items-center border-b pl-5">
           <FaSearch className="text-muted-foreground"></FaSearch>
           <input
-		  	ref={searchInputRef}
             className="flex h-10 w-full rounded-md bg-transparent py-3 pl-2 text-md outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Search Sermons,Topics, Series Ect..."
             onChange={handleInputChange} // Use the handler here
             value={searchTerm} // Control the input
           ></input>
         </header>
-		
 		</DialogHeader>
-		</div>
-	  	
+	  	<div className='pb-44 md:pb-0'>
        
-        
-      <ScrollArea ref={scrollAreaRef} className={'h-80'}>
-
+        <div className=''>
+      
 		{Array.isArray(searchResult.data)
       ? Object.entries(groupByCollection(searchResult.data)).map(([collection, items], index) => {
           return (
-            <div key={index} ref={scrollAreaRef} >
+            <div key={index}>
               <h2 className='text-md pl-4 pt-4 font-medium text-gray-600'>{collection}</h2> {/* This is the header for each type */}
               {items.map((item, index) => {
                   switch (item.collection) {
@@ -320,24 +247,19 @@ export function Search() {
                       return null;
                   }
 				})}
-				
 				</div>
 			  );
 			})
               : null}
-      </ScrollArea>
-       
-	
+      
+        </div>
+		</div>
       </DialogContent>
 	  </DialogOverlay>
-	  </div>
-	
+	 
     </Dialog>
-	
 
-
-	</>
   );
-
 }
+
 export default Search;

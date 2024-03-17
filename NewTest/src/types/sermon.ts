@@ -56,3 +56,10 @@ export interface SearchType{
   TopicType: TopicType;
   ScriptureType: ScriptureType;
 }
+export type SearchResult =
+  | { collection: 'sermons'; document: SermonType }
+  | { collection: 'topics'; document: TopicType }
+  | { collection: 'series'; document: SeriesType }
+  | { collection: 'authors'; document: AuthorType }
+  | { collection: 'scriptures'; document: ScriptureType }
+  | { collection: ''; document: "" };

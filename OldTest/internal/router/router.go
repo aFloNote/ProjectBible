@@ -46,9 +46,10 @@ func NewRouter(minio *minio.Client,typesense *typesense.Client) *http.ServeMux {
 
 	router.Handle("/api/pubfetchscriptures", handlerSermon.PubFetchScripturesHandler())
 	router.Handle("/api/fetchscriptures", handlerSermon.FetchScripturesHandler())
-	router.Handle("/api/updatescripture", handlerSermon.UpdateScripturesHandler(minio))
+	router.Handle("/api/updatescripture", handlerSermon.UpdateScripturesHandler(minio,typesense))
 
 	router.Handle("/api/fetchsearch", handlerSearch.SearchHandler(typesense))
+	router.Handle("/api/fetchsearchpage", handlerSearch.SearchPageHandler(typesense))
 
 	if err := http.ListenAndServe("0.0.0.0:8080", router); err != nil {
 		log.Fatalf("There was an error with the http server: %v", err)

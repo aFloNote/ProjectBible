@@ -16,7 +16,8 @@ import (
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/types"
-	
+	"github.com/typesense/typesense-go/typesense"
+	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
 	// Import other necessary packages
@@ -121,7 +122,7 @@ func FetchScripturesHandler() http.Handler {
 	)
 }
 
-func UpdateScripturesHandler(minioClient *minio.Client) http.Handler {
+func UpdateScripturesHandler(minioClient *minio.Client,client *typesense.Client) http.Handler {
 	return middleware.EnsureValidToken()(
 		http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -193,6 +194,20 @@ func UpdateScripturesHandler(minioClient *minio.Client) http.Handler {
 				if err != nil {
 					log.Fatal(err)
 				}
+
+			
+			
+			updateData := map[string]interface{}{
+				"scripture_id":   scriptureID,
+				"book":        book,
+				"image_path":   path,
+				"slug":         slug,
+			}
+			search.UpdateDocument(client, scriptureID, "scripture_id", "scriptures", updateData)
+
+
+
+
 			}
 			doneCh := make(chan struct{})
 

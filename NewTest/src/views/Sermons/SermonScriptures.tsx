@@ -5,25 +5,15 @@ import { SiteImage } from "@/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {Link, useLocation} from "react-router-dom";
-import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
-import { useDispatch } from "react-redux";
+import {Link} from "react-router-dom";
+
+
+import { useSelector } from 'react-redux';
+import { RootState } from '@/redux/store'; 
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 
 export function Scriptures() {
-	const location = useLocation();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    const currentPath = location.pathname;
-    let pageName = currentPath.substring(1); // remove the leading slash
-
-    // If the path is nested, you might want to get only the first part
-    if (pageName.includes('/')) {
-      pageName = pageName.split('/')[0];
-    }
-
-    dispatch(setSelectedSermonPage(pageName));
-  }, [location, dispatch]);
+	
   const bibleOrder = [
     "Genesis",
     "Exodus",
@@ -97,35 +87,58 @@ export function Scriptures() {
   const [items, setItems] = useState<ScriptureType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
-
+ 
+  const searchResults = useSelector((state: RootState) => state.search.results);
+  
   const { data: scriptsData } = Fetch<ScriptureType[]>(
     "pubfetchscriptures",
     "ScriptureData",
     false
   );
+  const searchTerm = useSelector((state: RootState) => state.search.input);
   useEffect(() => {
-    if (scriptsData) {
-      setItems(scriptsData.slice(0, 200));
-    }
-  }, [scriptsData]);
+	
+	if (searchResults && searchResults.length > 0 && searchTerm !== "") {
+	  const scriptsResults = searchResults
+		.filter(result => result.collection === 'scriptures')
+		.map(result => result.document as ScriptureType);
+	  setItems(scriptsResults.slice(0, 200));
+	} else {
+	  if(scriptsData)
+	  setItems(scriptsData.slice(0, 200));
+	}
+  }, [searchResults, scriptsData]);
+  
   const fetchMoreData = () => {
-    if (scriptsData) {
-      const newItems = scriptsData.slice(items.length, items.length + 10);
-
-      setItems((prevItems) => [...prevItems, ...newItems]);
-
-      if (items.length + 10 >= scriptsData.length) {
-        setHasMoreItems(false);
-      }
-    }
+	if (searchResults && searchResults.length > 0) {
+	  const newItems = searchResults
+		.filter(result => result.collection === 'scriptures')
+		.map(result => result.document as ScriptureType)
+		.slice(items.length, items.length + 10);
+  
+	  setItems((prevItems) => [...prevItems, ...newItems]);
+  
+	  if (items.length + 10 >= searchResults.length) {
+		setHasMoreItems(false);
+	  }
+	} else {
+	  if (!scriptsData) return;
+	  const newItems = scriptsData.slice(items.length, items.length + 10);
+	  setItems((prevItems) => [...prevItems, ...newItems]);
+  
+	  if (items.length + 10 >= scriptsData.length) {
+		setHasMoreItems(false);
+	  }
+	}
   };
 
-  const sortedScriptureData = scriptsData?.sort((a, b) => {
+  const sortedScriptureData = items?.sort((a, b) => {
     return bibleOrder.indexOf(a.book) - bibleOrder.indexOf(b.book);
   });
 
   return (
-    <div className="pb-16">
+    <div className="flex flex-col pb-24 lg:pb-10 h-full">
+		<ScrollArea className="flex-1 overflow-auto">
       <InfiniteScroll
         dataLength={items.length}
         next={fetchMoreData}
@@ -163,6 +176,7 @@ export function Scriptures() {
         ))}
 		  </div>
       </InfiniteScroll>
+	  </ScrollArea>
     </div>
   );
 }
