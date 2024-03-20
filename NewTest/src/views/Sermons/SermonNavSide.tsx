@@ -30,7 +30,7 @@ function SermonNavSide() {
               dispatch(setSelectedSermonPage("sermons")); // Dispatch the action
             }}
           >
-            <div className="flex flex-row">
+            <div className="flex flex-row cursor-pointer">
               <TbPodium
                 size={28}
                 className={
@@ -59,7 +59,7 @@ function SermonNavSide() {
               dispatch(setSelectedSermonPage("scriptures"));
             }}
           >
-            <div className="flex flex-row">
+            <div className="flex flex-row cursor-pointer">
               <FaBookOpen
                 size={iconSize}
                 className={
@@ -80,7 +80,7 @@ function SermonNavSide() {
             </div>
           </div>
         </div>
-        <div className="flex flex-row">
+        <div className="flex flex-row cursor-pointer">
           <div
             className="px-0 bg-none pt-5"
             onClick={() => {
@@ -89,7 +89,7 @@ function SermonNavSide() {
               // Dispatch the action
             }}
           >
-            <div className="flex flex-row ">
+            <div className="flex flex-row cursor-pointer">
               <FaLayerGroup
                 size={iconSize}
                 className={
@@ -110,7 +110,7 @@ function SermonNavSide() {
             </div>
           </div>
         </div>
-        <div className="flex flex-row pt-5">
+        <div className="flex flex-row pt-5 cursor-pointer">
           <div
             className="px-0"
             onClick={() => {
@@ -139,7 +139,7 @@ function SermonNavSide() {
             </div>
           </div>
         </div>
-        <div className="flex flex-row pt-5">
+        <div className="flex flex-row pt-5 cursor-pointer">
           <div
             className="px-0"
             onClick={() => {
