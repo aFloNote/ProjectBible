@@ -40,7 +40,7 @@ export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath })
   }, [audio, memoizedOnAudioUpdate]);
   useEffect(() => {
     if (audiopath) {
-      console.log(b2endpoint + encodeURIComponent(audiopath))
+  
       setAudio([
         {
           file: new File([], b2endpoint + encodeURIComponent(audiopath)),

@@ -129,7 +129,7 @@ export function EditTopic() {
 
     formData.append("image", uploadedFiles[0]);
     if (selectedTopic) formData.append("topic_id", selectedTopic.topic_id);
-    console.log(uploadedFiles);
+  
     upload(formData, {
       onSuccess: () => {
         // Handle successful mutation
@@ -152,7 +152,7 @@ export function EditTopic() {
       onSettled: () => {
         dispatch(setSelectedTopic(null));
         // Executes after mutation is either successful or errors out
-        console.log("Mutation is settled");
+    
       },
     });
   };

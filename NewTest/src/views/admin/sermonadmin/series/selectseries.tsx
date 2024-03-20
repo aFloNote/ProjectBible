@@ -51,7 +51,7 @@ const { data: seriesData, error } = Fetch<SeriesType[]>(
 
 
   if (!seriesData || error ||  seriesData===undefined || seriesData.length===0) {
-    console.log('asdfsd'+error)
+  
     return <div>Error Finding Series</div>
   }
   else {
@@ -86,9 +86,9 @@ const { data: seriesData, error } = Fetch<SeriesType[]>(
                  
               
                 
-                    console.log(currentValue,selectedId)
+                 
                     setSelectedId(currentValue === selectedId ? "" : currentValue)
-                    console.log(selectedId)
+                 
                     setOpen(false)
                
                       dispatch(setSelectedSeries(currentValue !== selectedId ? series : null));

@@ -129,7 +129,7 @@ export function EditSeries() {
     formData.append("desc", descForm);
     formData.append("image", uploadedFiles[0]);
     if (selectedSeries) formData.append("series_id", selectedSeries.series_id);
-    console.log(uploadedFiles);
+ 
     upload(formData, {
       onSuccess: () => {
         // Handle successful mutation
@@ -152,14 +152,14 @@ export function EditSeries() {
       onSettled: () => {
         dispatch(setSelectedSeries(null));
         // Executes after mutation is either successful or errors out
-        console.log("Mutation is settled");
+      
       },
     });
   };
 
   // Determine if the form can be submitted based on name, ministry, and image presence
   useEffect(() => {
-    console.log(headForm !== "" && descForm !== "" && uploadedFiles.length > 0);
+  
     setCanSubmit(
       headForm !== "" &&
         descForm !== "" &&

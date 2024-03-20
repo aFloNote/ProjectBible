@@ -42,7 +42,7 @@ export function Topic() {
     const isHeadInItems = topicData?.some(
       (itemData) => itemData.name.toLowerCase() === headForm.toLowerCase()
     );
-    console.log("test");
+
     if (isHeadInItems) {
       setServerResponse({
         success: false,

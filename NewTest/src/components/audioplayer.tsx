@@ -200,11 +200,11 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
             <PopoverContent className="flex h-fit w-fit">
               <Button
                 variant="ghost"
-                onClick={() =>
-                  (window.location.href = `${
-                    b2endpoint + audio_link
-                  }?download=true`)
-                }
+				onClick={() =>
+					(window.location.href = decodeURIComponent(
+					  `${b2endpoint + audio_link}?download=true`
+					))
+				  }
               >
                 <FaDownload />
               </Button>
