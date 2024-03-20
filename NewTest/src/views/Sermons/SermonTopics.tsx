@@ -89,15 +89,15 @@ const fetchMoreData = () => {
 		
 		<div className="h-full  lg:flex lg:flex-wrap lg:h-full">
 
-        {items?.map((topic) => (
+        {items?.map((topic,index) => (
           <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={topic.topic_id}>
                <Link to={`/sermons?topic=${topic.slug}`}>
             <Card>
-              <CardContent className="pt-5 lg:px-10">
+			<CardContent className={`pt-5 lg:px-10 ${index % 2 === 0 ? '' : ''}`}>
 			  <div className="flex lg:flex-col items-center space-x-4">
                   {topic.image_path !== "default" && (
                     <SiteImage
-					divClass="w-16 h-16 lg:h-32 lg:w-32 rounded-full"
+					divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full"
                       ratio={1}
                       alt="Topic Image"
                       source={

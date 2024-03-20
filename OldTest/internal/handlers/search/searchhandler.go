@@ -23,54 +23,37 @@ import (
 
 func SearchHandler(client *typesense.Client) http.Handler {
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        
-        fmt.Println("SearchHandler")
-        query := r.URL.Query().Get("query")
-        if query == "" {
-            http.Error(w, "Query parameter is missing", http.StatusBadRequest)
-            return
-        }
-
-        type SearchResultItem struct {
-            Collection string      `json:"collection"`
-            Document   interface{} `json:"document"`
-        }
-
-        var allResults []SearchResultItem
-
-        collections := map[string][]string{
-            "topics":     {"name"},
-            "series":     {"title"}, // Example for multiple fields
-            "authors":    {"name","ministry"},
-            "sermons":    {"title","scripture"},
-            "scriptures": {"book"},
-        }
-
-        for collectionName, fields := range collections {
-            queryByFields := strings.Join(fields, ",")
-            searchResult, err := client.Collection(collectionName).Documents().Search(context.Background(), &api.SearchCollectionParams{
-                Q:       query,
-                QueryBy: queryByFields,
-            })
-            if err != nil {
-                fmt.Printf("Error searching collection %s: %v\n", collectionName, err)
-                continue // Optionally, handle this error more gracefully
-            }
-            if searchResult.Hits != nil {
-                for _, document := range *searchResult.Hits {
-                    allResults = append(allResults, SearchResultItem{
-                        Collection: collectionName,
-                        Document:   document.Document, // Adjust according to the structure of document
-                    })
-                }
-            }
-        }
-
-        w.Header().Set("Content-Type", "application/json")
-        if err := json.NewEncoder(w).Encode(allResults); err != nil {
-            http.Error(w, "Failed to encode results", http.StatusInternalServerError)
-            return
-        }
+		fmt.Println("SearchHandler")
+		query := r.URL.Query().Get("query")
+		if query == "" {
+			http.Error(w, "Query parameter is missing", http.StatusBadRequest)
+			return
+		}
+		
+		var allResults []interface{}
+		
+		collectionName := "search"
+		queryByFields := "primary,secondary"
+		
+		searchResult, err := client.Collection(collectionName).Documents().Search(context.Background(), &api.SearchCollectionParams{
+			Q:       query,
+			QueryBy: queryByFields,
+		})
+		if err != nil {
+			fmt.Printf("Error searching collection %s: %v\n", collectionName, err)
+			return // Optionally, handle this error more gracefully
+		}
+		if searchResult.Hits != nil {
+			for _, document := range *searchResult.Hits {
+				allResults = append(allResults, document.Document) // Append only the document
+			}
+		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(allResults); err != nil {
+			http.Error(w, "Failed to encode results", http.StatusInternalServerError)
+			return
+		}
     })
 }
 

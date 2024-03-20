@@ -1,6 +1,13 @@
 import { useState, useRef, useEffect } from "react";
 import ReactPlayer from "react-player";
-import { FaUndo, FaRedo, FaPlay, FaPause, FaDownload } from "react-icons/fa";
+import {
+  FaUndo,
+  FaRedo,
+  FaPlay,
+  FaPause,
+  FaDownload,
+  FaEllipsisV,
+} from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { SermonFullType } from "@/types/sermon";
 import {
@@ -9,6 +16,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Slider } from "@/components/ui/slider";
+import {Share} from "@/components/share";
 
 interface AudioProps {
   audio_link: string;
@@ -24,7 +32,7 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [showSpeedControl, setShowSpeedControl] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(false);
   const handleSpeedChange = (value: number[]) => {
     setPlaybackRate(value[0]);
   };
@@ -152,8 +160,9 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
             <p className="text-md">Playback speed</p>
             <div className="flex justify-between items-center">
               <span>0.5x</span>
-              <div className="flex-grow mx-2">
+              <div className="flex-grow mx-2 ">
                 <Slider
+				
                   defaultValue={[1.0]}
                   min={0.5}
                   max={2.0}
@@ -181,17 +190,35 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
           <FaRedo />
         </button>
 
-        <div className="pt-2">
-          <Button
-            variant="ghost"
-            onClick={() =>
-              (window.location.href = `${
-                b2endpoint + audio_link
-              }?download=true`)
-            }
-          >
-            <FaDownload />
-          </Button>
+        <div className="">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="ghost" className="text-2xl p-4 text-sm">
+                <FaEllipsisV />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="flex h-fit w-fit">
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  (window.location.href = `${
+                    b2endpoint + audio_link
+                  }?download=true`)
+                }
+              >
+                <FaDownload />
+              </Button>
+			     <Button
+                variant="ghost"
+                className="text-2xl text-sm"
+                onClick={() => {
+                  setIsOpen(false);
+                }}
+              >
+                <Share />
+              </Button>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>

@@ -7,14 +7,21 @@ import { Audio } from "@/components/audioplayer";
 import 'react-h5-audio-player/lib/styles.css';
 import { useDispatch } from "react-redux";
 import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
+import {
+	Card,
+	CardContent,
+   
+  } from "@/components/ui/card"
 
 export function SermonPage() {
-	//blah
+	
   const navigate = useNavigate();
   const { sermonId } = useParams<{ sermonId: string }>();
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const dispatch=useDispatch();
-  dispatch(setSelectedSermonPage(""));
+  useEffect(() => {
+	dispatch(setSelectedSermonPage(""));
+  }, [dispatch]);
 
 
   useEffect(() => {
@@ -28,19 +35,32 @@ export function SermonPage() {
     sermonId || "SermonFull",
     false,   
   );
- 
-
+  let month="";
+  let day=0;
+  let year=0;
+ if (sermonFull){
+  let date = new Date(sermonFull[0].SermonType.date_delivered);
+     month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
+    day = date.getUTCDate();
+    // @ts-ignore
+    year = date.getUTCFullYear();
+ }
 
   if (!sermonFull) {
     return <div>Loading...</div>;
   }
 
   return (
+	
+	
+	<Card>
+		<div className='pb-0'  >
+			<CardContent>	
     <div className="flex flex-col"> 
       <div className="">
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
           <SiteImage
-            divClass='w-full max-w-screen-lg px-4 mx-auto pt-4'
+            divClass='w-full max-w-lg px-4 mx-auto pt-4'
             ratio={16/9}
             alt='Series Image'
             source={
@@ -51,17 +71,27 @@ export function SermonPage() {
         )}
         <div className="pt-2">
           <div className="col-span-4 leading-none pb-1 pl-4">
-            <h2 className="text-lg text-center leading-none">
+		
+            <h2 className="text-xl text-center leading-none">
               {sermonFull[0].SermonType.title}
             </h2>
-            <div className="text-center">
-              <p className="text-gray-500 text-sm text-center font-medium">
-                {sermonFull[0].SeriesType.desc}
+            <div className="text-center leading-none">
+              <p className="text-gray-500 text-lg text-center font-medium leading-none">
+                {sermonFull[0].SeriesType.description}
               </p>
             </div>
-            <div className="text-gray-500 text-center font-bold text-xs">
+            <div className="text-gray-500 text-center text-md">
               {sermonFull[0].AuthorType.name}
             </div>
+			<div className='flex text-center leading-tight pt-2'>
+				
+				<div className="flex flex-row items-center mx-auto">
+			  <div className='text-center text-gray-400 leading-none text-sm  pr-1'>{month}</div>
+			  <div className='text-center text-gray-400 text-sm  leading-none'>{day}</div>
+			  <div className='text-center text-gray-400 leading-none text-sm pl-1'>{year}</div>
+			  </div>
+					  
+					  </div>
           </div>
         </div>
       </div>
@@ -69,6 +99,10 @@ export function SermonPage() {
         <Audio audio_link={sermonFull[0].SermonType.audio_path} sermonFull={sermonFull}/>
       </div>
     </div>
+	</CardContent>
+	</div>
+
+	</Card>
   );
 }
 export default SermonPage;

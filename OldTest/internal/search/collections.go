@@ -89,6 +89,17 @@ func InitCollect(client *typesense.Client) {
 				// Add other fields as needed
 			},
 		},
+		{
+			Name: "search",
+			Fields: []api.Field{
+				{Name: "searchid", Type: "string"},
+				{Name: "primary", Type: "string"},
+				{Name: "secondary", Type: "string"},
+				{Name: "theType", Type: "string"},
+				{Name: "slug", Type: "string"},
+				// Add other fields as needed
+			},
+		},
 		// Add other collection schemas as needed
 	}
 

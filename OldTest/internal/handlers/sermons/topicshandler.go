@@ -140,8 +140,21 @@ func AddTopicsHandler(minioClient *minio.Client,client *typesense.Client) http.H
 				Image_Path: path,
 				Slug:      slug,
 			}
-			
 			_, err = client.Collection("topics").Documents().Create(context.Background(), topicDocument)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
+
+				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			searchDocument:=types.SearchType{
+				ID:   topicID.String(),
+				Primary:   name,
+				TheType: "topic",
+				Secondary: "",
+				Slug:slug,
+			}			
+			_, err = client.Collection("search").Documents().Create(context.Background(), searchDocument)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
 
@@ -196,8 +209,14 @@ func UpdateTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
 				"image_path": imgPath,
 				"slug":      slug,
 			}
+			
 			search.UpdateDocument(client, ID, "topic_id", "topics", updateData)
-		
+			updateSearch := map[string]interface{}{
+				"'searchid'":   ID,
+				"primary":      name,
+				"slug":      slug,
+			}
+			search.UpdateDocument(client, ID, "searchid", "search", updateSearch)
 			//call UpdateDocument
             defer close(doneCh)
 
@@ -241,6 +260,7 @@ func DeleteTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
                 }
             }
 			search.DeleteDocument(client, topicID, "topic_id","topics")
+			search.DeleteDocument(client, topicID, "searchid","search")
             w.WriteHeader(http.StatusOK)
             w.Write([]byte("Topic deleted successfully"))
         }),

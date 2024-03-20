@@ -90,11 +90,11 @@ export function Series() {
         scrollThreshold={0.8}
       >
         <div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64">
-          {items?.map((series) => (
+          {items?.map((series,index) => (
             <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={series.series_id}>
               <Link to={`/sermons?series=${series.slug}`}>
                 <Card>
-                  <CardContent className="pt-5 lg:px-10">
+				<CardContent className={`pt-5 lg:px-10 ${index % 2 === 0 ? '' : 'bg-secondary'}`}>
                     <div className="flex lg:flex-col items-center space-x-4">
                       <SiteImage
                         divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"

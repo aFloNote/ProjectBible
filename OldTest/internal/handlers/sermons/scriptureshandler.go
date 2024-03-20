@@ -204,6 +204,7 @@ func UpdateScripturesHandler(minioClient *minio.Client,client *typesense.Client)
 				"slug":         slug,
 			}
 			search.UpdateDocument(client, scriptureID, "scripture_id", "scriptures", updateData)
+			
 
 
 

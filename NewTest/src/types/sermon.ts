@@ -50,11 +50,11 @@ export interface SermonFullType{
   ScriptureType: ScriptureType;
 }
 export interface SearchType{
-  SermonType: SermonType;
-  AuthorType: AuthorType;
-  SeriesType: SeriesType;
-  TopicType: TopicType;
-  ScriptureType: ScriptureType;
+  id:string;
+  primary:string;
+  secondary:string;
+  theType:string;
+  slug:string;
 }
 export type SearchResult =
   | { collection: 'sermons'; document: SermonType }

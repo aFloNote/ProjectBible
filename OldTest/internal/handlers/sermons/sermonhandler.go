@@ -12,13 +12,14 @@ import (
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
+	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
 	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
 	"github.com/aFloNote/ProjectBible/OldTest/types"
 	"github.com/google/uuid"
 	"github.com/gosimple/slug"
 	"github.com/minio/minio-go/v7"
 	"github.com/typesense/typesense-go/typesense"
-	"github.com/aFloNote/ProjectBible/OldTest/internal/search"
+	"github.com/typesense/typesense-go/typesense/api"
 	// Import other necessary packages
 )
 
@@ -266,7 +267,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				ScriptureID   string `json:"scripture_id"`
 				DateDelivered string `json:"date_delivered"`
 				Title         string `json:"title"`
-				Description          string `json:"description"`
+				Description   string `json:"description"`
 				Image_Path    string `json:"image_path"`
 				Audio_Path    string `json:"audio_path"`
 				Slug          string `json:"slug"`
@@ -280,7 +281,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				ScriptureID:   scriptid,
 				DateDelivered: t,
 				Title:         title,
-				Description:          "",
+				Description:   "",
 				Audio_Path:    path,
 				Image_Path:    "",
 				Slug:          slugTitle,
@@ -295,7 +296,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				ScriptureID:   sermonDocument.ScriptureID,
 				DateDelivered: formattedDateDel,
 				Title:         sermonDocument.Title,
-				Description:          sermonDocument.Description,
+				Description:   sermonDocument.Description,
 				Audio_Path:    sermonDocument.Audio_Path,
 				Image_Path:    sermonDocument.Image_Path,
 				Slug:          sermonDocument.Slug,
@@ -311,32 +312,85 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 			rows := db.QueryRow("SELECT book, image_path FROM scriptures WHERE scripture_id=$1", scriptid)
 			var book string
 			var bookPath string
-			err = rows.Scan(&book,&bookPath)
+			err = rows.Scan(&book, &bookPath)
 
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Error scanning row: %v", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			slugBook:= slug.Make(book)
-			scriptDocument := types.ScriptureType{
-				ScriptureID: scriptid,
-				Book:        book,
-				Image_Path:  bookPath,
-				Slug:        slugBook,
-			}
 			
-			_, err = client.Collection("scriptures").Documents().Create(context.Background(), scriptDocument)
+		
+			searchDocument := types.SearchType{
+				ID:        sermonID.String(),
+				Primary:   title,
+				TheType:   "sermon",
+				Secondary: scripture,
+				Slug:      slugTitle,
+			}
+			_, err = client.Collection("search").Documents().Create(context.Background(), searchDocument)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
 
 				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
 				return
 			}
+			searchResult, err := client.Collection("scriptures").Documents().Search(context.Background(), &api.SearchCollectionParams{
+				Q:       scriptid,
+				QueryBy: "scripture_id",
+			})
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Error searching scriptures: %v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if searchResult.Hits != nil && len(*searchResult.Hits) == 0 {
+				row := db.QueryRow("SELECT scripture_id,book,image_path,slug FROM scriptures WHERE scripture_id=$1", scriptid)
+				var scriptid string
+				var book string
+				var imagePath string
+				var slug string
+				err := row.Scan(&scriptid, &book, &imagePath, &slug)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Could not get scripture id from db: %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+			
+				scriptDocument := types.ScriptureType{
+					ScriptureID: scriptid,
+					Book:        book,
+					Image_Path:  imagePath,
+					Slug:        slug,
+				}
+
+				_, err = client.Collection("scriptures").Documents().Create(context.Background(), scriptDocument)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
+
+					http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+					return
+				}
+				searchDocument := types.SearchType{
+					ID:        scriptid,
+					Primary:   book,
+					TheType:   "scripture",
+					Secondary: "",
+					Slug:      slug,
+				}
+				_, err = client.Collection("search").Documents().Create(context.Background(), searchDocument)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
+	
+					http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+					return
+				}
+			
 			if _, err := w.Write([]byte("Sermon Added")); err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
+			}
 			}
 		}),
 	)
@@ -358,6 +412,90 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 			authorId := r.FormValue("author_id")
 			topicId := r.FormValue("topic_id")
 			scriptureId := r.FormValue("scripture_id")
+
+			row := db.QueryRow("SELECT scripture_id FROM sermons WHERE sermon_id=$1", sermonId)
+			var scriptureIdFromDb string
+			err := row.Scan(&scriptureIdFromDb)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Could not get scripture id from db: %v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
+
+			if scriptureIdFromDb != scriptureId {
+				rows, err := db.Query("SELECT sermon_id FROM sermons WHERE scripture_id=$1", scriptureIdFromDb)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Could not get any sermons with scripture_id: %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+				defer rows.Close()
+
+				foundCount := 0
+				for rows.Next() {
+					foundCount++
+				}
+                fmt.Println("Found count: ", foundCount)
+				if err := rows.Err(); err != nil {
+					fmt.Fprintf(os.Stderr, "Error Scanning rows.next line 422: %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+
+				if foundCount == 1 {
+					search.DeleteDocument(client, scriptureIdFromDb, "scripture_id", "scriptures")
+					search.DeleteDocument(client,scriptureIdFromDb,"searchid","search")
+				}
+				searchResult, err := client.Collection("scriptures").Documents().Search(context.Background(), &api.SearchCollectionParams{
+					Q:       scriptureId,
+					QueryBy: "scripture_id",
+				})
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Error searching scriptures: %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
+				if searchResult.Hits != nil && len(*searchResult.Hits) == 0 {
+					row := db.QueryRow("SELECT scripture_id,book,image_path,slug FROM scriptures WHERE scripture_id=$1", scriptureId)
+					var scriptid string
+					var book string
+					var imagePath string
+					var slug string
+					err := row.Scan(&scriptid, &book, &imagePath, &slug)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Could not get scripture id from db: %v\n", err)
+						http.Error(w, err.Error(), http.StatusInternalServerError)
+						return
+					}
+				
+					scriptDocument := types.ScriptureType{
+						ScriptureID: scriptid,
+						Book:        book,
+						Image_Path:  imagePath,
+						Slug:        slug,
+					}
+
+					_, err = client.Collection("scriptures").Documents().Create(context.Background(), scriptDocument)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
+
+						http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+						return
+					}
+					searchDocument := types.SearchType{
+						ID:        scriptid,
+						Primary:   book,
+						TheType:   "scripture",
+						Secondary: "",
+						Slug:      slug,
+					}
+					_, err = client.Collection("search").Documents().Create(context.Background(), searchDocument)
+					if err != nil {
+						fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
+		
+						http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+						return
+					}
+				}
+			}
 
 			slug := slug.Make(title)
 
@@ -408,6 +546,13 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 				"slug":         slug,
 			}
 			search.UpdateDocument(client, sermonId, "sermon_id", "sermons", updateData)
+			updateSearch := map[string]interface{}{
+				"id":   sermonId,
+				"primary":        title,
+				"secondary":      script,
+				"slug":         slug,
+			}
+			search.UpdateDocument(client, sermonId, "id", "search", updateSearch)
 
 			if _, err := w.Write([]byte("Sermon Updated")); err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -429,8 +574,43 @@ func DeleteSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 
 			sermon_id := r.FormValue("id")
 			slug := r.FormValue("slug")
+			scriptureId := r.FormValue("scripture_id")
+			row := db.QueryRow("SELECT scripture_id FROM sermons WHERE sermon_id=$1", sermon_id)
+			var scriptureIdFromDb string
+			err := row.Scan(&scriptureIdFromDb)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Could not get scripture id from db: %v\n", err)
+				http.Error(w, err.Error(), http.StatusInternalServerError)
+				return
+			}
 
-			_, err := db.Exec("DELETE FROM sermons WHERE sermon_id=$1", sermon_id)
+			if scriptureIdFromDb != scriptureId {
+				rows, err := db.Query("SELECT sermon_id FROM sermons WHERE scripture_id=$1", scriptureIdFromDb)
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Could not get any sermons with scripture_id: %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+				defer rows.Close()
+
+				foundCount := 0
+				for rows.Next() {
+					foundCount++
+				}
+
+				if err := rows.Err(); err != nil {
+					fmt.Fprintf(os.Stderr, "Error Scanning rows.next line 422: %v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+				}
+
+				if foundCount == 1 {
+					search.DeleteDocument(client, scriptureIdFromDb, "scripture_id", "scriptures")
+					search.DeleteDocument(client,scriptureIdFromDb,"searchid","search")
+				}
+				
+			}
+
+
+			_, err = db.Exec("DELETE FROM sermons WHERE sermon_id=$1", sermon_id)
 			if err != nil {
 				http.Error(w, "Failed to delete series", http.StatusInternalServerError)
 				return
@@ -453,6 +633,7 @@ func DeleteSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 				}
 			}
 			search.DeleteDocument(client, sermon_id, "sermon_id", "sermons")
+			search.DeleteDocument(client, sermon_id, "searchid", "search")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("Series deleted successfully"))
 		}),

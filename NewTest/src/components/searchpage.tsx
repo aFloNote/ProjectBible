@@ -121,9 +121,9 @@ export function SearchPage() {
         value={inputValue}
         onChange={handleInputChange}
         placeholder={searchCriteria}
-        className="pl-10" // Add some padding to prevent the text from overlapping the icon
+        className="pl-10 border-border" // Add some padding to prevent the text from overlapping the icon
       />
-      <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500" />
+      <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-primary" />
     </div>
   );
 }

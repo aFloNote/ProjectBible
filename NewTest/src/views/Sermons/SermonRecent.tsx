@@ -35,16 +35,25 @@ export function Recent() {
   const [items, setItems] = useState<SermonFullType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   useEffect(() => {
-    const currentPath = location.pathname;
-    let pageName = currentPath.substring(1); // remove the leading slash
+	console.log(topic_slug)
+    if (author_slug){
+		dispatch(setSelectedSermonPage("authors"));
+	} // remove the leading slash
+	else if (series_slug){
+		dispatch(setSelectedSermonPage("series"));
+	}
+	else if (script_slug){
+		dispatch(setSelectedSermonPage("scriptures"));
+	}
+	else if (topic_slug){
+		dispatch(setSelectedSermonPage("topics"));
+	}
+	else{
+		dispatch(setSelectedSermonPage("sermons"));
+	}
 
-    // If the path is nested, you might want to get only the first part
-    if (pageName.includes("/")) {
-      pageName = pageName.split("/")[0];
-    }
-
-    dispatch(setSelectedSermonPage(pageName));
-  }, [location, dispatch]);
+  
+  }, [author_slug, series_slug, script_slug, topic_slug,dispatch]);
   let route = "pubfetchsermons";
   let queryKey = "SermonsData";
   function formatSlug(slug: string): string {
@@ -53,9 +62,7 @@ export function Recent() {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // Capitalize the first letter of each word
       .join(" "); // Join the words back together with spaces
   }
-  useEffect(() => {
-    dispatch(setSelectedSermonPage("sermons"));
-  }, [author_slug, series_slug, script_slug, topic_slug, dispatch]);
+  
   var title = "";
   if (author_slug) {
     route += "?author_slug=" + author_slug;
@@ -129,7 +136,7 @@ export function Recent() {
   };
 
   return (
-    <div className="flex flex-col pb-24 md:pb-0 h-full">
+    <div className="flex flex-col h-full">
       <ScrollArea className="flex-1 overflow-auto">
         <InfiniteScroll
           dataLength={state.items.length}
@@ -148,13 +155,13 @@ export function Recent() {
                 className="pt-2 px-2 lg:w-1/2 lg:px-15 "
               >
                 <Card>
-                  <CardContent className="flex lg:flex-col items-center pt-2 pb-2 px-5 space-x-4 cursor-pointer">
+                  <CardContent className="flex lg:flex-col items-center pt-2 pb-2 px-5 space-x-2 cursor-pointer">
                     <div className="lg:hidden">
                       <DateComp date={SermonFull.SermonType.date_delivered} />
                     </div>
-                    <div className="flex lg:flex-col items-center space-x-4">
+                    <div className="flex lg:flex-col items-center space-x-2">
                       <SiteImage
-                        divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full"
+                        divClass="w-14 h-14 lg:h-32 lg:w-32 flex items-center rounded-full"
                         ratio={1}
                         alt="Topic Image"
                         source={
@@ -163,15 +170,15 @@ export function Recent() {
                         }
                       />
 
-                      <div className="flex flex-col leading-none lg:hidden w-full">
+                      <div className="flex flex-col leading-none lg:hidden  w-full">
                         <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md leading-none">
                           {SermonFull.SermonType.title}
                         </h2>
-                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600 text-sm font-medium leading-none">
+                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600 text-sm  leading-none">
                           {SermonFull.SeriesType.title}
                         </p>
                         <div></div>
-                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600 text-xs">
+                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden font-medium  text-primary text-xs leading-tight">
                           {SermonFull.SermonType.scripture}
                         </p>
                       </div>
@@ -192,7 +199,7 @@ export function Recent() {
                     <p className="lg:text-md lg:text-gray-600 lg:text-center hidden lg:block lg:leading-tight">
                       {SermonFull.SeriesType.title}
                     </p>
-                    <p className="lg:text-sm lg:font-light lg:text-center hidden lg:block lg:leading-tight">
+                    <p className="lg:text-sm lg:font-normal lg:text-center lg:text-primary hidden lg:block lg:leading-tight">
                       {SermonFull.SermonType.scripture}
                     </p>
 					</div>

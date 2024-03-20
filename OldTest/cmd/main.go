@@ -32,7 +32,7 @@ func createTypesenseClient() *typesense.Client {
 		//client.Collection("sermons").Delete(context.Background())
 		//client.Collection("series").Delete(context.Background())
 		//client.Collection("authors").Delete(context.Background())
-		
+		//client.Collection("search").Delete(context.Background())
 		// Attempt a simple operation like fetching the health status
 		_, err := client.Health(context.Background(), 10*time.Second)
 		if err == nil {

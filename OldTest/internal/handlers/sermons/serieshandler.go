@@ -187,6 +187,20 @@ func AddSeriesHandler(minioClient *minio.Client, client *typesense.Client) http.
 				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
 
 			}
+			searchDocument:=types.SearchType{
+				ID:   seriesID.String(),
+				Primary:   title,
+				TheType: "series",
+				Secondary: "",
+				Slug:slug,
+			}			
+			_, err = client.Collection("search").Documents().Create(context.Background(), searchDocument)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
+
+				http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
 			// Write the author string to the response
 			if _, err := w.Write([]byte("Series Added")); err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -236,6 +250,12 @@ func UpdateSeriesHandler(minioClient *minio.Client, client *typesense.Client) ht
 				"slug":      slug,
 			}
 			search.UpdateDocument(client, ID, "series_id", "series", updateData)
+			updateSearch := map[string]interface{}{
+				"'id'":   ID,
+				"primary":      title,
+				"slug":      slug,
+			}
+			search.UpdateDocument(client, ID, "searchid", "search", updateSearch)
 			// Write the author string to the response
 			if _, err := w.Write([]byte("Series Updated")); err != nil {
 				fmt.Fprintf(os.Stderr, "%v\n", err)
@@ -280,6 +300,7 @@ func DeleteSeriesHandler(minioClient *minio.Client, client *typesense.Client) ht
 				}
 			}
 			search.DeleteDocument(client, series_id, "series_id", "series")
+			search.DeleteDocument(client, series_id, "searchid", "search")
 			w.WriteHeader(http.StatusOK)
 			w.Write([]byte("Series deleted successfully"))
 		}),

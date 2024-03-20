@@ -16,7 +16,6 @@ import InfiniteScroll from "react-infinite-scroll-component";
 import { useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
-import {SearchPage} from "@/components/searchpage";
 import { useSelector } from 'react-redux';
 import { RootState } from '@/redux/store'; 
 import { ScrollArea } from "@radix-ui/react-scroll-area";
@@ -109,7 +108,7 @@ export function Authors() {
               encodeURIComponent(author.image_path)
             }
           />
-          <div>
+          <div className='text-center'>
             <h2 className="text-xl">{author.name}</h2>
             <p className='text-gray-500'>{author.ministry}</p>
           </div>

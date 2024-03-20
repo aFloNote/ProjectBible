@@ -17,30 +17,31 @@ function SermonNav() {
   const selectedSermonPage = useSelector(
     (state: RootState) => state.sermon.selectedSermonPage
   );
-
+  const selectedColor='text-primary'
+  const darkSelectedColor='text-blue-500'
   return (
     <div className="flex justify-between w-full px-2">
       <div className="flex flex-col items-center w-1/5">
         <div
-          className="px-5 w-full"
+          className=" w-full"
           onClick={() => {
             navigate("/sermons");
             dispatch(setSelectedSermonPage("sermons")); // Dispatch the action
           }}
         >
-          <div className="flex flex-col items-center w-1/5">
+          <div className="flex flex-col items-center">
             <TbPodium
               size={iconSize}
               className={
                 selectedSermonPage === "sermons"
-                  ? "text-blue-500"
+                  ? `${selectedColor} dark:${darkSelectedColor}`
                   : "text-gray-500"
               }
             />
             <span
               className={
                 selectedSermonPage === "sermons"
-                  ? "text-xs text-center font-normal text-blue-500"
+                  ? `text-xs text-center font-normal ${selectedColor} dark:${darkSelectedColor}`
                   : "text-xs text-center font-normal text-gray-500"
               }
             >
@@ -62,14 +63,14 @@ function SermonNav() {
               size={iconSize}
               className={
                 selectedSermonPage === "scriptures"
-                  ? "text-blue-500"
+                  ? `${selectedColor} dark:${darkSelectedColor}`
                   : "text-gray-500"
               }
             />
             <span
               className={
                 selectedSermonPage === "scriptures"
-                  ? "text-xs text-center font-normal text-blue-500"
+				? `text-xs text-center font-normal ${selectedColor} dark:${darkSelectedColor}`
                   : "text-xs text-center font-normal text-gray-500"
               }
             >
@@ -92,14 +93,14 @@ function SermonNav() {
               size={iconSize}
               className={
                 selectedSermonPage === "series"
-                  ? "text-blue-500"
+                  ? `${selectedColor} dark:${darkSelectedColor}`
                   : "text-gray-500"
               }
             />
             <span
               className={
                 selectedSermonPage === "series"
-                  ? "text-xs text-center font-normal text-blue-500"
+				? `text-xs text-center font-normal ${selectedColor} dark:${darkSelectedColor}`
                   : "text-xs text-center font-normal text-gray-500"
               }
             >
@@ -121,14 +122,14 @@ function SermonNav() {
               size={iconSize}
               className={
                 selectedSermonPage === "topics"
-                  ? "text-blue-500"
+                  ? `${selectedColor} dark:${darkSelectedColor}`
                   : "text-gray-500"
               }
             />
             <span
               className={
-                selectedSermonPage === "sermontopics"
-                  ? "text-xs text-center font-normal text-blue-500"
+                selectedSermonPage === "topics"
+				? `text-xs text-center font-normal ${selectedColor} dark:${darkSelectedColor}`
                   : "text-xs text-center font-normal text-gray-500"
               }
             >
@@ -150,14 +151,14 @@ function SermonNav() {
               size={iconSize}
               className={
                 selectedSermonPage === "authors"
-                  ? "text-blue-500"
+                  ? `${selectedColor} dark:${darkSelectedColor}`
                   : "text-gray-500"
               }
             />
             <span
               className={
                 selectedSermonPage === "authors"
-                  ? "text-xs text-center font-normal text-blue-500"
+				? `text-xs text-center font-normal ${selectedColor} dark:${darkSelectedColor}`
                   : "text-xs text-center font-normal text-gray-500"
               }
             >

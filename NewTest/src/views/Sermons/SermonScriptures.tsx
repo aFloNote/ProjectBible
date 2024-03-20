@@ -155,7 +155,7 @@ export function Scriptures() {
 				<div className="flex lg:flex-col items-center space-x-4">
 				  {script.image_path !== "default" && (
 					<SiteImage
-					  divClass="w-16 h-16 lg:h-32 lg:w-32 rounded-full"
+					  divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full"
 					  ratio={1}
 					  alt="Scripture Image"
 					  source={
