@@ -105,7 +105,7 @@ export function EditSermon() {
   );
 
   useEffect(() => {
-    console.log(selectedSermon)
+   
     setTitleForm(selectedSermon ? selectedSermon.title : "");
     setScriptureForm(selectedSermon ? selectedSermon.scripture : "");
     setTopicForm(selectedSermon ? selectedSermon.topic_id : "");
@@ -244,7 +244,7 @@ export function EditSermon() {
   return (
     <Dialog onOpenChange={open => {
       if (!open) {
-        console.log("closed")
+     
         dispatch(setSelectedSeries(null));
         dispatch(setSelectedSermon(null));
         dispatch(setSelectedAuthor(null));

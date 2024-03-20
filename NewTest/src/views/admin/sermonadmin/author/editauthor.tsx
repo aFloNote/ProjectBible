@@ -99,7 +99,7 @@ export function EditAuthor() {
 
         onSettled: () => {
           // Executes after mutation is either successful or errors out
-          console.log("Mutation is settled");
+          
         },
       });
     }
@@ -132,7 +132,7 @@ export function EditAuthor() {
     formData.append("biolink", bioForm);
     formData.append("image", uploadedFiles[0]);
     if (selectedAuthor) formData.append("author_id", selectedAuthor.author_id);
-    console.log(uploadedFiles);
+   
     upload(formData, {
       onSuccess: () => {
         // Handle successful mutation
@@ -141,7 +141,7 @@ export function EditAuthor() {
           messageTitle: "Success!",
           message: "Author added successfully",
         });
-        console.log("author editteed");
+     
         queryClient.invalidateQueries("AuthorData");
       },
       onError: () => {
@@ -155,14 +155,14 @@ export function EditAuthor() {
       onSettled: () => {
         dispatch(setSelectedAuthor(null));
         // Executes after mutation is either successful or errors out
-        console.log("Mutation is settled");
+  
       },
     });
   };
 
   // Determine if the form can be submitted based on name, ministry, and image presence
   useEffect(() => {
-    console.log(headForm !== "" && descForm !== "" && uploadedFiles.length > 0);
+ 
     
     setCanSubmit(
       

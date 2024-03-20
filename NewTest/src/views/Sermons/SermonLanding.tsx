@@ -21,7 +21,7 @@ function SermonLanding() {
 	  (state: RootState) => state.sermon.selectedSermonPage
 	);
 	const isSermonsPage =  location.pathname.startsWith("/sermonlistening");
-	console.log("isSermonsPage", isSermonsPage);
+	
 	return (
 		<div className={`flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-background`}>
 		<header >

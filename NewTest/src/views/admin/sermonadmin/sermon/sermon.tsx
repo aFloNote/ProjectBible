@@ -96,8 +96,7 @@ export function Sermon() {
     selectedScripture,
   ]);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    console.log(titleForm)
-    console.log(sermonData)
+  
     event.preventDefault();
     if (sermonData !=undefined &&sermonData.length != 0) {
       const isHeadInItems = sermonData.some(
@@ -114,7 +113,7 @@ export function Sermon() {
       }
     }
     
-    console.log(selectedAuthor);
+
     const formData = new FormData();
     formData.append("title", titleForm);
     formData.append("scripture", scriptureForm);

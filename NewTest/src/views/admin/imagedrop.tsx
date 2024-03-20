@@ -20,7 +20,7 @@ export const AuthImage: React.FC<AuthImageProps> = ({
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   useEffect(() => {
     if (imgpath) {
-      console.log(b2endpoint + encodeURIComponent(imgpath))
+   
       setImages([
         {
           

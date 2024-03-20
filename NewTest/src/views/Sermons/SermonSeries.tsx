@@ -29,7 +29,7 @@ export function Series() {
     if (pageName.includes("/")) {
       pageName = pageName.split("/")[0];
     }
-	console.log(author_id)
+	
 	if (!author_id)
     dispatch(setSelectedSermonPage(pageName));
   }, [location, dispatch]);

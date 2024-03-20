@@ -26,7 +26,7 @@ export function Scripture() {
   const selectedScripture = useSelector(
     (state: RootState) => state.sermonAdmin.selectedScripture
   );
-  console.log(selectedScripture);
+
   const [canSubmit, setCanSubmit] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [headForm, setHeadForm] = useState(
@@ -85,7 +85,7 @@ export function Scripture() {
       onSettled: () => {
         dispatch(setSelectedScripture(null));
         // Executes after mutation is either successful or errors out
-        console.log("Mutation is settled");
+    
       },
     });
   };
