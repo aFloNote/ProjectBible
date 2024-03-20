@@ -21,7 +21,7 @@ function SermonNav() {
   const darkSelectedColor='text-blue-500'
   return (
     <div className="flex justify-between w-full px-2">
-      <div className="flex flex-col items-center w-1/5">
+      <div className="flex flex-col items-center w-1/5 cursor-pointer">
         <div
           className=" w-full"
           onClick={() => {
@@ -29,7 +29,7 @@ function SermonNav() {
             dispatch(setSelectedSermonPage("sermons")); // Dispatch the action
           }}
         >
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center ">
             <TbPodium
               size={iconSize}
               className={
@@ -50,7 +50,7 @@ function SermonNav() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center w-1/5">
+      <div className="flex flex-col items-center w-1/5 cursor-pointer">
         <div
           className="px-0 w-full"
           onClick={() => {
@@ -79,7 +79,7 @@ function SermonNav() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center w-1/5 bg-none">
+      <div className="flex flex-col items-center w-1/5 bg-none cursor-pointer">
         <div
           className="px-0 bg-none w-full"
           onClick={() => {
@@ -109,7 +109,7 @@ function SermonNav() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center w-1/5">
+      <div className="flex flex-col items-center w-1/5 cursor-pointer">
         <div
           className="px-0 w-full"
           onClick={() => {
@@ -138,7 +138,7 @@ function SermonNav() {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center w-1/5">
+      <div className="flex flex-col items-center w-1/5 cursor-pointer">
         <div
           className="px-0 w-full"
           onClick={() => {
