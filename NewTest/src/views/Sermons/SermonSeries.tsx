@@ -89,12 +89,12 @@ export function Series() {
         loader={<h4></h4>}
         scrollThreshold={0.8}
       >
-        <div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64">
-          {items?.map((series,index) => (
+        <div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
+          {items?.map((series) => (
             <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={series.series_id}>
               <Link to={`/sermons?series=${series.slug}`}>
                 <Card>
-				<CardContent className={`pt-5 lg:px-10 ${index % 2 === 0 ? '' : 'bg-secondary'}`}>
+				<CardContent className='pb-0 lg:px-10 lg:pt-2'>
                     <div className="flex lg:flex-col items-center space-x-4">
                       <SiteImage
                         divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
@@ -106,7 +106,7 @@ export function Series() {
                       />
                     <div className="flex flex-col lg:hidden overflow-hidden w-full">
 						
-                        <h2 className="text-xl">
+                        <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl">
                           {series.title}
                         </h2>
                         <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600">

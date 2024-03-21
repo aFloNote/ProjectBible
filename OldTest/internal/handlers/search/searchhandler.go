@@ -82,7 +82,7 @@ func SearchPageHandler(client *typesense.Client) http.Handler {
             "topics":     {"name"},
             "series":     {"title", "description"}, // Example for multiple fields
             "authors":    {"name","ministry"},
-            "sermons":    {"title","scripture","description"},
+            "sermons":    {"title","scripture","typesense_date"},
             "scriptures": {"book"},
         }
 

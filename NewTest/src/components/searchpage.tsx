@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { FaSearch } from "react-icons/fa";
-
+import { DatePickerWithRange } from "./ui/daterangepicker";
 
 export function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,6 +54,7 @@ export function SearchPage() {
 	}
     
     else
+		
       setSearchCriteria(pageName.charAt(0).toUpperCase() + pageName.slice(1));
 
 
@@ -117,6 +118,7 @@ export function SearchPage() {
 
   return (
     <div className="relative">
+		<div>
       <Input
         value={inputValue}
         onChange={handleInputChange}
@@ -124,7 +126,12 @@ export function SearchPage() {
         className="pl-10 border-border" // Add some padding to prevent the text from overlapping the icon
       />
       <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-primary" />
+	 <div>
+		
+	
+	 </div>
     </div>
+	</div>
   );
 }
 

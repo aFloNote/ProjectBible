@@ -11,23 +11,20 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { SearchFetch } from "@/hooks/sermonhooks";
 import { useState, useEffect, useRef } from "react";
-import {
-  AuthorType,
-  SermonType,
-  SeriesType,
-  TopicType,
-  ScriptureType,
-} from "@/types/sermon";
+
 import { Link } from "react-router-dom";
 import { MdFormatListBulleted } from "react-icons/md";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { TbPodium } from "react-icons/tb";
 import { FaLayerGroup, FaBookOpen } from "react-icons/fa";
 import { SearchType } from "@/types/sermon";
+interface SearchProps {
+    setIsClicked: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 // Define your components
-const iconColor='text-primary'
-const darkIconColor='text-blue-500'
+const iconColor = "text-primary";
+const darkIconColor = "text-blue-500";
 const SermonResult = ({
   data,
   setIsDialogOpen,
@@ -41,7 +38,10 @@ const SermonResult = ({
   >
     <div className="flex items-center pb-1 pt-1 pl-2 space-x-4">
       <div>
-	<TbPodium size="20px" className={`${iconColor} dark:${darkIconColor}`}/>
+        <TbPodium
+          size="20px"
+          className={`${iconColor} dark:${darkIconColor}`}
+        />
       </div>
       <div className="flex-grow min-w-0 leading-none">
         <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm md:text-md">
@@ -68,7 +68,10 @@ const AuthorResult = ({
   >
     <div className="flex items-center  pb-1 pt-1  pl-2 space-x-4">
       <div>
-        <IoPersonCircleOutline size="20px" className={`${iconColor} dark:${darkIconColor}`} />
+        <IoPersonCircleOutline
+          size="20px"
+          className={`${iconColor} dark:${darkIconColor}`}
+        />
       </div>
       <div className="flex-grow min-w-0 leading-none">
         <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm md:text-md">
@@ -96,7 +99,10 @@ const SeriesResult = ({
     >
       <div className="flex items-center pb-1 pt-1  pl-2 space-x-4">
         <div>
-          <FaLayerGroup size="20px" className={`${iconColor} dark:${darkIconColor}`} />
+          <FaLayerGroup
+            size="20px"
+            className={`${iconColor} dark:${darkIconColor}`}
+          />
         </div>
         <div className="flex-grow min-w-0 leading-none">
           <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm md:text-md">
@@ -124,7 +130,10 @@ const TopicResult = ({
     >
       <div className="flex items-center  pb-1 pt-1  pl-2 space-x-4">
         <div>
-          <MdFormatListBulleted size="20px" className={`${iconColor} dark:${darkIconColor}`} />
+          <MdFormatListBulleted
+            size="20px"
+            className={`${iconColor} dark:${darkIconColor}`}
+          />
         </div>
         <div className="flex-grow min-w-0">
           <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm md:text-md">
@@ -149,7 +158,10 @@ const ScriptureResult = ({
   >
     <div className="flex items-center pt-1  pb-1 pl-2 space-x-4">
       <div>
-        <FaBookOpen size="20px" className={`${iconColor} dark:${darkIconColor}`} />
+        <FaBookOpen
+          size="20px"
+          className={`${iconColor} dark:${darkIconColor}`}
+        />
       </div>
       <div className="flex-grow min-w-0">
         <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm md:text-md">
@@ -159,35 +171,18 @@ const ScriptureResult = ({
     </div>
   </Link>
 );
-export function Search() {
+export function Search({ setIsClicked }: SearchProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchResult = SearchFetch<SearchType[]>(
     `fetchsearch?query=${searchTerm}`,
     "SearchData",
-    false,
     isDialogOpen
   );
-  console.log(searchResult.data);
-  const [isSafari, setIsSafari] = useState(false);
-
-  useEffect(() => {
-    console.log("here");
-    const detectSafari = () => {
-      const userAgent = navigator.userAgent;
-      const isChrome = userAgent.indexOf("Chrome") > -1;
-      const isSafari = userAgent.indexOf("Safari") > -1;
-      console.log(isSafari && !isChrome);
-      return isSafari && !isChrome;
-    };
-
-    setIsSafari(detectSafari());
-  }, []);
 
   const timeoutId = useRef<NodeJS.Timeout | null>(null);
-  const inputRef = useRef(null);
+
   useEffect(() => {
     if (
       isDialogOpen &&
@@ -219,9 +214,6 @@ export function Search() {
       document.documentElement.style.setProperty("--vh", `${vh}px`);
       console.log(vh);
       if (window.visualViewport) {
-        const keyboardShown = window.visualViewport.height < window.innerHeight;
-        setKeyboardVisible(keyboardShown);
-
         // Prevent scrolling when keyboard is open
 
         document.body.style.overflow = " relative hidden";
@@ -274,14 +266,13 @@ export function Search() {
 
   return (
     <>
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+      <Dialog open={isDialogOpen} onOpenChange={(isOpen) => {
+  setIsDialogOpen(isOpen);
+  setIsClicked(isOpen);
+}}>
         <DialogTrigger asChild>
-          <Button
-            className="h-4 lg:h-6"
-        
-          >
-            <FaSearch className='pr-1' size={15}></FaSearch>
-			   Site
+          <Button className="h-5 w-5 lg:h-6" variant="ghost">
+            <FaSearch className=""></FaSearch>
           </Button>
         </DialogTrigger>
         <div className="overflow-hidden">
@@ -308,12 +299,16 @@ export function Search() {
                       ([collection, items], index) => {
                         return (
                           <div key={index} ref={scrollAreaRef}>
-                            <h2 ref={scrollAreaRef} className="text-md pl-4 pt-4 font-medium text-gray-600">
-							{collection.charAt(0).toUpperCase() + collection.slice(1)}
+                            <h2
+                              ref={scrollAreaRef}
+                              className="text-md pl-4 pt-4 font-medium text-gray-600"
+                            >
+                              {collection.charAt(0).toUpperCase() +
+                                collection.slice(1)}
                             </h2>{" "}
                             {/* This is the header for each type */}
                             {items.map((item, index) => {
-								console.log(item);
+                              console.log(item);
                               let Component;
                               switch (item.theType) {
                                 case "sermon":
@@ -339,7 +334,6 @@ export function Search() {
                                   key={index}
                                   data={item}
                                   setIsDialogOpen={setIsDialogOpen}
-								
                                 />
                               ) : null;
                             })}

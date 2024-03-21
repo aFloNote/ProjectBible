@@ -13,7 +13,13 @@ import {
   import {Separator} from "@/components/ui/separator";
 import { useState } from "react";
   import { GiHamburgerMenu } from "react-icons/gi";
-  
+  import  ModeToggle  from "@/components/mode-toggle";
+
+
+
+import Search from "@/components/search";
+
+
   function Menu() {
 	return (
 	
@@ -136,15 +142,29 @@ import { useState } from "react";
   
   export default function MenuNav(){
 	const [isClicked, setIsClicked] = useState(false);
-	
+	console.log(isClicked)
 	return (
 		<Popover open={isClicked} onOpenChange={setIsClicked} >
 		<PopoverTrigger > <GiHamburgerMenu
 	
-			  className={isClicked ? 'rotate-90 text-secondary' : 'text-primary'}
+			  className={isClicked ? 'rotate-90 text-secondary' : ''}
 			  size={30}
 			/></PopoverTrigger>
-		<PopoverContent onOpenAutoFocus={(event) => event.preventDefault()} className='w-fit translate-x-20 translate-y-5'><Menu/></PopoverContent>
+		<PopoverContent onOpenAutoFocus={(event) => event.preventDefault()} className='w-fit -translate-x-1'>
+			<Menu/>
+			<div className='border-t-2'></div>
+			<div className="flex justify-between">
+		<ModeToggle setIsClicked={setIsClicked} />
+         
+        
+     
+       <div className=''>
+            <Search setIsClicked={setIsClicked} />
+			</div>
+      
+		</div>
+       
+			</PopoverContent>
 	  </Popover>
 
 

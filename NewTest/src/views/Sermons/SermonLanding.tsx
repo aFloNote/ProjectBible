@@ -1,5 +1,5 @@
 import { lazy, Suspense } from "react";
-import { Route, Routes, useLocation } from "react-router-dom";
+import { Route, Routes} from "react-router-dom";
 import Footer from "@/views/Sermons/SermonNav";
 import Nav from "@/views/sitenav/TopNav";
 import Side from "@/views/Sermons/SermonNavSide";
@@ -16,11 +16,10 @@ const Scriptures = lazy(() => import("./SermonScriptures"));
 const Topics = lazy(() => import("@/views/Sermons/SermonTopics"));
 
 function SermonLanding() {
-	const location = useLocation();
 	const selectedSermonPage = useSelector(
 	  (state: RootState) => state.sermon.selectedSermonPage
 	);
-	const isSermonsPage =  location.pathname.startsWith("/sermonlistening");
+	
 	
 	return (
 		<div className={`flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-background`}>
@@ -41,7 +40,7 @@ function SermonLanding() {
 		  </aside>
 		  
 		  {/* Main content area */}
-		  <main className="flex-grow overflow-hidden h-full p-4">
+		  <main className="flex-grow overflow-hidden h-full w-full p-4">
 			<div className='bg-white dark:bg-background'>
 		  {selectedSermonPage !== "" && <SearchPage/>}
 		  </div>

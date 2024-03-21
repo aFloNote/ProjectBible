@@ -137,47 +137,59 @@ export function Scriptures() {
   });
 
   return (
-    <div className="flex flex-col pb-24 lg:pb-10 h-full">
-		<ScrollArea className="flex-1 overflow-auto">
-      <InfiniteScroll
-        dataLength={items.length}
-        next={fetchMoreData}
-        hasMore={hasMoreItems}
-        loader={<h4></h4>}
-        scrollThreshold={0.8}
-      >
-		<div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64">
-        {sortedScriptureData?.map((script) => (
-          <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={script.scripture_id}>
+	<div className="flex flex-col pb-24 lg:pb-10 h-full">
+	<ScrollArea className="flex-1 overflow-auto">
+  <InfiniteScroll
+	dataLength={items.length}
+	next={fetchMoreData}
+	hasMore={hasMoreItems}
+	loader={<h4></h4>}
+	scrollThreshold={0.8}
+  >
+	<div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
+	  {sortedScriptureData?.map((script) => (
+		<div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={script.book}>
 		  <Link to={`/sermons?scripture=${script.slug}`}>
 			<Card>
-			  <CardContent className="pt-5 lg:px-10">
+			<CardContent className='pb-0 lg:py-1 lg:px-10 lg:pt-2'>
 				<div className="flex lg:flex-col items-center space-x-4">
-				  {script.image_path !== "default" && (
-					<SiteImage
-					  divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full"
-					  ratio={1}
-					  alt="Scripture Image"
-					  source={
-						b2endpoint + encodeURIComponent(script.image_path)
-					  }
-					/>
-				  )}
-				  <h2 className="text-xl lg:hidden">{script.book}</h2>
-				</div>
-				<div className=' lg:border-b lg:text-gray-600 lg:pt-2'></div>
-				  <div className="lg:flex lg:justify-center lg:pt-2">
-				  <h2 className="lg:text-xl lg:text-center hidden lg:block">{script.book}</h2>
+				  <SiteImage
+					divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
+					ratio={1}
+					alt="Scripture Image"
+					source={
+					  b2endpoint + encodeURIComponent(script.image_path)
+					}
+				  />
+				<div className="flex flex-col lg:hidden overflow-hidden w-full">
+					
+					<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl">
+					  {script.book}
+					</h2>
+				  
 				  </div>
+				</div>
+
+
+
+				<div className=" lg:border-b lg:text-gray-600 lg:pt-2"></div>
+				<div className="lg:flex lg:justify-center lg:pt-2">
+				  <div className="flex flex-col">
+					<h2 className="lg:text-xl lg:text-center hidden lg:block">
+					  {script.book}
+					</h2>
+				   
+				  </div>
+				</div>
 			  </CardContent>
 			</Card>
 		  </Link>
 		</div>
-        ))}
-		  </div>
-      </InfiniteScroll>
-	  </ScrollArea>
-    </div>
+	  ))}
+	</div>
+  </InfiniteScroll>
+  </ScrollArea>
+</div>
   );
 }
 export default Scriptures;

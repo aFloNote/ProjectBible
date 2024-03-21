@@ -32,7 +32,7 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
   const [playbackRate, setPlaybackRate] = useState(1.0);
   const [showSpeedControl, setShowSpeedControl] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+
   const handleSpeedChange = (value: number[]) => {
     setPlaybackRate(value[0]);
   };
@@ -193,7 +193,7 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
         <div className="">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" className="text-2xl p-4 text-sm">
+              <Button variant="ghost" className="text-2xl p-4 text-sm z-50">
                 <FaEllipsisV />
               </Button>
             </PopoverTrigger>
@@ -211,9 +211,7 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
 			     <Button
                 variant="ghost"
                 className="text-2xl text-sm"
-                onClick={() => {
-                  setIsOpen(false);
-                }}
+              
               >
                 <Share />
               </Button>

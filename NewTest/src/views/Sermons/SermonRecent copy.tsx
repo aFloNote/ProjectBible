@@ -9,14 +9,14 @@ import { useNavigate } from "react-router-dom";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { Card } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { RootState } from "@/redux/store";
 import { SermonType } from "@/types/sermon";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { SiteImage } from "@/image";
 export function Recent() {
   const navigate = useNavigate();
-
+  
   const location = useLocation();
   const dispatch = useDispatch();
   const queryParams = new URLSearchParams(location.search);
@@ -29,25 +29,30 @@ export function Recent() {
   const [items, setItems] = useState<SermonFullType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   useEffect(() => {
-    console.log(topic_slug);
-    if (author_slug) {
-      dispatch(setSelectedSermonPage("authors"));
-    } // remove the leading slash
-    else if (series_slug) {
-      dispatch(setSelectedSermonPage("series"));
-    } else if (script_slug) {
-      dispatch(setSelectedSermonPage("scriptures"));
-    } else if (topic_slug) {
-      dispatch(setSelectedSermonPage("topics"));
-    } else {
-      dispatch(setSelectedSermonPage("sermons"));
-    }
-  }, [author_slug, series_slug, script_slug, topic_slug, dispatch]);
+	console.log(topic_slug)
+    if (author_slug){
+		dispatch(setSelectedSermonPage("authors"));
+	} // remove the leading slash
+	else if (series_slug){
+		dispatch(setSelectedSermonPage("series"));
+	}
+	else if (script_slug){
+		dispatch(setSelectedSermonPage("scriptures"));
+	}
+	else if (topic_slug){
+		dispatch(setSelectedSermonPage("topics"));
+	}
+	else{
+		dispatch(setSelectedSermonPage("sermons"));
+	}
+
+  
+  }, [author_slug, series_slug, script_slug, topic_slug,dispatch]);
   let route = "pubfetchsermons";
   let queryKey = "SermonsData";
+ 
   
-
-
+  
   if (author_slug) {
     route += "?author_slug=" + author_slug;
     queryKey = "AuthorsData" + author_slug;
@@ -55,15 +60,15 @@ export function Recent() {
   } else if (series_slug) {
     route += "?series_slug=" + series_slug;
     queryKey = "SeriessData" + series_slug;
-
+ 
   } else if (script_slug) {
     route += "?script_slug=" + script_slug;
     queryKey = "ScriptsData" + script_slug;
- 
+  
   } else if (topic_slug) {
     route += "?topic_slug=" + topic_slug;
     queryKey = "TopicsData" + topic_slug;
- 
+
   }
   const searchTerm = useSelector((state: RootState) => state.search.input);
 
@@ -96,7 +101,7 @@ export function Recent() {
         .filter((result) => result.collection === "sermons")
         .map((result) => result.document as SermonType)
         .slice(items.length, items.length + 10);
-		console.log(newItems)
+
       const filteredSermonsData = sermonsData?.filter((sermonData) =>
         newItems.some(
           (newItem) => newItem.sermon_id === sermonData.SermonType.sermon_id
@@ -129,7 +134,7 @@ export function Recent() {
           loader={<h4></h4>}
           scrollThreshold={0.8}
         >
-          <div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64 h-full">
+          <div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64 h-full">
             {items.map((SermonFull, index) => (
               <div
                 key={index}
@@ -139,53 +144,58 @@ export function Recent() {
                 className="pt-2 px-2 lg:w-1/3 lg:px-15 "
               >
                 <Card>
-                  <div className="flex items-center pt-4 pb-4 px-5 space-x-2 lg:justify-center">
+                  <CardContent className="flex lg:flex-col items-center pt-2 pb-2 px-5 space-x-2 cursor-pointer">
                     <div className="lg:hidden">
                       <DateComp date={SermonFull.SermonType.date_delivered} />
                     </div>
-                    <div>
-						
+                    <div className="flex lg:flex-col items-center space-x-2">
                       <SiteImage
-                        divClass="w-12 h-12 lg:h-32 lg:w-32 flex items-center rounded-full lg:mx-auto"
-                        ratio={1}
+                        divClass="w-20 h-20 lg:h-32 lg:w-32 flex items-center rounded-full"
+                        ratio={1/1}
                         alt="Topic Image"
                         source={
                           b2endpoint +
                           encodeURIComponent(SermonFull.SeriesType.image_path)
                         }
                       />
-                    </div>
-                    <div className="flex-grow min-w-0 lg:hidden">
-                      <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
-                        {SermonFull.SermonType.title}
-                      </h2>
-                      <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm leading-tight text-gray-600">
-                        {SermonFull.SeriesType.title}
-                      </div>
 
-                      <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xs text-primary leading-tight text-gray-600">
-                        {SermonFull.SermonType.scripture}
+                      <div className="flex flex-col leading-none lg:hidden  w-full">
+                        <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-lg leading-tight truncate">
+                          {SermonFull.SermonType.title}
+                        </h2>
+                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600 text-md  leading-tight truncate">
+                          {SermonFull.SeriesType.title}
+                        </p>
+                        <div></div>
+                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden font-medium  text-primary text-sm leading-tight">
+                          {SermonFull.SermonType.scripture}
+                        </p>
                       </div>
                     </div>
-                  </div>
-                  <div className=" lg:border-b lg:text-gray-600 lg:pt-2 w-5/6"></div>
 
-                  <div className="lg:flex lg:justify-center lg:pt-2">
-                    <div className="flex flex-col hidden lg:block">
-                      <div className="flex text-center lg:leading-tight">
-                        <DateComp date={SermonFull.SermonType.date_delivered} />
-                      </div>
-                      <h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
-                        {SermonFull.SermonType.title}
-                      </h2>
-                      <p className="lg:text-md lg:text-gray-600 lg:text-center hidden lg:block lg:leading-tight">
-                        {SermonFull.SeriesType.title}
-                      </p>
-                      <p className="lg:text-sm lg:font-normal lg:text-center lg:text-primary hidden lg:block lg:leading-tight">
-                        {SermonFull.SermonType.scripture}
-                      </p>
-                    </div>
-                  </div>
+					<div className=" lg:border-b lg:text-gray-600 lg:pt-2 w-5/6"></div>
+
+					<div className="lg:flex lg:justify-center lg:pt-2">
+					<div className="flex flex-col hidden lg:block">
+				<div className='flex text-center lg:leading-tight'>
+				
+					<DateComp date={SermonFull.SermonType.date_delivered} />
+					
+					</div>
+                    <h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
+                      {SermonFull.SermonType.title}
+                    </h2>
+                    <p className="lg:text-md lg:text-gray-600 lg:text-center hidden lg:block lg:leading-tight">
+                      {SermonFull.SeriesType.title}
+                    </p>
+                    <p className="lg:text-sm lg:font-normal lg:text-center lg:text-primary hidden lg:block lg:leading-tight">
+                      {SermonFull.SermonType.scripture}
+                    </p>
+					</div>
+					</div>
+
+
+                  </CardContent>
                 </Card>
               </div>
             ))}
