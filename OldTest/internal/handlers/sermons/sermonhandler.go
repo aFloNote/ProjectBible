@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
@@ -266,6 +267,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				TopicID       string `json:"topic_id"`
 				ScriptureID   string `json:"scripture_id"`
 				DateDelivered string `json:"date_delivered"`
+				TypesenseDate string `json:"typesense_date"`
 				Title         string `json:"title"`
 				Description   string `json:"description"`
 				Image_Path    string `json:"image_path"`
@@ -280,6 +282,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				TopicID:       topicid,
 				ScriptureID:   scriptid,
 				DateDelivered: t,
+				TypesenseDate: strconv.FormatInt(t.Unix(), 10),
 				Title:         title,
 				Description:   "",
 				Audio_Path:    path,
@@ -412,6 +415,7 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 			authorId := r.FormValue("author_id")
 			topicId := r.FormValue("topic_id")
 			scriptureId := r.FormValue("scripture_id")
+			
 
 			row := db.QueryRow("SELECT scripture_id FROM sermons WHERE sermon_id=$1", sermonId)
 			var scriptureIdFromDb string
@@ -541,6 +545,8 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 				"scripture_id": scriptureId,
 				"author_id":    authorId,
 				"series_id":    seriesId,
+				"date_delivered":t.Format(time.RFC3339),
+				"typsense_date":strconv.FormatInt(t.Unix(), 10),
 				"topic_id":     topicId,
 				"audio_path":   audioPath,
 				"slug":         slug,

@@ -77,52 +77,60 @@ const fetchMoreData = () => {
   
 
   return (
-    <div className="flex flex-col h-full pb-24 lg:pb-10">
+    <div className="flex flex-col pb-24 lg:pb-10 h-full">
 	<ScrollArea className="flex-1 overflow-auto">
-      <InfiniteScroll
-        dataLength={items.length}
-        next={fetchMoreData}
-        hasMore={hasMoreItems}
-        loader={<h4></h4>}
-        scrollThreshold={0.8}
-      >
-		
-		<div className="h-full  lg:flex lg:flex-wrap lg:h-full">
-
-        {items?.map((topic,index) => (
-          <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={topic.topic_id}>
-               <Link to={`/sermons?topic=${topic.slug}`}>
-            <Card>
-			<CardContent className={`pt-5 lg:px-10 ${index % 2 === 0 ? '' : ''}`}>
-			  <div className="flex lg:flex-col items-center space-x-4">
-                  {topic.image_path !== "default" && (
-                    <SiteImage
-					divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full"
-                      ratio={1}
-                      alt="Topic Image"
-                      source={
-                        b2endpoint + encodeURIComponent(topic.image_path)
-                      }
-                    />
-                  )}
-				 
-				 <h2 className="text-xl lg:hidden">{topic.name}</h2>
-				</div>
-				<div className=' lg:border-b lg:text-gray-600 lg:pt-2'></div>
-				  <div className="lg:flex lg:justify-center lg:pt-2">
-				  <h2 className="lg:text-xl lg:text-center hidden lg:block">{topic.name}</h2>
+  <InfiniteScroll
+	dataLength={items.length}
+	next={fetchMoreData}
+	hasMore={hasMoreItems}
+	loader={<h4></h4>}
+	scrollThreshold={0.8}
+  >
+	<div className="pb-10 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
+	  {items?.map((topic) => (
+		<div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={topic.name}>
+		  <Link to={`/sermons?topic=${topic.slug}`}>
+			<Card>
+			<CardContent className='pb-0 lg:py-1 lg:px-10 lg:pt-2'>
+				<div className="flex lg:flex-col items-center space-x-4">
+				  <SiteImage
+					divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
+					ratio={1/1}
+					alt="Topic Image"
+					source={
+					  b2endpoint + encodeURIComponent(topic.image_path)
+					}
+				  />
+				<div className="flex flex-col lg:hidden overflow-hidden w-full">
+					
+					<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl">
+					  {topic.name}
+					</h2>
+				  
 				  </div>
-              </CardContent>
-            </Card>
-            </Link>
-          </div>
+				</div>
 
-        ))}
+
+
+				<div className=" lg:border-b lg:text-gray-600 lg:pt-2"></div>
+				<div className="lg:flex lg:justify-center lg:pt-2">
+				  <div className="flex flex-col">
+					<h2 className="lg:text-xl lg:text-center hidden lg:block">
+					  {topic.name}
+					</h2>
+				   
+				  </div>
+				</div>
+			  </CardContent>
+			</Card>
+		  </Link>
 		</div>
+	  ))}
+	</div>
+  </InfiniteScroll>
+  </ScrollArea>
+</div>
 	
-      </InfiniteScroll>
-	  </ScrollArea>
-    </div>
   );
 }
 export default Topics

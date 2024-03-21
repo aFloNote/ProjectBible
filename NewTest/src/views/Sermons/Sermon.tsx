@@ -51,16 +51,15 @@ export function SermonPage() {
   }
 
   return (
-	
-	
+	<div className='mx-auto max-w-lg'>
 	<Card>
-		<div className='pb-0'  >
-			<CardContent>	
+		<div className='pb-0 pt-5'  >
+			<CardContent className=''>	
     <div className="flex flex-col"> 
       <div className="">
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
           <SiteImage
-            divClass='w-full max-w-lg px-4 mx-auto pt-4'
+            divClass='w-full max-w-lg px-4 mx-auto pt-4 max-h-52'
             ratio={16/9}
             alt='Series Image'
             source={
@@ -103,6 +102,7 @@ export function SermonPage() {
 	</div>
 
 	</Card>
+	</div>
   );
 }
 export default SermonPage;

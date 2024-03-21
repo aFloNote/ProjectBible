@@ -18,7 +18,7 @@ export function SiteImage({source,ratio,divClass,alt}: ImageProps) {
             <img
                 src={source}
                 alt={alt}
-                className="h-full w-full rounded-md object-cover"
+                className="h-full w-full max-w-64  max-h-48 mx-auto  rounded-md object-cover"
             />
         </AspectRatio>
     </div>

@@ -11,10 +11,10 @@ interface DateComponentProps {
   
     return (
 		<>
-      <div className="flex flex-col lg:flex-row lg:items-center lg:mx-auto">
-        <div className='text-center text-gray-400 leading-none text-xs  lg:pr-2'>{month}</div>
-        <div className='text-center text-gray-400 text-2xl lg:text-xs leading-none'>{day}</div>
-		<div className='hidden lg:block text-center text-gray-400 leading-none text-xs lg:pl-2'>{year}</div>
+      <div className="flex flex-col lg:flex-row w-7 lg:w-full lg:items-center lg:justify-center">
+        <div className='text-center text-gray-400 leading-tight text-sm  lg:pr-2'>{month}</div>
+        <div className='text-center text-gray-400 text-2xl lg:text-sm leading-tight'>{day}</div>
+		<div className='hidden lg:block text-center text-gray-400 leading-tight text-xs lg:pl-2'>{year}</div>
 		</div>
 		
 	  </>

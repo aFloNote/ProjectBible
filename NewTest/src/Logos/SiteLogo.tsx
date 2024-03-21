@@ -11,7 +11,7 @@ export function Logo({ ratio, size }: LogoProps) {
     const { theme } = useTheme();
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
     const logo = isDark ? logoDark : logoLight;
-    
+    console.log(size)
     return (
         <div className='w-28 lg:w-40'>
             <AspectRatio ratio={ratio}>

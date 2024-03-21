@@ -93,7 +93,7 @@ export function Authors() {
        hasMore={hasMoreItems}
        loader={<h4></h4>}
        scrollThreshold={0.8}>
-			<div className="lg:flex lg:flex-wrap lg:h-auto lg:h-64">
+			<div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
     {items?.map((author) => (
         <div className="pt-2 px-2 lg:w-1/3 lg:px-15"  key={author.author_id}>
           <Card>
@@ -116,12 +116,12 @@ export function Authors() {
 		<div className='lg:border-b text-gray-600'></div>
 
         <div className="flex justify-start lg:justify-center pt-2">
-          <Button className="mr-2  px-4 py-2 rounded"
+          <Button className="mr-2 h-4  px-4 py-2 rounded"
           onClick={() => navigate(`/sermons?author=${ author.slug }`)}>
             Sermons
           </Button>
 		  <div className='pl-2'>
-          <Button className=" rounded"
+          <Button className="h-4 rounded"
            onClick={() => navigate(`/series?author=${ author.slug }`)}>
             Series
           </Button>

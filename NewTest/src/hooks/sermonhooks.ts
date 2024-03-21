@@ -57,7 +57,6 @@ export function Delete(endpoint: string) {
 export function SearchFetch<TData>(
   endPoint: string,
   queryKey: string,
-  requireAuth = true,
   enableSearchQuery: boolean
 ) {
   const fetchApi = UseApi().fetchApi;

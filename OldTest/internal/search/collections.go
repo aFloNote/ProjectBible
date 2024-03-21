@@ -75,6 +75,7 @@ func InitCollect(client *typesense.Client) {
 				{Name: "scripture", Type: "string"},
 				{Name: "audio_path", Type: "string"},
 				{Name: "date_delivered", Type: "string"},
+				{Name:"typesense_datge", Type:"string"},
 				{Name: "slug", Type: "string"},
 				// Add other fields as needed
 			},
