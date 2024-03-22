@@ -1,5 +1,3 @@
-import logoLight from '@/assets/FBC_TV_Logo.png';
-import logoDark from '@/assets/FBC_TV_Logo_White.png';
 
 import { useTheme } from "@/components/theme-provider";
 import { AspectRatio } from '@/components/ui/aspect-ratio';
@@ -9,8 +7,9 @@ interface LogoProps {
 }
 export function Logo({ ratio, size }: LogoProps) {
     const { theme } = useTheme();
+	const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
     const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
-    const logo = isDark ? logoDark : logoLight;
+    const logo = isDark ? b2endpoint+'logos/FBC_TV_Logo_White.png': b2endpoint+'logos/FBC_TV_Logo.png';
     console.log(size)
     return (
         <div className='w-28 lg:w-40'>
