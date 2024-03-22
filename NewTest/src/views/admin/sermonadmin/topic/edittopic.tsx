@@ -103,7 +103,7 @@ export function EditTopic() {
   };
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     if (selectedTopic != null) {
-      if (topicsData !== undefined&&topicsData.length>1){
+      if (topicsData !== undefined){
       const filteredTopicsData = topicsData?.filter(
         (itemData) => itemData.topic_id !== selectedTopic.topic_id
       );
@@ -126,8 +126,9 @@ export function EditTopic() {
     event.preventDefault();
     const formData = new FormData();
     formData.append("name", headForm);
-
+  	if (uploadedFiles.length > 0)
     formData.append("image", uploadedFiles[0]);
+  	else formData.append("image","default")
     if (selectedTopic) formData.append("topic_id", selectedTopic.topic_id);
   
     upload(formData, {
@@ -163,7 +164,7 @@ export function EditTopic() {
     setCanSubmit(
       headForm !== "" &&
 
-        uploadedFiles.length > 0 &&
+        
         selectedTopic != null
     );
   }, [headForm, uploadedFiles, selectedTopic]);

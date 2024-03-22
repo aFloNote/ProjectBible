@@ -271,8 +271,8 @@ export function Search({ setIsClicked }: SearchProps) {
   setIsClicked(isOpen);
 }}>
         <DialogTrigger asChild>
-          <Button className="h-5 w-5 lg:h-6" variant="ghost">
-            <FaSearch className=""></FaSearch>
+          <Button size='icon' variant="ghost">
+            <FaSearch size={18} ></FaSearch>
           </Button>
         </DialogTrigger>
         <div className="overflow-hidden">

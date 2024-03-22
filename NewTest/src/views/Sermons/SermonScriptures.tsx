@@ -5,15 +5,20 @@ import { SiteImage } from "@/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
-
-import { useSelector } from 'react-redux';
-import { RootState } from '@/redux/store'; 
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-
+function isValidURL(string: string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
 export function Scriptures() {
-	
   const bibleOrder = [
     "Genesis",
     "Exodus",
@@ -83,13 +88,13 @@ export function Scriptures() {
     "Revelation",
     "Various Scriptures",
   ];
- 
+
   const [items, setItems] = useState<ScriptureType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
- 
+
   const searchResults = useSelector((state: RootState) => state.search.results);
-  
+
   const { data: scriptsData } = Fetch<ScriptureType[]>(
     "pubfetchscriptures",
     "ScriptureData",
@@ -97,39 +102,37 @@ export function Scriptures() {
   );
   const searchTerm = useSelector((state: RootState) => state.search.input);
   useEffect(() => {
-	
-	if (searchResults && searchResults.length > 0 && searchTerm !== "") {
-	  const scriptsResults = searchResults
-		.filter(result => result.collection === 'scriptures')
-		.map(result => result.document as ScriptureType);
-	  setItems(scriptsResults.slice(0, 200));
-	} else {
-	  if(scriptsData)
-	  setItems(scriptsData.slice(0, 200));
-	}
+    if (searchResults && searchResults.length > 0 && searchTerm !== "") {
+      const scriptsResults = searchResults
+        .filter((result) => result.collection === "scriptures")
+        .map((result) => result.document as ScriptureType);
+      setItems(scriptsResults.slice(0, 200));
+    } else {
+      if (scriptsData) setItems(scriptsData.slice(0, 200));
+    }
   }, [searchResults, scriptsData]);
-  
+
   const fetchMoreData = () => {
-	if (searchResults && searchResults.length > 0) {
-	  const newItems = searchResults
-		.filter(result => result.collection === 'scriptures')
-		.map(result => result.document as ScriptureType)
-		.slice(items.length, items.length + 10);
-  
-	  setItems((prevItems) => [...prevItems, ...newItems]);
-  
-	  if (items.length + 10 >= searchResults.length) {
-		setHasMoreItems(false);
-	  }
-	} else {
-	  if (!scriptsData) return;
-	  const newItems = scriptsData.slice(items.length, items.length + 10);
-	  setItems((prevItems) => [...prevItems, ...newItems]);
-  
-	  if (items.length + 10 >= scriptsData.length) {
-		setHasMoreItems(false);
-	  }
-	}
+    if (searchResults && searchResults.length > 0) {
+      const newItems = searchResults
+        .filter((result) => result.collection === "scriptures")
+        .map((result) => result.document as ScriptureType)
+        .slice(items.length, items.length + 10);
+
+      setItems((prevItems) => [...prevItems, ...newItems]);
+
+      if (items.length + 10 >= searchResults.length) {
+        setHasMoreItems(false);
+      }
+    } else {
+      if (!scriptsData) return;
+      const newItems = scriptsData.slice(items.length, items.length + 10);
+      setItems((prevItems) => [...prevItems, ...newItems]);
+
+      if (items.length + 10 >= scriptsData.length) {
+        setHasMoreItems(false);
+      }
+    }
   };
 
   const sortedScriptureData = items?.sort((a, b) => {
@@ -137,59 +140,68 @@ export function Scriptures() {
   });
 
   return (
-	<div className="flex flex-col pb-24 lg:pb-10 h-full">
-	<ScrollArea className="flex-1 overflow-auto">
-  <InfiniteScroll
-	dataLength={items.length}
-	next={fetchMoreData}
-	hasMore={hasMoreItems}
-	loader={<h4></h4>}
-	scrollThreshold={0.8}
-  >
-	<div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
-	  {sortedScriptureData?.map((script) => (
-		<div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={script.book}>
-		  <Link to={`/sermons?scripture=${script.slug}`}>
-			<Card>
-			<CardContent className='pb-1 lg:py-1 lg:px-10 lg:pt-2'>
-				<div className="flex lg:flex-col items-center space-x-4">
-				  <SiteImage
-					divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
-					ratio={1}
-					alt="Scripture Image"
-					source={
-					  b2endpoint + encodeURIComponent(script.image_path)
-					}
-				  />
-				<div className="flex flex-col lg:hidden overflow-hidden w-full">
-					
-					<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl">
-					  {script.book}
-					</h2>
-				  
-				  </div>
-				</div>
+    <div className="flex flex-col pb-24 lg:pb-10 h-full">
+      <ScrollArea className="flex-1 overflow-auto">
+        <InfiniteScroll
+          dataLength={items.length}
+          next={fetchMoreData}
+          hasMore={hasMoreItems}
+          loader={<h4></h4>}
+          scrollThreshold={0.8}
+        >
+          <div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
+            {sortedScriptureData?.map((script) => (
+              <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={script.book}>
+                <Link to={`/sermons?scripture=${script.slug}`}>
+                  <Card>
+                    <CardContent className="pb-1 pt-1 lg:py-1 lg:px-10 lg:pt-2">
+                      <div className="flex lg:flex-col items-center space-x-4 mx-auto">
+                        {script.image_path !== "default" &&
+                          isValidURL(script.image_path) && (
+                            <SiteImage
+                              divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
+                              ratio={1}
+                              alt="Scripture Image"
+                              source={
+                                b2endpoint +
+                                encodeURIComponent(script.image_path)
+                              }
+                            />
+                          )}
+                        <div className="flex flex-col lg:hidden overflow-hidden w-full">
+                          <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl">
+                            {script.book}
+                          </h2>
+                        </div>
+                      </div>
 
-
-
-				<div className=" lg:border-b lg:text-gray-600 lg:pt-2"></div>
-				<div className="lg:flex lg:justify-center lg:pt-2">
-				  <div className="flex flex-col">
-					<h2 className="lg:text-xl lg:text-center hidden lg:block">
-					  {script.book}
-					</h2>
-				   
-				  </div>
-				</div>
-			  </CardContent>
-			</Card>
-		  </Link>
-		</div>
-	  ))}
-	</div>
-  </InfiniteScroll>
-  </ScrollArea>
-</div>
+                      {script.image_path !== "default" &&
+                        isValidURL(script.image_path) && (
+                          <div className="lg:border-b lg:text-gray-600 lg:pt-2"></div>
+                        )}
+                      <div
+                        className={`lg:flex lg:justify-center ${
+                          script.image_path !== "default" &&
+                          isValidURL(script.image_path)
+                            ? "lg:pt-2"
+                            : ""
+                        }`}
+                      >
+                        <div className="flex flex-col">
+                          <h2 className="lg:text-xl lg:text-center hidden lg:block">
+                            {script.book}
+                          </h2>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </InfiniteScroll>
+      </ScrollArea>
+    </div>
   );
 }
 export default Scriptures;

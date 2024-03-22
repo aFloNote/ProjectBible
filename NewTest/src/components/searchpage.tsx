@@ -22,7 +22,9 @@ export function SearchPage() {
   let pageName = "";
   const currentPath = location.pathname;
   pageName = currentPath.substring(1); // remove the leading slash
-
+  useEffect(() => {
+	setInputValue("");
+  }, [location]);
   // If the path is nested, you might want to get only the first part
   if (pageName.includes("/")) {
     pageName = pageName.split("/")[0];

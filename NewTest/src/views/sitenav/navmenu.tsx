@@ -154,13 +154,16 @@ import Search from "@/components/search";
 			<Menu/>
 			<div className='border-t-2'></div>
 			<div className="flex justify-between">
+			<div className=''>
+            <Search setIsClicked={setIsClicked} />
+			</div>
+      
+		
 		<ModeToggle setIsClicked={setIsClicked} />
          
         
      
-       <div className=''>
-            <Search setIsClicked={setIsClicked} />
-			</div>
+    
       
 		</div>
        
