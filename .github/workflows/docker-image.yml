@@ -53,5 +53,6 @@ jobs:
         key: ${{ secrets.DO_SSH }}
         script: |
           cd /home/ck5150/prod
+          ls -la
           docker compose pull oldtest newtest
           docker compose -f docker-compose.prod.yml up -d --no-deps --build oldtest newtest
