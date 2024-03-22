@@ -40,6 +40,7 @@ jobs:
             VITE_REACT_APP_DOMAIN=${{ secrets.VITE_REACT_APP_DOMAIN }}
             VITE_REACT_AUTH_DOMAIN=${{ secrets.VITE_REACT_AUTH_DOMAIN }}
             VITE_REACT_B2_ENDPOINT=${{ secrets.VITE_REACT_B2_ENDPOINT }}
+            VITE_REACT_SEARCH_API=${{secrets.VITE_REACT_SEARCH_API}}
   deploy:
     needs: build
     runs-on: ubuntu-latest

@@ -226,4 +226,3 @@ GRANT SELECT,INSERT,DELETE,UPDATE ON TABLE public.topics TO faithbible;
 --
 -- PostgreSQL database dump complete
 --
-

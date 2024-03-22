@@ -2,13 +2,14 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/components/theme-provider";
 interface ModeToggleProps {
-    setIsClicked: React.Dispatch<React.SetStateAction<boolean>>;
+    setIsClicked?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 export default function ModeToggle({ setIsClicked }: ModeToggleProps) {
   const { theme, setTheme } = useTheme();
 
   const toggleTheme = () => {
     setTheme(theme === "light" ? "dark" : "light");
+	if (setIsClicked)
 	setIsClicked(false);
   };
 

@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { FaSearch } from "react-icons/fa";
 import { DatePickerWithRange } from "./ui/daterangepicker";
 import { DateRange } from "react-day-picker";
-import { format } from "date-fns";
+
 
 export function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
