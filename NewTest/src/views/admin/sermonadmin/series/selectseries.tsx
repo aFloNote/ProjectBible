@@ -63,11 +63,13 @@ const { data: seriesData, error } = Fetch<SeriesType[]>(
             variant={buttonVar}
             role="combobox"
             aria-expanded={open}
-            className='h-5'
+            className='h-5 max-w-48'
           >
+			<div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
             {selectedId
                ? seriesData.find((series) => series.slug === selectedId)?.title
                : `Select series...`}
+			   </div>
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 " />
           </Button>
         </PopoverTrigger>
@@ -95,13 +97,16 @@ const { data: seriesData, error } = Fetch<SeriesType[]>(
                   
                   }}
                 >
-                  {series.title}
-                  <CheckIcon
+					  <CheckIcon
                     className={cn(
                       "mr-2 h-4 w-4",
                       selectedId === series.slug ? "opacity-100" : "opacity-0"
                     )}
                   />
+						
+                  {series.title}
+				
+                
                 </CommandItem>
               ))}
             </CommandGroup>

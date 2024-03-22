@@ -40,7 +40,7 @@ func createTypesenseClient() *typesense.Client {
 			break
 		}
 		fmt.Println("Waiting for Typesense to become available...")
-		time.Sleep(5 * time.Second) // Adjust the sleep duration as necessary
+		time.Sleep(5 * time.Second) 
 	}
 	return client
 }

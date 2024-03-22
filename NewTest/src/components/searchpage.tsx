@@ -7,12 +7,16 @@ import { useDispatch } from "react-redux";
 import { Input } from "@/components/ui/input";
 import { FaSearch } from "react-icons/fa";
 import { DatePickerWithRange } from "./ui/daterangepicker";
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 export function SearchPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const dispatch = useDispatch();
   const [inputValue, setInputValue] = useState("");
   const [searchCriteria, setSearchCriteria] = useState("");
+  const [fromDate, setFromDate] = useState<number| undefined>(undefined);
+  const [toDate, setToDate] = useState<number | undefined>(undefined);
   const location = useLocation();
 
   let pageName = "";
@@ -22,10 +26,15 @@ export function SearchPage() {
   // If the path is nested, you might want to get only the first part
   if (pageName.includes("/")) {
     pageName = pageName.split("/")[0];
+
   }
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
-	
+	console.log(pageName)
+	if (pageName !=="sermons"){
+		setFromDate(undefined);
+		setToDate(undefined);
+	}
     const seriesSlug = queryParams.get("series");
     const topicSlug = queryParams.get("topic");
     const scriptureSlug = queryParams.get("scripture");
@@ -54,7 +63,7 @@ export function SearchPage() {
 	}
     
     else
-		
+	
       setSearchCriteria(pageName.charAt(0).toUpperCase() + pageName.slice(1));
 
 
@@ -66,7 +75,7 @@ export function SearchPage() {
   }, [location, dispatch]);
 
   const searchResult = SearchPageFetch<SearchResult[]>(
-    `fetchsearchpage?query=${searchTerm}&collection=${pageName}`,
+    `fetchsearchpage?query=${searchTerm}&collection=${pageName}&fromDate=${fromDate}&toDate=${toDate}`,
     "SearchTopicData"
   );
 
@@ -104,6 +113,27 @@ export function SearchPage() {
 	};
   }, [inputValue, searchResult?.refetch, dispatch, searchResult.data]);
 
+  const handleDateChange = (date: DateRange | undefined) => {
+	if (date?.from && date?.to) {
+	  const fromMountainTime = new Date(date.from.toLocaleString("en-US", { timeZone: "America/Denver" }));
+	  const toMountainTime = new Date(date.to.toLocaleString("en-US", { timeZone: "America/Denver" }));
+	  const fromUnix = Math.floor(fromMountainTime.getTime() / 1000);
+	  const toUnix = Math.floor(toMountainTime.getTime() / 1000);
+	  setFromDate(fromUnix);
+	  setToDate(toUnix);
+	  dispatch(setSearch(fromUnix + "-" + toUnix));
+	} else if (date?.from) {
+	  const fromMountainTime = new Date(date.from.toLocaleString("en-US", { timeZone: "America/Denver" }));
+	  const fromUnix = Math.floor(fromMountainTime.getTime() / 1000);
+	  setFromDate(fromUnix);
+	  setToDate(fromUnix);
+	  dispatch(setSearch(fromUnix + "-" + fromUnix));
+	} else {
+	  setFromDate(undefined);
+	  setToDate(undefined);
+	}
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 	setInputValue(e.target.value);
 	dispatch(setSearch(e.target.value));
@@ -117,21 +147,18 @@ export function SearchPage() {
   }, [inputValue, dispatch]);
 
   return (
-    <div className="relative">
-		<div>
+	<div className="relative bg-slate-50 dark:bg-background">
+    <div className="flex pt-1 items-center">
       <Input
         value={inputValue}
         onChange={handleInputChange}
         placeholder={searchCriteria}
-        className="pl-10 border-border" // Add some padding to prevent the text from overlapping the icon
+        className="pl-10 border-border bg-white dark:bg-background pr-2" // Add some padding to prevent the text from overlapping the icon
       />
-      <FaSearch className="absolute left-2 top-1/2 transform -translate-y-1/2 text-primary" />
-	 <div>
-		
-	
-	 </div>
+      <FaSearch size={20} className={`absolute left-2 top-1/2 transform -translate-y-2 ${inputValue ? 'text-primary' : 'text-gray-500/50'}`} />
+      {pageName === "sermons" && <DatePickerWithRange className={fromDate !== undefined && toDate !== undefined ? 'pl-2 text-primary' : 'pl-2'}  onDateChange={handleDateChange} />}
     </div>
-	</div>
+  </div>
   );
 }
 
