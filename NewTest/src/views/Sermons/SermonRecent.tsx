@@ -139,7 +139,7 @@ export function Recent() {
                 className="pt-2 px-2 lg:w-1/3 lg:px-15 "
               >
                 <Card>
-                  <div className="flex items-center pt-4 pb-4 px-5 space-x-2 lg:justify-center">
+                  <div className="flex items-center pt-1 pb-1 lg:pt-4 px-5 space-x-2 lg:justify-center">
                     <div className="lg:hidden">
                       <DateComp date={SermonFull.SermonType.date_delivered} />
                     </div>
@@ -170,7 +170,7 @@ export function Recent() {
                   </div>
                   <div className=" lg:border-b lg:text-gray-600 lg:pt-2 w-5/6"></div>
 
-                  <div className="lg:flex lg:justify-center lg:pt-2">
+                  <div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2">
                     <div className="flex flex-col hidden lg:block">
                       <div className="flex text-center lg:leading-tight">
                         <DateComp date={SermonFull.SermonType.date_delivered} />

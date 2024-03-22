@@ -76,7 +76,7 @@ func PubFetchScriptures(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	// Fetch author data from the database
-	rows, err := db.Query("SELECT s.scripture_id, s.book, s.image_path, s.slug FROM scriptures s INNER JOIN sermons se ON s.scripture_id = se.scripture_id")
+	rows, err := db.Query("SELECT DISTINCT s.scripture_id, s.book, s.image_path, s.slug FROM scriptures s INNER JOIN sermons se ON s.scripture_id = se.scripture_id")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error query: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -84,7 +84,7 @@ export function Topic() {
   };
 
   // Determine if the form can be submitted based on name, ministry, and image presence
-  const canSubmit = headForm !== "" && uploadedFiles.length > 0;
+  const canSubmit = headForm !== "" ;
 
   return (
     <>
