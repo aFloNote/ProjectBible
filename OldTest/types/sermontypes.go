@@ -38,7 +38,7 @@ type SermonType struct {
 	ScriptureID string `json:"scripture_id"`
 	TopicID string `json:"topic_id"`
 	Scripture string `json:"scripture"`
-	TypesenseDate string `json:"typesense_date"`
+	TypesenseDate int64 `json:"typesense_date"`
     Description string `json:"description"`
     Image_Path  string `json:"image_path"`
 	Slug string `json:"slug"`

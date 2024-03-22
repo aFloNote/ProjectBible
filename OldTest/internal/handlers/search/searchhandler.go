@@ -5,10 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	
+	"strconv"
+	"time"
+
 	"strings"
 
-	
 	"github.com/typesense/typesense-go/typesense"
 	"github.com/typesense/typesense-go/typesense/api"
 	// Import other necessary packages
@@ -62,7 +63,11 @@ func SearchPageHandler(client *typesense.Client) http.Handler {
         
         fmt.Println("SearchHandler")
         query := r.URL.Query().Get("query")
-        collection := r.URL.Query().Get("collection")
+        collection := r.URL.Query().Get("collection") 
+		fromDate:= r.URL.Query().Get("fromDate")
+		toDate:= r.URL.Query().Get("toDate")
+		fmt.Println("FromDate: ",fromDate)
+		fmt.Println("ToDate: ",toDate)
 		fmt.Println("Collection: ",collection)
 		fmt.Println("Query: ",query)
         if query == "" || collection == "" {
@@ -82,7 +87,7 @@ func SearchPageHandler(client *typesense.Client) http.Handler {
             "topics":     {"name"},
             "series":     {"title", "description"}, // Example for multiple fields
             "authors":    {"name","ministry"},
-            "sermons":    {"title","scripture","typesense_date"},
+            "sermons":    {"title","scripture"},
             "scriptures": {"book"},
         }
 
@@ -91,11 +96,43 @@ func SearchPageHandler(client *typesense.Client) http.Handler {
             http.Error(w, "Invalid collection", http.StatusBadRequest)
             return
         }
+		if fromDate == "" || fromDate == "undefined" {
+			fromDate = fmt.Sprintf("%d", time.Date(2023, 11, 1, 0, 0, 0, 0, time.UTC).Unix())
+		} else {
+			fromDateInt, err := strconv.ParseInt(fromDate, 10, 64)
+			if err != nil {
+				http.Error(w, "Invalid fromDate", http.StatusBadRequest)
+				return
+			}
+			// Subtract one day from fromDate
+			fromDate = fmt.Sprintf("%d", fromDateInt-86400)
+		}
+		
+		if toDate == "" || toDate == "undefined" {
+			toDate = fmt.Sprintf("%d", time.Now().AddDate(0, 0, 1).Unix())
+		} else {
+			toDateInt, err := strconv.ParseInt(toDate, 10, 64)
+			if err != nil {
+				http.Error(w, "Invalid toDate", http.StatusBadRequest)
+				return
+			}
+			// Add one day to toDate
+			toDate = fmt.Sprintf("%d", toDateInt+86400)
+		}
 
+        // Create the filter string
+		fmt.Println("FromDate: ",fromDate)
+		fmt.Println("ToDate: ",toDate)
+		filterBy :=""
+		if collection=="sermons" {
+        filterBy = fmt.Sprintf("typesense_date:>=%s && typesense_date:<=%s", fromDate, toDate)
+		//FilterBy: &filterBy,
+		}
         queryByFields := strings.Join(fields, ",")
-        searchResult, err := client.Collection(collection).Documents().Search(context.Background(), &api.SearchCollectionParams{
-            Q:       query,
-            QueryBy: queryByFields,
+		searchResult, err := client.Collection(collection).Documents().Search(context.Background(), &api.SearchCollectionParams{
+            Q:        query,
+            QueryBy:  queryByFields,
+            FilterBy: &filterBy,
         })
         if err != nil {
             fmt.Printf("Error searching collection %s: %v\n", collection, err)

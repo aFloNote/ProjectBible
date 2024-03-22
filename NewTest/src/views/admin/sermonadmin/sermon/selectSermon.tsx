@@ -83,13 +83,15 @@ export function SelectSermon({buttonVar="outline"}: {buttonVar?: "outline" | "li
                   dispatch(setSelectedTopic(currentValue !== selectedId ? sermon.TopicType : null));
                 }}
               >
-                {sermon.SermonType.title}
-                <CheckIcon
+				  <CheckIcon
                   className={cn(
                     "mr-2 h-4 w-4",
                     selectedId === sermon.SermonType.slug ? "opacity-100" : "opacity-0"
                   )}
                 />
+				
+                {sermon.SermonType.title}
+			
               </CommandItem>
             ))}
           </CommandGroup>

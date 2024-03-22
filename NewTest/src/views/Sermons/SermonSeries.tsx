@@ -94,7 +94,7 @@ export function Series() {
             <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={series.series_id}>
               <Link to={`/sermons?series=${series.slug}`}>
                 <Card>
-				<CardContent className='pb-0 lg:px-10 lg:pt-2'>
+				<CardContent className='pb-1 lg:px-10 lg:pt-2'>
                     <div className="flex lg:flex-col items-center space-x-4">
                       <SiteImage
                         divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
@@ -106,10 +106,10 @@ export function Series() {
                       />
                     <div className="flex flex-col lg:hidden overflow-hidden w-full">
 						
-                        <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl">
+                        <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-lg">
                           {series.title}
                         </h2>
-                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-600">
+                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md text-gray-600">
                           {series.description}
                         </p>
                       </div>

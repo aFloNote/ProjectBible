@@ -284,7 +284,7 @@ export function Search({ setIsClicked }: SearchProps) {
                     <FaSearch className="text-primary"></FaSearch>
                     <input
                       ref={searchInputRef}
-                      className="flex h-10 w-full rounded-md bg-transparent py-3 pr-5 pl-2 text-md outline-none  placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex h-10 w-full rounded-md bg-transparent py-3 pr-10 pl-2 text-md outline-none  placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50"
                       placeholder="Search Sermons,Topics, Series Ect..."
                       onChange={handleInputChange} // Use the handler here
                       value={searchTerm} // Control the input

@@ -22,7 +22,7 @@ function SermonLanding() {
 	
 	
 	return (
-		<div className={`flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-background`}>
+		<div className={`flex flex-col h-screen overflow-hidden bg-slate-50 dark:bg-background py-2`}>
 		<header >
 			<div className="flex sticky top-0 w-full relative bg-white dark:bg-background pt-2 pb-1 pl-1 border-b-2 border-secondary dark:border-none dark:shadow-lg dark:shadow-blue-500/50 overflow-hidden z-10">
 		  <Nav />
@@ -58,7 +58,7 @@ function SermonLanding() {
 		  </main>
 		</div>
 		
-		  <div className="flex fixed bottom-0 w-full bg-white dark:bg-background border-t-2  border-secondary dark:border-none dark:dark:shadow-[rgba(59,130,246,0.8)_0px_3px_15px_4px] p-2 lg:hidden z-10">
+		  <div className="flex fixed bottom-1 w-full bg-white dark:bg-background border-t-2  border-secondary dark:border-none dark:dark:shadow-[rgba(59,130,246,0.8)_0px_3px_15px_4px] p-2 pb-2 lg:hidden z-10">
 		  <Footer />
 		</div>
 	  </div>

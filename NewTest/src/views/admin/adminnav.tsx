@@ -8,14 +8,14 @@ import {
    
   
   } from "@/components/ui/navigation-menu"
-  import { ModeToggle } from "@/components/mode-toggle";
+  import  ModeToggle  from "@/components/mode-toggle";
   import {Logo} from "@/Logos/SiteLogo";
   import { useAuth0 } from "@auth0/auth0-react";
   import {Button} from "@/components/ui/button";
-
+  import { useState } from "react";
 function AdminNav() {
   const { logout } = useAuth0();
-
+  const [isClicked, setIsClicked] = useState(false);
  
   
   return (
@@ -46,7 +46,7 @@ function AdminNav() {
     Logout
     </Button>
     <div className='pt-2 pr-1'> 
-    <ModeToggle/>
+    <ModeToggle setIsClicked={setIsClicked}/>
     </div>
     </div>
   </div>

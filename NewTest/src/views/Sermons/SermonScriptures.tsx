@@ -151,7 +151,7 @@ export function Scriptures() {
 		<div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={script.book}>
 		  <Link to={`/sermons?scripture=${script.slug}`}>
 			<Card>
-			<CardContent className='pb-0 lg:py-1 lg:px-10 lg:pt-2'>
+			<CardContent className='pb-1 lg:py-1 lg:px-10 lg:pt-2'>
 				<div className="flex lg:flex-col items-center space-x-4">
 				  <SiteImage
 					divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
