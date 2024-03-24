@@ -19,7 +19,14 @@ COPY package*.json ./
 RUN npm ci
 
 # Copy the local package files to the container's workspace
+ARG CACHEBUST=1
+
+# Then use the CACHEBUST argument in a RUN instruction
+RUN echo "CACHE BUST: $CACHEBUST" > /dev/null
+
+# Now copy the files
 COPY . .
+
 
 # Build the application for production
 RUN  npm run build
