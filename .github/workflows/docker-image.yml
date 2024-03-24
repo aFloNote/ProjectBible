@@ -24,6 +24,8 @@ jobs:
         file: ./OldTest/Dockerfile.prodold
         push: true
         tags: ck5150/oldtest:latest
+        cache-from: type=none
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
 
     - name: Build and push Docker image for newtest
       uses: docker/build-push-action@v5
@@ -41,6 +43,8 @@ jobs:
             VITE_REACT_AUTH_DOMAIN=${{ secrets.VITE_REACT_AUTH_DOMAIN }}
             VITE_REACT_B2_ENDPOINT=${{ secrets.VITE_REACT_B2_ENDPOINT }}
             VITE_REACT_SEARCH_API=${{secrets.VITE_REACT_SEARCH_API}}
+        cache-from: type=none
+        cache-to: type=local,dest=/tmp/.buildx-cache-new
   deploy:
     needs: build
     runs-on: ubuntu-latest

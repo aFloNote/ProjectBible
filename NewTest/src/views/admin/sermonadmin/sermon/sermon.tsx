@@ -24,6 +24,14 @@ import {
   DialogClose,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -96,11 +104,11 @@ export function Sermon() {
     selectedScripture,
   ]);
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-  
     event.preventDefault();
-    if (sermonData !=undefined &&sermonData.length != 0) {
+    if (sermonData != undefined && sermonData.length != 0) {
       const isHeadInItems = sermonData.some(
-        (itemData) => itemData.SermonType.title.toLowerCase() === titleForm.toLowerCase()
+        (itemData) =>
+          itemData.SermonType.title.toLowerCase() === titleForm.toLowerCase()
       );
       if (isHeadInItems) {
         setServerResponse({
@@ -112,7 +120,6 @@ export function Sermon() {
         return;
       }
     }
-    
 
     const formData = new FormData();
     formData.append("title", titleForm);
@@ -158,128 +165,150 @@ export function Sermon() {
   };
 
   return (
-    <div className="w-full pt-4">
-      <h1 className="text-2xl font-semibold text-center pb-4">Sermons</h1>
+    <div className="flex flex-col items-center pt-10 bg-slate-50 dark:bg-background h-screen">
+      <h1 className="text-2xl font-bold mb-4">Sermons</h1>
+	  <div className='flex flex-row justify-center space-x-4'>
+	  <div className='flex flex-col'>
+      <Card>
+        <CardHeader>
+          <CardTitle>Create or <EditSermon/> existing.</CardTitle>
+          <CardDescription>
+            Fill in all information then click "Add Sermon".
+          </CardDescription>
+        </CardHeader>
 
-      <h2 className="text-xl font-bold mb-4 pl-16">
-        Create a new Sermon or <EditSermon /> existing
-      </h2>
-      <div className="flex columns-2 justify-evenly pt-5">
-        <div className="flex items-center space-x-4">
-          <Label className="font-medium">Topic</Label>
-          <SelectTopic buttonVar="ghost" />
-        </div>
-
-        <div className="flex items-center space-x-4">
-          <Label className="font-medium">Book</Label>
-          <SelectScripture buttonVar="ghost" />
-        </div>
-      </div>
-      <div className="flex columns-2 justify-evenly">
-        <div className="flex items-center space-x-4">
-          <Label className="font-medium">Series</Label>
-          <SelectSeries buttonVar="ghost" />
-        </div>
-        <div className="flex items-center space-x-4">
-          <Label className="font-medium">Author</Label>
-          <SelectAuthor buttonVar="ghost" />
-        </div>
-      </div>
-
-      <div className="flex columns-2 justify-evenly pt-5 pb-5">
-        <div className="flex items-center space-x-4">
-          <Label htmlFor="title" className="font-medium">
-            Title
-          </Label>
-          <Input
-            className=""
-            placeholder="Enter name"
-            id="title"
-            value={titleForm}
-            onChange={(e) => setTitleForm(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center space-x-4">
-          <Label className="font-medium">Scripture</Label>
-          <Input
-            placeholder="EX: John 3:16-17,Psalm 5:7-8 ect"
-            id="scripture"
-            value={scriptureForm}
-            onChange={(e) => setScriptureForm(e.target.value)}
-            className=""
-          />
-        </div>
-      </div>
-
-      <div className="flex columns-2 justify-evenly pt-5 pb-5">
-        <div className="flex items-left space-x-4">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"ghost"}
-                className={cn(
-                  "justify-start text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
-              >
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {date ? format(date, "PPP") : <span>Pick a date</span>}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-                initialFocus
+        <CardContent className="w-fill flex flex-col">
+          <div className="flex flex-row pb-4 space-x-10">
+            <div className="flex flex-col">
+              <Label htmlFor="title" className="font-medium pl-3 pb-1">
+                Title
+              </Label>
+              <Input
+                className=" w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
+                placeholder="Enter name"
+                id="title"
+                value={titleForm}
+                onChange={(e) => setTitleForm(e.target.value)}
               />
-            </PopoverContent>
-          </Popover>
-        </div>
-        <div className="flex items-center space-x-4">
-          <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-            <AuthAudio audiopath="" onAudioUpdate={handleAudioUpdate} />
+            </div>
+
+            <div className="flex flex-col">
+              <Label className="font-medium pl-4 pb-1">Author</Label>
+              <SelectAuthor />
+            </div>
           </div>
 
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogContent className="sm:min-w-[225px]">
-              {serverResponse && !isLoading ? (
-                <>
-                  <DialogHeader>
-                    <DialogTitle>{serverResponse.messageTitle}</DialogTitle>
-                    <DialogDescription>
-                      {serverResponse.message}
-                    </DialogDescription>
-                  </DialogHeader>
+		  <div className="flex flex-row pb-4 space-x-10">
+            <div className="flex flex-col">
+              <Label htmlFor="title" className="font-medium pl-3 pb-1">
+                Topic
+              </Label>
+             <SelectTopic />
+            </div>
 
-                  <DialogFooter>
-                    <DialogClose
-                      asChild
-                      onClick={() => setServerResponse(null)}
-                    >
-                      <Button>Close</Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </>
-              ) : null}
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-      <div className="pt-5 flex justify-center">
-        <form onSubmit={handleSubmit}>
-          {isLoading ? (
-            <Button disabled>
-              <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              Adding Sermon...
-            </Button>
-          ) : (
-            <Button type="submit" disabled={!canSubmit}>
-              Add Sermon
-            </Button>
-          )}
-        </form>
-      </div>
+            <div className="flex flex-col">
+              <Label className="font-medium pl-4 pb-1">Series</Label>
+              <SelectSeries />
+            </div>
+          </div>
+
+		  <div className="flex flex-row pb-4 space-x-10">
+            <div className="flex flex-col">
+              <Label htmlFor="title" className="font-medium pl-3 pb-1">
+                Book
+              </Label>
+             <SelectScripture />
+            </div>
+
+            <div className="flex flex-col">
+			<Label className="font-medium pl-3 pb-1">Scripture</Label>
+              <Input
+                placeholder="John 3:16-17, Psalm 5:7-8"
+                id="scripture"
+                value={scriptureForm}
+                onChange={(e) => setScriptureForm(e.target.value)}
+                className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
+              />
+            </div>
+          </div>
+
+          <div className="border-t-2 pb-2"></div>
+
+
+          <div className="flex justify-center space-x-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant={"ghost"}
+                  className={cn(
+                    "justify-start text-left font-normal pl-0"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {date ? format(date, "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0">
+                <Calendar
+                  mode="single"
+                  selected={date}
+                  onSelect={setDate}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+          <div className="flex flex-col">
+            <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+              <AuthAudio audiopath="" onAudioUpdate={handleAudioUpdate} />
+            </div>
+
+            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+              <DialogContent className="sm:min-w-[225px]">
+                {serverResponse && !isLoading ? (
+                  <>
+                    <DialogHeader>
+                      <DialogTitle>{serverResponse.messageTitle}</DialogTitle>
+                      <DialogDescription>
+                        {serverResponse.message}
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <DialogFooter>
+                      <DialogClose
+                        asChild
+                        onClick={() => setServerResponse(null)}
+                      >
+                        <Button>Close</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </>
+                ) : null}
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <div className="pt-5 flex justify-center">
+            <form onSubmit={handleSubmit}>
+              {isLoading ? (
+                <Button disabled>
+                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  Adding Sermon...
+                </Button>
+              ) : (
+                <Button type="submit" disabled={!canSubmit}>
+                  Add Sermon
+                </Button>
+              )}
+            </form>
+          </div>
+        </CardContent>
+      </Card>
+	  </div>
+	  <div className='flex flex-col'>
+	  <EditSermon />
+	  </div>
+	  </div>
     </div>
   );
 }

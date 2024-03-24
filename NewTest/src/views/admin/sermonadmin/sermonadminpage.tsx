@@ -19,7 +19,7 @@ function SermonAdminPage() {
            <div className="bg-background border-r-2 dark:border-none dark:shadow-[rgba(59,130,246,0.8)_0px_3px_15px_4px]">
              <SermonSideBar/>
            </div>
-           <div className="flex-grow px-4 overflow-auto">
+           <div className="flex-grow overflow-auto">
            <Routes>
               <Route path="/" element={<Sermon/>} index/>
               <Route path="sermons" element={<Sermon/>}index />   
