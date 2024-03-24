@@ -24,7 +24,6 @@ jobs:
         file: ./OldTest/Dockerfile.prodold
         push: true
         tags: ck5150/oldtest:latest
-        no-cache: true
 
     - name: Build and push Docker image for newtest
       uses: docker/build-push-action@v5
@@ -42,7 +41,6 @@ jobs:
             VITE_REACT_AUTH_DOMAIN=${{ secrets.VITE_REACT_AUTH_DOMAIN }}
             VITE_REACT_B2_ENDPOINT=${{ secrets.VITE_REACT_B2_ENDPOINT }}
             VITE_REACT_SEARCH_API=${{secrets.VITE_REACT_SEARCH_API}}
-        no-cache: true
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -55,5 +53,6 @@ jobs:
         key: ${{ secrets.DO_SSH }}
         script: |
           cd /home/ck5150/prod
+          ls -la
           docker compose pull oldtest newtest
-          docker compose up -d --no-deps oldtest newtest
+          docker compose up -d --no-deps --build oldtest newtest
