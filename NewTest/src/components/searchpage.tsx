@@ -158,7 +158,7 @@ export function SearchPage() {
         className="pl-10 border-border bg-white dark:bg-background pr-2" // Add some padding to prevent the text from overlapping the icon
       />
       <FaSearch size={20} className={`absolute left-2 top-1/2 transform -translate-y-2 ${inputValue ? 'text-primary' : 'text-gray-500/50'}`} />
-      {pageName === "sermons" && <DatePickerWithRange className={fromDate !== undefined && toDate !== undefined ? 'pl-2 text-primary' : 'pl-2'}  onDateChange={handleDateChange} />}
+      {pageName === "sermons" && <DatePickerWithRange className={fromDate !== undefined && toDate !== undefined ? 'pl-2 text-primary dark:text-white' : 'pl-2 text-gray-500/50'}  onDateChange={handleDateChange} />}
     </div>
   </div>
   );
