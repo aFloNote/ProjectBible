@@ -24,19 +24,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 
-export function SelectScripture({
-  buttonVar = "outline",
-}: {
-  buttonVar?:
-    | "outline"
-    | "link"
-    | "default"
-    | "destructive"
-    | "secondary"
-    | "ghost"
-    | null
-    | undefined;
-}) {
+export function SelectScripture() {
   const [open, setOpen] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState("");
   const selectedScripture = useSelector(
@@ -141,16 +129,16 @@ export function SelectScripture({
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant={buttonVar}
+          
             role="combobox"
             aria-expanded={open}
-            className="h-5"
+			className='h-5 w-[200px] justify-between bg-white text-gray-500 font-normal border-t-5 dark:bg-background dark:text-white'
           >
             {selectedId && selectedScripture
               ? sortedScriptureData?.find(
                   (scripture) => scripture.slug === selectedId
                 )?.book
-              : `Select scripture...`}
+              : `Select Book...`}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 " />
           </Button>
         </PopoverTrigger>

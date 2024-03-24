@@ -57,15 +57,15 @@ const { data: topicData, error } = Fetch<TopicType[]>(
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant={buttonVar}
+			
             role="combobox"
             aria-expanded={open}
-            className='h-5'
+            className='h-5 w-[200px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white'
           >
             {selectedId
                ? topicData.find((topic) => topic.slug === selectedId)?.name
-               : `Select topic...`}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 " />
+               : `Select Topic...`}
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">

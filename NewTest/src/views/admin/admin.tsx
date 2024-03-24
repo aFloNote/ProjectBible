@@ -15,7 +15,7 @@ function Admin() {
            <Nav />
          </div>
         
-           <div className="flex-grow px-4 overflow-auto">
+           <div className="flex-grow overflow-auto">
            <Routes>
               <Route path="*" element={<SermonAdminPage/>}/>
             

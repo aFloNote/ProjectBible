@@ -26,7 +26,7 @@ import { RootState } from "@/redux/store";
 
 
 
-export function SelectAuthor({buttonVar="outline"}: {buttonVar?: "outline" | "link" | "default" | "destructive" | "secondary" | "ghost" | null | undefined}) {
+export function SelectAuthor() {
   const [open, setOpen] = React.useState(false);
   const [selectedId, setSelectedId] = React.useState("");
   const selectedAuthor = useSelector(
@@ -60,10 +60,11 @@ const { data: authorsData, error } = Fetch<AuthorType[]>(
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            variant={buttonVar}
+      
             role="combobox"
             aria-expanded={open}
-            className='h-5'
+			className='h-5 w-[200px] justify-between bg-white text-gray-500 font-normal border-t-5 dark:bg-background dark:text-white'
+            
           >
             {selectedId
                ? authorsData.find((author) => author.slug === selectedId)?.name

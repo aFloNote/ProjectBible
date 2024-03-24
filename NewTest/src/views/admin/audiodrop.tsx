@@ -60,7 +60,7 @@ export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath })
     <div {...getRootProps()} className="cursor-pointer text-black dark:text-white">
       <input {...getInputProps()} />
       {audio.length > 0 ? (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center">
           {audio.map((audio, index) => (
             <div key={index} className="relative">
             <p className="overflow-auto">{decodeURIComponent(audio.file.name).split('/').pop()}</p>
@@ -75,7 +75,7 @@ export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath })
           ))}
         </div>
       ) : (
-        <p>Drag 'n' or click to add audio</p>
+        <p className='flex justify-center'>Drag 'n' or click to add audio</p>
       )}
     </div>
   );
