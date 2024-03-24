@@ -54,5 +54,5 @@ jobs:
         script: |
           cd /home/ck5150/prod
           ls -la
-          docker compose pull oldtest newtest
+          docker compose pull --force-rm oldtest newtest
           docker compose up -d --no-deps oldtest newtest
