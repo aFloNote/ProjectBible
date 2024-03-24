@@ -296,7 +296,7 @@ export function EditSermon() {
               <div className="flex columns-2 justify-evenly pt-5">
                 <div className="flex items-center space-x-4">
                   <Label className="font-medium">Topic</Label>
-                  <SelectTopic buttonVar="ghost" />
+                  <SelectTopic />
                 </div>
 
                 <div className="flex items-center space-x-4">
