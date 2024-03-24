@@ -53,6 +53,7 @@ jobs:
         key: ${{ secrets.DO_SSH }}
         script: |
           cd /home/ck5150/prod
-          ls -la
-          docker compose pull --force-rm oldtest newtest
+          docker image rm ck5150/oldtest:latest
+          docker image rm ck5150/newtest:latest
+          docker compose pull oldtest newtest
           docker compose up -d --no-deps oldtest newtest
