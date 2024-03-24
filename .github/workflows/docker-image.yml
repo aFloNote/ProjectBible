@@ -24,7 +24,6 @@ jobs:
         file: ./OldTest/Dockerfile.prodold
         push: true
         tags: ck5150/oldtest:latest
-        no-cache: true
 
     - name: Build and push Docker image for newtest
       uses: docker/build-push-action@v5
@@ -33,7 +32,6 @@ jobs:
         file: ./NewTest/Dockerfile.prodnew
         push: true
         tags: ck5150/newtest:latest
-        no-cache: true
         build-args: |
             VITE_REACT_APP_REDIRECT_URI=${{ secrets.VITE_REACT_APP_REDIRECT_URI }}
             VITE_REACT_APP_AUD=${{ secrets.VITE_REACT_APP_AUD }}
