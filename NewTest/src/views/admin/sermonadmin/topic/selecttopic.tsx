@@ -26,7 +26,7 @@ import { RootState } from "@/redux/store";
 
 
 
-export function SelectTopic({buttonVar="outline"}: {buttonVar?: "outline" | "link" | "default" | "destructive" | "secondary" | "ghost" | null | undefined}) {
+export function SelectTopic() {
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const selectedTopic = useSelector(
