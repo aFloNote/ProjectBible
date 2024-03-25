@@ -66,7 +66,7 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 
 	if sermonID != "" {
 
-		query += "WHERE sermons.sermon_slug = $1 ORDER BY sermons.date_delivered DESC"
+		query += "WHERE sermons.slug = $1 ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query, sermonID)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)

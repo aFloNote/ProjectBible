@@ -83,7 +83,7 @@ export function topics() {
 			<CardContent className='pb-1 lg:py-1 lg:px-10 lg:pt-2'>
 				<div className="flex lg:flex-col items-center space-x-4 mx-auto">
 				  <SiteImage
-					divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
+					divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full "
 					ratio={1}
 					alt="Topic Image"
 					source={
