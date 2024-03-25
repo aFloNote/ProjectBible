@@ -12,7 +12,7 @@ import {
 	CardContent,
    
   } from "@/components/ui/card"
-
+import {ScrollArea} from "@/components/ui/scroll-area";
 export function SermonPage() {
 	
   const navigate = useNavigate();
@@ -31,10 +31,11 @@ export function SermonPage() {
   }, [sermonId, navigate]);
 
   const { data: sermonFull } = Fetch<SermonFullType[]>(
-    `pubfetchsermons?sermon_id=${sermonId}`,
+    `pubfetchsermons?sermon_slug=${sermonId}`,
     sermonId || "SermonFull",
     false,   
   );
+  console.log(sermonFull)
   let month="";
   let day=0;
   let year=0;
@@ -54,12 +55,12 @@ export function SermonPage() {
 	<div className='mx-auto max-w-lg'>
 	<Card>
 		<div className='pb-0 pt-5'  >
-			<CardContent className=''>	
+			<CardContent className='min h-[500px]'>	
     <div className="flex flex-col"> 
       <div className="">
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
           <SiteImage
-            divClass='w-64 h-64 max-[320px]:h-24 max-[320px]:w-24 mx-auto'
+            divClass='w-64 h-64 max-[320px]:h-20 max-[320px]:w-20 mx-auto'
             ratio={1/1}
             alt='Series Image'
             source={
@@ -79,11 +80,14 @@ export function SermonPage() {
                 {sermonFull[0].SeriesType.description}
               </p>
             </div>
-            <div className="text-gray-500 text-center text-md">
+            <div className="text-gray-500 text-center leading-tight text-md">
               {sermonFull[0].AuthorType.name}
             </div>
+			<div className="text-gray-500 text-center text-primary leading-tight text-sm">
+              {sermonFull[0].SermonType.scripture}
+            </div>
 			<div className='flex text-center leading-none pt-2'>
-				
+			
 				<div className="flex flex-row items-center mx-auto">
 			  <div className='text-center text-gray-400 leading-none text-sm  pr-1'>{month}</div>
 			  <div className='text-center text-gray-400 text-sm  leading-none'>{day}</div>
