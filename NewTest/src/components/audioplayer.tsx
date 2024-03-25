@@ -112,6 +112,7 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
 		title: sermonFull[0]?.SermonType.title,
 		artist: sermonFull[0]?.AuthorType.name,
 		artwork: [{ src: b2endpoint + encodeURIComponent(sermonFull[0]?.SeriesType.image_path) }],
+		
 	  });
   
 	  navigator.mediaSession.setActionHandler('play', () => setIsPlaying(true));
