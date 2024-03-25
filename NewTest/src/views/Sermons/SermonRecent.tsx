@@ -146,7 +146,7 @@ export function Recent() {
                     <div>
 						
                       <SiteImage
-                        divClass="w-12 h-12 lg:h-32 lg:w-32 flex items-center rounded-full lg:mx-auto"
+                        divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto"
                         ratio={1}
                         alt="Topic Image"
                         source={
@@ -168,7 +168,7 @@ export function Recent() {
                       </div>
                     </div>
                   </div>
-                  <div className=" lg:border-b lg:text-gray-600 lg:pt-2 w-5/6"></div>
+                  <div className=" lg:border-b lg:text-gray-600 lg:pt-2 "></div>
 
                   <div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2">
                     <div className="flex flex-col hidden lg:block">

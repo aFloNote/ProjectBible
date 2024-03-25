@@ -117,7 +117,7 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
       <ReactPlayer
         key={isPlaying ? "playing" : "paused"}
         ref={playerRef}
-        url={b2endpoint + audio_link}
+        url={b2endpoint + encodeURIComponent(audio_link)}
         playing={isPlaying}
         controls={false}
         onProgress={handleProgress}

@@ -27,7 +27,6 @@ import { Fetch } from "@/hooks/sermonhooks";
 import { SeriesType } from "@/types/sermon";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -39,12 +38,8 @@ import {
 
 import { SelectSeries } from "@/views/admin/sermonadmin/series/selectseries";
 
-
 export function EditSeries() {
-  const { data: seriesData } = Fetch<SeriesType[]>(
-    "fetchseries",
-    "SeriesData"
-  );
+  const { data: seriesData } = Fetch<SeriesType[]>("fetchseries", "SeriesData");
   const selectedSeries = useSelector(
     (state: RootState) => state.sermonAdmin.selectedSeries
   );
@@ -71,65 +66,70 @@ export function EditSeries() {
     setUploadedFiles(files);
   };
 
-
   const queryClient = useQueryClient();
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedSeries) {
-      deleteItem({id:selectedSeries.series_id,slug:selectedSeries.slug}, {
-        onSuccess: () => {
-          // Handle successful mutation
-          setServerResponse({
-            success: true,
-            messageTitle: "Success!",
-            message: "Series Deleted successfully",
-          });
-          queryClient.invalidateQueries("seriesData");
-        },
-        onError: () => {
-          setServerResponse({
-            success: false,
-            messageTitle: "Error!",
-            message:
-              "Error Deleting series, ensure all sermons and series are deleted for this Series",
-          });
-        },
+      deleteItem(
+        { id: selectedSeries.series_id, slug: selectedSeries.slug },
+        {
+          onSuccess: () => {
+            // Handle successful mutation
+            setServerResponse({
+              success: true,
+              messageTitle: "Success!",
+              message: "Series Deleted successfully",
+            });
+            queryClient.invalidateQueries("seriesData");
+          },
+          onError: () => {
+            setServerResponse({
+              success: false,
+              messageTitle: "Error!",
+              message:
+                "Error Deleting series, ensure all sermons and series are deleted for this Series",
+            });
+          },
 
-        onSettled: () => {
-          // Executes after mutation is either successful or errors out
-          dispatch(setSelectedSeries(null));
-        },
-      });
+          onSettled: () => {
+            // Executes after mutation is either successful or errors out
+            dispatch(setSelectedSeries(null));
+          },
+        }
+      );
     }
   };
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    
-      if (selectedSeries != null && seriesData != undefined && seriesData.length > 0) {
-        const filteredSeriesData = seriesData?.filter(
-          (itemData) => itemData.series_id !== selectedSeries.series_id
-        );
-    
-        const isHeadInItems = filteredSeriesData?.some(
-          (itemData) => itemData.title.toLowerCase() === headForm.toLowerCase()
-        );
-    
-        if (isHeadInItems) {
-          setServerResponse({
-            success: false,
-            messageTitle: "Error! Duplicate Series Title",
-            message: "Series Title already exists",
-          });
-          setIsDialogOpen(true);
-          return;
-        }
+    if (
+      selectedSeries != null &&
+      seriesData != undefined &&
+      seriesData.length > 0
+    ) {
+      const filteredSeriesData = seriesData?.filter(
+        (itemData) => itemData.series_id !== selectedSeries.series_id
+      );
+
+      const isHeadInItems = filteredSeriesData?.some(
+        (itemData) => itemData.title.toLowerCase() === headForm.toLowerCase()
+      );
+
+      if (isHeadInItems) {
+        setServerResponse({
+          success: false,
+          messageTitle: "Error! Duplicate Series Title",
+          message: "Series Title already exists",
+        });
+        setIsDialogOpen(true);
+        return;
       }
+    }
     event.preventDefault();
     const formData = new FormData();
     formData.append("head", headForm);
     formData.append("desc", descForm);
     formData.append("image", uploadedFiles[0]);
     if (selectedSeries) formData.append("series_id", selectedSeries.series_id);
- 
+
     upload(formData, {
       onSuccess: () => {
         // Handle successful mutation
@@ -138,7 +138,7 @@ export function EditSeries() {
           messageTitle: "Success!",
           message: "Series added successfully",
         });
-        
+
         queryClient.invalidateQueries("SeriesData");
       },
       onError: () => {
@@ -152,14 +152,12 @@ export function EditSeries() {
       onSettled: () => {
         dispatch(setSelectedSeries(null));
         // Executes after mutation is either successful or errors out
-      
       },
     });
   };
 
   // Determine if the form can be submitted based on name, ministry, and image presence
   useEffect(() => {
-  
     setCanSubmit(
       headForm !== "" &&
         descForm !== "" &&
@@ -172,7 +170,7 @@ export function EditSeries() {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="h-5"
+          className="h-3 cursor-pointer"
           onClick={() => {
             setIsDialogOpen(true);
             dispatch(setSelectedSeries(null)); // Set selectedseries to null when dialog is opened
@@ -206,51 +204,63 @@ export function EditSeries() {
           ) : (
             <>
               <DialogHeader>
-                <DialogTitle>Edit series</DialogTitle>
+                <DialogTitle>Edit Series</DialogTitle>
                 <DialogDescription>
-                  Edit Name, Minsitry, and image, then click Edit series.
+                  Edit Title, Description, and Image, then click Edit series.
                 </DialogDescription>
               </DialogHeader>
+			  <div className='flex justify-center'>
               <SelectSeries />
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="head" className="text-left">
-                    Title
-                  </Label>
-                  <Input
-                    id="head"
-                    placeholder="Enter Title"
-                    value={headForm}
-                    onChange={(e) => setHeadForm(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="desc" className="text-left">
-                    Description
-                  </Label>
-                  <Input
-                    id="desc"
-                    placeholder="Enter Description"
-                    value={descForm}
-                    onChange={(e) => setDescForm(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-rows-1 flex justify-center gap-4">
-                  <Label
-                    htmlFor="typeimage"
-                    className="text-center dark:text-white"
-                  >
-                    Insert Series Image
-                  </Label>
-                  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-                    <AuthImage
-                      onImageUpdate={handleImageUpdate}
-                      imgpath={selectedSeries ? selectedSeries.image_path : ""}
+			  </div>
+			  <div className="border-t-2 "></div>
+              <div className="flex flex-col">
+                <div className="flex flex-row pb-4 space-x-10 justify-center">
+                  <div className="">
+					<div>
+                    <Label htmlFor="head" className="font-medium pl-3 pb-1">
+                      Title
+                    </Label>
+                    <Input
+                      id="head"
+                      placeholder="Enter Title"
+                      value={headForm}
+                      onChange={(e) => setHeadForm(e.target.value)}
+                      className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
+                    />
+
+                  </div>
+                  <div className="pt-2">
+                    <Label htmlFor="desc" className="font-medium pl-3 pb-1">
+                      Description
+                    </Label>
+                    <Input
+                      id="desc"
+                      placeholder="Enter Description"
+                      value={descForm}
+                      onChange={(e) => setDescForm(e.target.value)}
+                      className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
                     />
                   </div>
+				  </div>
+                
                 </div>
+				<div className="border-t-2 pb-2 pt-2"></div>
+				<div className="flex flex-col items-center justify-center">
+                    <Label
+                      htmlFor="typeimage"
+                      className="text-center dark:text-white"
+                    >
+                      Insert Series Image
+                    </Label>
+                    <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+                      <AuthImage
+                        onImageUpdate={handleImageUpdate}
+                        imgpath={
+                          selectedSeries ? selectedSeries.image_path : ""
+                        }
+                      />
+                    </div>
+                  </div>
               </div>
               <DialogFooter>
                 <form onSubmit={handleSubmit}>
@@ -267,32 +277,39 @@ export function EditSeries() {
                 </form>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" disabled={!canSubmit}>Delete Series</Button>
+                    <Button variant="destructive" disabled={!canSubmit}>
+                      Delete Series
+                    </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
                     </AlertDialogHeader>
                     <AlertDialogDescription>
-                      Are you sure you want to delete this Series? This action
-                      cannot be undone. Sermons in this
+                      Are you sure you want to delete this Series?
                     </AlertDialogDescription>
                     <AlertDialogFooter>
                       <AlertDialogCancel asChild>
                         <Button variant="outline">Cancel</Button>
                       </AlertDialogCancel>
-                      <AlertDialogAction asChild>
-                        <form onSubmit={handleDelete}>
+                   
+                        <form onSubmit={handleDelete} className='bg-none border-none'>
                           {isDeleting ? (
-                            <Button >
+                            <Button>
                               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                               Deleting series...
                             </Button>
                           ) : (
-                            <Button type="submit" variant='destructive' disabled={!canSubmit}>Confirm Delete</Button>
+                            <Button
+                              type="submit"
+                              variant="destructive"
+                              disabled={!canSubmit}
+                            >
+                              Confirm Delete
+                            </Button>
                           )}
                         </form>
-                      </AlertDialogAction>
+                    
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

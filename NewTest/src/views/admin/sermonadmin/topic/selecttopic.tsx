@@ -65,7 +65,7 @@ const { data: topicData, error } = Fetch<TopicType[]>(
             {selectedId
                ? topicData.find((topic) => topic.slug === selectedId)?.name
                : `Select Topic...`}
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">

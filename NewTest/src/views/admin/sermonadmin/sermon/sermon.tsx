@@ -1,9 +1,9 @@
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store"; // re
 import { Label } from "@/components/ui/label";
 import { AuthAudio } from "@/views/admin/audiodrop";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ReloadIcon } from "@radix-ui/react-icons";
 
 import * as React from "react";
@@ -45,12 +45,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
+import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 
 export function Sermon() {
   const { data: sermonData } = Fetch<SermonFullType[]>(
     "fetchsermons",
     "SermonData"
   );
+  const dispatch=useDispatch();
   const queryClient = useQueryClient();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [titleForm, setTitleForm] = useState("");
@@ -81,7 +83,18 @@ export function Sermon() {
   const handleAudioUpdate = (files: File[]) => {
     setUploadedFiles(files);
   };
+  useEffect(() => {
+    const currentPath = location.pathname;
+    let pageName = currentPath.substring(1); // remove the leading slash
 
+    // If the path is nested, you might want to get only the first part
+    if (pageName.includes("/")) {
+      pageName = pageName.split("/")[0];
+    }
+	
+
+    dispatch(setSelectedSermonPage("sermons"));
+  }, [location, dispatch]);
   const { isLoading, mutate } = Upload("uploadsermon".toLowerCase());
   React.useEffect(() => {
     setCanSubmit(
@@ -241,7 +254,7 @@ export function Sermon() {
                 <Button
                   variant={"ghost"}
                   className={cn(
-                    "justify-start text-left font-normal pl-0"
+                    "font-normal"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
@@ -258,7 +271,7 @@ export function Sermon() {
               </PopoverContent>
             </Popover>
           </div>
-          <div className="flex flex-col">
+          <div className="flex flex-col pt-2">
             <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
               <AuthAudio audiopath="" onAudioUpdate={handleAudioUpdate} />
             </div>
@@ -305,11 +318,11 @@ export function Sermon() {
         </CardContent>
       </Card>
 	  </div>
-	  <div className='flex flex-col'>
-	  <EditSermon />
-	  </div>
+
 	  </div>
     </div>
   );
 }
 export default Sermon;
+
+
