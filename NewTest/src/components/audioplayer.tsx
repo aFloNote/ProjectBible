@@ -66,7 +66,15 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
       );
     }
   };
-
+  useEffect(() => {
+	if ("mediaSession" in navigator) {
+	  navigator.mediaSession.setPositionState({
+		duration: duration,
+		playbackRate: playbackRate,
+		position: playedSeconds,
+	  });
+	}
+  }, [isPlaying, playedSeconds]);
   const handleProgress = (state: { played: number; playedSeconds: number }) => {
     setPlayed(state.played);
     setPlayedSeconds(state.playedSeconds);
@@ -81,6 +89,13 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
 
   const handleDuration = (duration: number) => {
     setDuration(duration);
+	if ('mediaSession' in navigator && playerRef.current) {
+		navigator.mediaSession.setPositionState({
+		  duration: duration,
+		  playbackRate,
+		  position: playedSeconds,
+		});
+	  }
   };
 
   const formatTime = (seconds: number) => {
@@ -92,30 +107,35 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
       .join(":");
   };
   useEffect(() => {
-    if (
-      "mediaSession" in navigator &&
-      sermonFull &&
-      sermonFull[0] &&
-      playerRef.current
-    ) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: sermonFull[0].SermonType.title,
-        artist: sermonFull[0].AuthorType.name,
-        artwork: [
-          {
-            src:
-              b2endpoint +
-              encodeURIComponent(sermonFull[0].SeriesType.image_path),
-          },
-        ],
-      });
-    }
-  }, [sermonFull, b2endpoint]);
+	if ("mediaSession" in navigator) {
+	  navigator.mediaSession.metadata = new MediaMetadata({
+		title: sermonFull[0]?.SermonType.title,
+		artist: sermonFull[0]?.AuthorType.name,
+		artwork: [{ src: b2endpoint + encodeURIComponent(sermonFull[0]?.SeriesType.image_path) }],
+	  });
+  
+	  navigator.mediaSession.setActionHandler('play', () => setIsPlaying(true));
+	  navigator.mediaSession.setActionHandler('pause', () => setIsPlaying(false));
+	  
+	  // Handling seek backward and forward
+	  navigator.mediaSession.setActionHandler('seekbackward', (event) => {
+		const skipTime = event.seekOffset || 10;
+		playerRef.current?.seekTo(playerRef.current.getCurrentTime() - skipTime, "seconds");
+	  });
+  
+	  navigator.mediaSession.setActionHandler('seekforward', (event) => {
+		const skipTime = event.seekOffset || 10; 
+		playerRef.current?.seekTo(playerRef.current.getCurrentTime() + skipTime, "seconds");
+	  });
+  
+	
+	}
+  }, [sermonFull, b2endpoint, isPlaying]);
 
   return (
     <div>
       <ReactPlayer
-        key={isPlaying ? "playing" : "paused"}
+
         ref={playerRef}
         url={b2endpoint + encodeURIComponent(audio_link)}
         playing={isPlaying}

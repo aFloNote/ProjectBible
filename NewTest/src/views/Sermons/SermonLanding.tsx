@@ -58,7 +58,7 @@ function SermonLanding() {
 		  </main>
 		</div>
 		
-		  <div className="flex fixed bottom-1 w-full bg-white dark:bg-background border-t-2  border-secondary dark:border-none dark:dark:shadow-[rgba(59,130,246,0.8)_0px_3px_15px_4px] p-2 pb-2 lg:hidden z-10">
+		  <div className="flex fixed bottom-0 w-full bg-white dark:bg-background border-secondary dark:border-b-none dark:dark:shadow-[rgba(59,130,246,0.8)_0px_3px_15px_4px] p-2 pb-2 lg:hidden z-10">
 		  <Footer />
 		</div>
 	  </div>

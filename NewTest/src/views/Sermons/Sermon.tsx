@@ -59,7 +59,7 @@ export function SermonPage() {
       <div className="">
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
           <SiteImage
-            divClass='w-48 h-48 lg:max-w-lg mx-auto lg:max-h-52'
+            divClass='w-64 h-64 max-[320px]:h-24 max-[320px]:w-24 mx-auto'
             ratio={16/9}
             alt='Series Image'
             source={
@@ -69,13 +69,13 @@ export function SermonPage() {
           />
         )}
         <div className="pt-2">
-          <div className="col-span-4 leading-none pb-1">
+          <div className="col-span-4 leading-tight pb-1">
 		
-            <h2 className="text-xl text-center leading-none">
+            <h2 className="text-xl text-center leading-tight">
               {sermonFull[0].SermonType.title}
             </h2>
-            <div className="text-center leading-none">
-              <p className="text-gray-500 text-lg text-center font-medium leading-none">
+            <div className="text-center leading-tight">
+              <p className="text-gray-500 text-lg text-center font-medium leading-tight">
                 {sermonFull[0].SeriesType.description}
               </p>
             </div>
