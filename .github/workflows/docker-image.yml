@@ -45,6 +45,14 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - name: Clean up dangling images
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.DO_IP }}
+        username: ${{ secrets.DO_USER }}
+        key: ${{ secrets.DO_SSH }}
+        script: |
+          docker system prune -f
     - name: Execute remote ssh commands to deploy
       uses: appleboy/ssh-action@master
       with:
@@ -56,11 +64,4 @@ jobs:
           ls -la
           docker compose pull oldtest newtest
           docker compose up -d --no-deps --build oldtest newtest
-    - name: Clean up dangling images
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.DO_IP }}
-        username: ${{ secrets.DO_USER }}
-        key: ${{ secrets.DO_SSH }}
-        script: |
-          docker system prune -f
+   
