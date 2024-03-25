@@ -57,5 +57,5 @@ jobs:
           docker compose down
           docker system prune -f
           docker compose pull oldtest newtest
-          docker compose up -d --build oldtest newtest
+          docker compose up -d
    
