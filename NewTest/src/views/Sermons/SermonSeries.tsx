@@ -98,7 +98,7 @@ export function Series() {
                     <div className="flex lg:flex-col items-center space-x-4">
                       <SiteImage
                         divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
-                        ratio={16/9}
+                        ratio={1/1}
                         alt="Series Image"
                         source={
                           b2endpoint + encodeURIComponent(series.image_path)

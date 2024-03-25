@@ -60,7 +60,7 @@ export function SermonPage() {
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
           <SiteImage
             divClass='w-64 h-64 max-[320px]:h-24 max-[320px]:w-24 mx-auto'
-            ratio={16/9}
+            ratio={1/1}
             alt='Series Image'
             source={
               b2endpoint +
