@@ -35,7 +35,7 @@ function SermonLanding() {
 		{/* Main content wrapper */}
 		<div className="flex flex-grow overflow-hidden">
 		  {/* Sidebar */}
-		  <aside className="hidden lg:block bg-white dark:bg-background border-r-2 dark:shadow-lg dark:shadow-blue-500/50 lg:p-5">
+		  <aside className="hidden lg:block bg-white dark:bg-background border-r-2 dark:border-none dark:shadow-lg dark:shadow-blue-500/50 lg:p-5">
 			<Side />
 		  </aside>
 		  

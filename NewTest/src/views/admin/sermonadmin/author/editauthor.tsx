@@ -27,7 +27,6 @@ import {Fetch} from "@/hooks/sermonhooks";
 import { AuthorType } from "@/types/sermon";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -177,10 +176,10 @@ export function EditAuthor() {
     <Dialog>
       <DialogTrigger asChild>
         <Button
-          className="h-5"
+          className="h-3 cursor-pointer"
           onClick={() => {
             setIsDialogOpen(true);
-            dispatch(setSelectedAuthor(null)); // Set selectedAuthor to null when dialog is opened
+            dispatch(setSelectedAuthor(null)); // Set selectedseries to null when dialog is opened
           }}
         >
           Edit/Delete
@@ -213,61 +212,61 @@ export function EditAuthor() {
               <DialogHeader>
                 <DialogTitle>Edit Author</DialogTitle>
                 <DialogDescription>
-                  Edit Name, Minsitry, and image, then click Edit Author.
+                  Edit Name, Minsitry, and Image, then click Edit Author.
                 </DialogDescription>
               </DialogHeader>
+			  <div className='flex justify-center'>
               <SelectAuthor />
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="head" className="text-left">
-                    Name
-                  </Label>
-                  <Input
-                    id="head"
-                    placeholder="Enter name"
-                    value={headForm}
-                    onChange={(e) => setHeadForm(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="desc" className="text-left">
-                    Ministry
-                  </Label>
-                  <Input
-                    id="desc"
-                    placeholder="Enter ministry"
-                    value={descForm}
-                    onChange={(e) => setDescForm(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="bio" className="text-left">
-                    BioLink
-                  </Label>
-                  <Input
-                    id="bio"
-                    placeholder="Enter a link to the author's bio: optional"
-                    value={bioForm || ""}
-                    onChange={(e) => setBioForm(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-rows-1 flex justify-center gap-4">
-                  <Label
-                    htmlFor="typeimage"
-                    className="text-center dark:text-white"
-                  >
-                    Insert Author Image
-                  </Label>
-                  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-                    <AuthImage
-                      onImageUpdate={handleImageUpdate}
-                      imgpath={selectedAuthor ? selectedAuthor.image_path : ""}
+			  </div>
+			  <div className="border-t-2 "></div>
+              <div className="flex flex-col">
+                <div className="flex flex-row pb-4 space-x-10 justify-center">
+                  <div className="">
+					<div>
+                    <Label htmlFor="head" className="font-medium pl-3 pb-1">
+                      Name
+                    </Label>
+                    <Input
+                      id="head"
+                      placeholder="Enter Name"
+                      value={headForm}
+                      onChange={(e) => setHeadForm(e.target.value)}
+                      className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
+                    />
+
+                  </div>
+                  <div className="pt-2">
+                    <Label htmlFor="desc" className="font-medium pl-3 pb-1">
+                      Minisry
+                    </Label>
+                    <Input
+                      id="desc"
+                      placeholder="Enter Ministry"
+                      value={descForm}
+                      onChange={(e) => setDescForm(e.target.value)}
+                      className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
                     />
                   </div>
+				  </div>
+                
                 </div>
+				<div className="border-t-2 pb-2 pt-2"></div>
+				<div className="flex flex-col items-center justify-center">
+                    <Label
+                      htmlFor="typeimage"
+                      className="text-center dark:text-white"
+                    >
+                      Insert Author Image
+                    </Label>
+                    <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+                      <AuthImage
+                        onImageUpdate={handleImageUpdate}
+                        imgpath={
+                          selectedAuthor ? selectedAuthor.image_path : ""
+                        }
+                      />
+                    </div>
+                  </div>
               </div>
               <DialogFooter>
                 <form onSubmit={handleSubmit}>
@@ -284,32 +283,39 @@ export function EditAuthor() {
                 </form>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
-                    <Button variant="destructive" disabled={!canSubmit}>Delete Author</Button>
+                    <Button variant="destructive" disabled={!canSubmit}>
+                      Delete Author
+                    </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>Confirm Delete</AlertDialogTitle>
                     </AlertDialogHeader>
                     <AlertDialogDescription>
-                      Are you sure you want to delete this author? This action
-                      cannot be undone.
+                      Are you sure you want to delete this Author?
                     </AlertDialogDescription>
                     <AlertDialogFooter>
                       <AlertDialogCancel asChild>
                         <Button variant="outline">Cancel</Button>
                       </AlertDialogCancel>
-                      <AlertDialogAction asChild>
-                        <form onSubmit={handleDelete}>
+                   
+                        <form onSubmit={handleDelete} className='bg-none border-none'>
                           {isDeleting ? (
-                            <Button disabled={!canSubmit}>
+                            <Button>
                               <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                               Deleting Author...
                             </Button>
                           ) : (
-                            <Button type="submit">Confirm Delete</Button>
+                            <Button
+                              type="submit"
+                              variant="destructive"
+                              disabled={!canSubmit}
+                            >
+                              Confirm Delete
+                            </Button>
                           )}
                         </form>
-                      </AlertDialogAction>
+                    
                     </AlertDialogFooter>
                   </AlertDialogContent>
                 </AlertDialog>

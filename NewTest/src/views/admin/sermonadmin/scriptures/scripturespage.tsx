@@ -20,6 +20,7 @@ import { setSelectedScripture } from "@/redux/sermonAdminSelector";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { SelectScripture } from "@/views/admin/sermonadmin/scriptures/selectscriptures";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 
 export function Scripture() {
@@ -68,7 +69,7 @@ export function Scripture() {
         setServerResponse({
           success: true,
           messageTitle: "Success!",
-          message: "Scripture Image Added successfully",
+          message: "Book Image Added successfully",
         });
         setIsDialogOpen(true);
         queryClient.invalidateQueries("ScriptureData");
@@ -77,7 +78,7 @@ export function Scripture() {
         setServerResponse({
           success: false,
           messageTitle: "Error!",
-          message: "Error adding scripture",
+          message: "Error adding Book Image!",
         });
         setIsDialogOpen(true);
       },
@@ -104,14 +105,13 @@ export function Scripture() {
 
 
   return (
-    <>
-      <h1 className="text-2xl font-bold mb-4 text-center pt-4">Sermon scripture</h1>
-      <div>
-        <h2 className="text-xl font-bold mb-4 text-center">
-          Edit Book Photo 
-        </h2>
-      </div>
-      <div className='flex justify-center pt-10 pb-5'>
+	<div className="flex flex-col items-center pt-10 bg-slate-50 dark:bg-background h-screen">
+	<h1 className="text-2xl font-bold mb-4">Sermon Book</h1>
+	<div className="flex flex-row justify-center space-x-4">
+	  <div className="flex flex-col">
+     <Card><CardHeader><CardTitle>Edit Book Photo</CardTitle><CardDescription>Add a photo</CardDescription></CardHeader>
+	 <CardContent className="w-fill flex flex-col">
+	 <div className='flex justify-center pb-5'>
       <SelectScripture />
       </div>
               <div className="grid gap-4 py-4">
@@ -158,6 +158,13 @@ export function Scripture() {
           </DialogContent>
         </Dialog>
       )}
-    </>
+		
+	 </CardContent>
+	 
+	 </Card>
+      
+    </div>
+	</div>
+	</div>
   );
 }

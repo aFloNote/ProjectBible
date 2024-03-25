@@ -16,7 +16,7 @@ function SermonAdminPage() {
       
         
          <div className="flex flex-grow overflow-hidden">
-           <div className="bg-background border-r-2 dark:border-none dark:shadow-[rgba(59,130,246,0.8)_0px_3px_15px_4px]">
+           <div className="bg-background border-r-2 dark:border-blue-500/50 dark:shadow-lg dark:shadow-blue-500/50">
              <SermonSideBar/>
            </div>
            <div className="flex-grow overflow-auto">

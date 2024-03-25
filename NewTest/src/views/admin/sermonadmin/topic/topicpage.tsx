@@ -19,6 +19,8 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 import { Fetch } from "@/hooks/sermonhooks";
 import { TopicType } from "@/types/sermon";
 import { EditTopic } from "@/views/admin/sermonadmin/topic/edittopic";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+
 
 export function Topic() {
   const [headForm, setHeadForm] = useState("");
@@ -87,59 +89,81 @@ export function Topic() {
   const canSubmit = headForm !== "" ;
 
   return (
-    <>
-      <h1 className="text-2xl font-bold mb-4 text-center pt-4">Sermon Topic</h1>
-      <div>
-        <h2 className="text-xl font-bold mb-4 pl-16">
-          Create a new Topic or <EditTopic /> existing
-        </h2>
-      </div>
-      <div className="grid gap-4 py-4 pl-5">
-        <div className="grid grid-cols-8 items-center gap-4">
-          <Label htmlFor="head" className="text-right col-span-1">
-            Name
-          </Label>
-          <Input
-            id="head"
-            placeholder="Enter Topic Name: required"
-            value={headForm}
-            onChange={(e) => setHeadForm(e.target.value)}
-            className="col-span-2 text-left"
-          />
-          <Label htmlFor="typeimage" className="text-right dark:text-white col-span-2">
-            Insert Topic Image
-          </Label>
-          <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500 col-span-2 w-40">
-            <AuthImage onImageUpdate={handleImageUpdate} />
-          </div>
-        </div>
-      </div>
+	<div className="flex flex-col items-center pt-10 bg-slate-50 dark:bg-background h-screen">
+	<h1 className="text-2xl font-bold mb-4">Sermon Topic</h1>
+	<div className="flex flex-row justify-center space-x-4">
+	  <div className="flex flex-col">
+		<Card>
+		  <CardHeader>
+			<CardTitle>
+			  Create or <EditTopic /> existing.
+			</CardTitle>
+			<CardDescription></CardDescription>
+		  </CardHeader>
 
-      <form onSubmit={handleSubmit} className="flex justify-center">
-        {isLoading ? (
-          <Button disabled>
-            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-            Creating Topic...
-          </Button>
-        ) : (
-          <Button type="submit" disabled={!canSubmit}>
-            Create Topic
-          </Button>
-        )}
-      </form>
-      {serverResponse && (
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent>
-            <DialogHeader>{serverResponse.messageTitle}</DialogHeader>
-            <DialogDescription>{serverResponse.message}</DialogDescription>
-            <DialogFooter>
-              <DialogClose asChild onClick={() => setServerResponse(null)}>
-                <Button>Close</Button>
-              </DialogClose>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
-    </>
+		  <CardContent className="w-fill flex flex-col">
+		  <div className="flex flex-row pb-4 space-x-10 justify-center">
+		  <div className="flex flex-col">
+			  <div className=''>
+				<Label htmlFor="head" className="font-medium pl-3 pb-1">
+				  Name
+				</Label>
+				<Input
+				  id="head"
+				  placeholder="Enter Name: required"
+				  value={headForm}
+				  onChange={(e) => setHeadForm(e.target.value)}
+				  className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
+				/>
+				</div>
+			  </div>
+			  </div>
+			  <div className="border-t-2 pb-2 pt-2"></div>
+				<div className="flex flex-col items-center justify-center">
+				  <Label htmlFor="typeimage" className="dark:text-white">
+					Insert Topic Image
+				  </Label>
+				  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+					<AuthImage onImageUpdate={handleImageUpdate} />
+				  </div>
+				</div>
+			 
+			
+
+			<form onSubmit={handleSubmit} className="flex justify-center pt-4">
+			  {isLoading ? (
+				<Button disabled>
+				  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+				  Creating Topic...
+				</Button>
+			  ) : (
+				<Button type="submit" disabled={!canSubmit}>
+				  Create Topic
+				</Button>
+			  )}
+			</form>
+			{serverResponse && (
+			  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+				<DialogContent>
+				  <DialogHeader>{serverResponse.messageTitle}</DialogHeader>
+				  <DialogDescription>
+					{serverResponse.message}
+				  </DialogDescription>
+				  <DialogFooter>
+					<DialogClose
+					  asChild
+					  onClick={() => setServerResponse(null)}
+					>
+					  <Button>Close</Button>
+					</DialogClose>
+				  </DialogFooter>
+				</DialogContent>
+			  </Dialog>
+			)}
+		  </CardContent>
+		</Card>
+	  </div>
+	</div>
+  </div>
   );
 }

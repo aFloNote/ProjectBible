@@ -59,7 +59,7 @@ export function SermonPage() {
       <div className="">
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
           <SiteImage
-            divClass='w-full max-w-lg px-4 mx-auto pt-4 max-h-52'
+            divClass='w-48 h-48 lg:max-w-lg mx-auto lg:max-h-52'
             ratio={16/9}
             alt='Series Image'
             source={
@@ -69,7 +69,7 @@ export function SermonPage() {
           />
         )}
         <div className="pt-2">
-          <div className="col-span-4 leading-none pb-1 pl-4">
+          <div className="col-span-4 leading-none pb-1">
 		
             <h2 className="text-xl text-center leading-none">
               {sermonFull[0].SermonType.title}
@@ -82,7 +82,7 @@ export function SermonPage() {
             <div className="text-gray-500 text-center text-md">
               {sermonFull[0].AuthorType.name}
             </div>
-			<div className='flex text-center leading-tight pt-2'>
+			<div className='flex text-center leading-none pt-2'>
 				
 				<div className="flex flex-row items-center mx-auto">
 			  <div className='text-center text-gray-400 leading-none text-sm  pr-1'>{month}</div>
@@ -94,7 +94,7 @@ export function SermonPage() {
           </div>
         </div>
       </div>
-      <div className=""> {/* Audio player container */}
+      <div className="flex flex-col"> {/* Audio player container */}
         <Audio audio_link={sermonFull[0].SermonType.audio_path} sermonFull={sermonFull}/>
       </div>
     </div>

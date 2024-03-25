@@ -55,7 +55,7 @@ export function SelectSermon({buttonVar="outline"}: {buttonVar?: "outline" | "li
           variant={buttonVar}
           role="combobox"
           aria-expanded={open}
-          className='h-5'
+          className='h-5 w-full'
         >
           {selectedId
             ? sermonData.find((sermon) => sermon.SermonType.slug === selectedId)?.SermonType.title

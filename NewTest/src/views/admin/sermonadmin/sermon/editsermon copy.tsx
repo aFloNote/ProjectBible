@@ -309,88 +309,96 @@ export function EditSermon() {
                 </DialogDescription>
               </DialogHeader>
               <SelectSermon />
-              <div className="flex columns-2 justify-evenly pt-5">
-                <div className="flex items-center space-x-4">
-                  <Label className="font-medium">Topic</Label>
-                  <SelectTopic  />
-                </div>
+              <div className="flex flex-col">
+                <div className="flex flex-row">
+          
+                    <div className="flex flex-col">
+                      <Label className="font-medium">Topic</Label>
+                      <SelectTopic />
+                    </div>
+               
 
-                <div className="flex items-center space-x-4">
-                  <Label className="font-medium">Book</Label>
-                  <SelectScripture />
+            
+                    <div className="flex flex-col">
+                      <Label className="font-medium">Book</Label>
+                      <SelectScripture />
+                    </div>
+              
                 </div>
-              </div>
-              <div className="flex columns-2 justify-evenly">
-                <div className="flex items-center space-x-4">
-                  <Label className="font-medium">Series</Label>
-                  <SelectSeries  />
-                </div>
-                <div className="flex items-center space-x-4">
-                  <Label className="font-medium">Author</Label>
-                  <SelectAuthor  />
-                </div>
-              </div>
-              <div className="grid gap-4 py-4">
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="head" className="text-left">
-                    Title
-                  </Label>
-                  <Input
-                    id="head"
-                    placeholder="Enter Title"
-                    value={titleForm}
-                    onChange={(e) => setTitleForm(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="grid grid-cols-4 items-center gap-4">
-                  <Label htmlFor="desc" className="text-left">
-                    Scripture
-                  </Label>
-                  <Input
-                    id="desc"
-                    placeholder="Enter Scripture"
-                    value={scriptureForm}
-                    onChange={(e) => setScriptureForm(e.target.value)}
-                    className="col-span-3"
-                  />
-                </div>
-                <div className="flex justify-center">
-                  <div className="flex items-left space-x-4">
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant={"ghost"}
-                          className={cn(
-                            "justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? (
-                            format(date, "PPP")
-                          ) : (
-                            <span>Pick a date</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          onSelect={setDate}
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                <div className="flex columns-2 justify-evenly">
+                  <div className="flex items-center space-x-4">
+                    <Label className="font-medium">Series</Label>
+                    <SelectSeries />
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <Label className="font-medium">Author</Label>
+                    <SelectAuthor />
                   </div>
                 </div>
+                <div className="grid gap-4 py-4">
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="head" className="text-left">
+                      Title
+                    </Label>
+                    <Input
+                      id="head"
+                      placeholder="Enter Title"
+                      value={titleForm}
+                      onChange={(e) => setTitleForm(e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="grid grid-cols-4 items-center gap-4">
+                    <Label htmlFor="desc" className="text-left">
+                      Scripture
+                    </Label>
+                    <Input
+                      id="desc"
+                      placeholder="Enter Scripture"
+                      value={scriptureForm}
+                      onChange={(e) => setScriptureForm(e.target.value)}
+                      className="col-span-3"
+                    />
+                  </div>
+                  <div className="flex justify-center">
+                    <div className="flex items-left space-x-4">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant={"ghost"}
+                            className={cn(
+                              "justify-start text-left font-normal",
+                              !date && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-2 h-4 w-4" />
+                            {date ? (
+                              format(date, "PPP")
+                            ) : (
+                              <span>Pick a date</span>
+                            )}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={date}
+                            onSelect={setDate}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
 
-                <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-                  <AuthAudio
-                    onAudioUpdate={handleAudioUpdate}
-                    audiopath={selectedSermon ? selectedSermon.audio_path : ""}
-                  />
+                  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+                    <AuthAudio
+                      onAudioUpdate={handleAudioUpdate}
+                      audiopath={
+                        selectedSermon ? selectedSermon.audio_path : ""
+                      }
+                    />
+                  </div>
                 </div>
               </div>
               <DialogFooter>
