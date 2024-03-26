@@ -1,11 +1,11 @@
 import { SearchPageFetch } from "@/hooks/sermonhooks";
 import { SeriesType } from "@/types/sermon";
-import { Link } from "react-router-dom";
 import { SiteImage } from "@/image";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { useLocation } from "react-router-dom";
-import { Card, CardContent } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { Card} from "@/components/ui/card";
 import { useDispatch } from "react-redux";
 import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 import { useSelector } from 'react-redux';
@@ -20,7 +20,7 @@ export function Series() {
   const author_id = queryParams.get("author");
   const searchResults = useSelector((state: RootState) => state.search.results);
   const dispatch = useDispatch();
-  
+  const navigate = useNavigate();
   useEffect(() => {
     const currentPath = location.pathname;
     let pageName = currentPath.substring(1); // remove the leading slash
@@ -80,63 +80,71 @@ export function Series() {
  
 
   return (
-    <div className="flex flex-col pb-24 lg:pb-10 h-full">
-		<ScrollArea className="flex-1 overflow-auto">
-      <InfiniteScroll
-        dataLength={items.length}
-        next={fetchMoreData}
-        hasMore={hasMoreItems}
-        loader={<h4></h4>}
-        scrollThreshold={0.8}
-      >
-        <div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
-          {items?.map((series) => (
-            <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={series.series_id}>
-              <Link to={`/sermons?series=${series.slug}`}>
-                <Card>
-				<CardContent className='pb-1 lg:px-10 lg:pt-2'>
-                    <div className="flex lg:flex-col items-center space-x-4">
-                      <SiteImage
-                        divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
-                        ratio={1/1}
-                        alt="Series Image"
-                        source={
-                          b2endpoint + encodeURIComponent(series.image_path)
-                        }
-                      />
-                    <div className="flex flex-col lg:hidden overflow-hidden w-full">
-						
-                        <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-lg">
-                          {series.title}
-                        </h2>
-                        <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md text-gray-600">
-                          {series.description}
-                        </p>
-                      </div>
-                    </div>
+	<div className="flex flex-col h-full pb-36 lg:pb-10">
+	<ScrollArea className="flex-1 overflow-auto">
+	  <InfiniteScroll
+		dataLength={items.length}
+		next={fetchMoreData}
+		hasMore={hasMoreItems}
+		loader={<h4></h4>}
+		scrollThreshold={0.8}
+	  >
+		<div className="lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64 h-full">
+		  {items.map((series, index) => (
+			<div
+			  key={index}
+			  onClick={() => {
+				navigate(`/sermons?series=${series.slug}`);
+			  }}
+			  className="pt-2 px-2 lg:w-1/3 lg:px-15 "
+			>
+			  <Card>
+				<div className="flex items-center pt-1 pb-1 lg:pt-4 px-5 space-x-2 lg:justify-center">
+				
+				  <div>
+					  
+					<SiteImage
+					  divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto"
+					  ratio={1}
+					  alt="Topic Image"
+					  source={
+						b2endpoint +
+						encodeURIComponent(series.image_path)
+					  }
+					/>
+				  </div>
+				  <div className="flex-grow min-w-0 lg:hidden">
+					<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
+					  {series.title}
+					</h2>
+					<div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm leading-tight text-gray-600">
+					  {series.description}
+					</div>
 
+					
+				  </div>
+				</div>
+				<div className=" lg:border-b lg:text-gray-600 lg:pt-2 "></div>
 
-
-                    <div className=" lg:border-b lg:text-gray-600 lg:pt-2"></div>
-                    <div className="lg:flex lg:justify-center lg:pt-2">
-                      <div className="flex flex-col">
-                        <h2 className="lg:text-xl lg:text-center hidden lg:block">
-                          {series.title}
-                        </h2>
-                        <p className="text-gray-600 hidden lg:block text-center">
-                          {series.description}
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
-          ))}
-        </div>
-      </InfiniteScroll>
-	  </ScrollArea>
-    </div>
+				<div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2">
+				  <div className="flex flex-col hidden lg:block">
+				
+					<h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
+					  {series.title}
+					</h2>
+					<p className="lg:text-md lg:text-gray-600 lg:text-center hidden lg:block lg:leading-tight">
+					  {series.description}
+					</p>
+				
+				  </div>
+				</div>
+			  </Card>
+			</div>
+		  ))}
+		</div>
+	  </InfiniteScroll>
+	</ScrollArea>
+  </div>
   );
 }
 export default Series;

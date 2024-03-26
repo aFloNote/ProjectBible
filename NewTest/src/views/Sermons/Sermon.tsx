@@ -12,7 +12,6 @@ import {
 	CardContent,
    
   } from "@/components/ui/card"
-import {ScrollArea} from "@/components/ui/scroll-area";
 export function SermonPage() {
 	
   const navigate = useNavigate();
