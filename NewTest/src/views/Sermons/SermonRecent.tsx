@@ -117,7 +117,7 @@ export function Recent() {
   {
 
   return  (
-	<div className="flex flex-col h-full pb-36 lg:pb-10">
+	<div className="flex flex-col h-full pb-20 lg:pb-10">
 	<ScrollArea className="flex-1 overflow-auto">
 	  <InfiniteScroll
 		dataLength={items.length}
@@ -126,7 +126,7 @@ export function Recent() {
 		loader={<h4></h4>}
 		scrollThreshold={0.8}
 	  >
-		<div className="pb-22 lg:pb-1 lg:flex lg:flex-wrap">
+		<div className="pb-15 lg:pb-1 lg:flex lg:flex-wrap">
 		{items.map((SermonFull, index) => {
       const author_slug = queryParams.get("author");
       const topic_slug = queryParams.get("topic");

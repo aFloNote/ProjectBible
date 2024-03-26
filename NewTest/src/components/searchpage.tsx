@@ -101,7 +101,7 @@ export function SearchPage() {
 		  } else {
 			dispatch(setSearchResults([{ collection: "", document: "" }]));
 		  }
-		}, 400);
+		}, 200);
 	  });
 	} else {
 	  dispatch(setSearchResults([]));
