@@ -2,22 +2,15 @@ import { Fetch } from "@/hooks/sermonhooks";
 import { ScriptureType } from "@/types/sermon";
 
 import { SiteImage } from "@/image";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import { Link } from "react-router-dom";
 
+import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-function isValidURL(string: string) {
-  try {
-    new URL(string);
-    return true;
-  } catch (_) {
-    return false;
-  }
-}
+
 export function Scriptures() {
   const bibleOrder = [
     "Genesis",
@@ -88,7 +81,7 @@ export function Scriptures() {
     "Revelation",
     "Various Scriptures",
   ];
-
+  const navigate = useNavigate();
   const [items, setItems] = useState<ScriptureType[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
@@ -140,68 +133,64 @@ export function Scriptures() {
   });
 
   return (
-    <div className="flex flex-col pb-24 lg:pb-10 h-full">
-      <ScrollArea className="flex-1 overflow-auto">
-        <InfiniteScroll
-          dataLength={items.length}
-          next={fetchMoreData}
-          hasMore={hasMoreItems}
-          loader={<h4></h4>}
-          scrollThreshold={0.8}
-        >
-          <div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
-            {sortedScriptureData?.map((script) => (
-              <div className="pt-2 px-2 lg:w-1/3 lg:px-15" key={script.book}>
-                <Link to={`/sermons?scripture=${script.slug}`}>
-                  <Card>
-                    <CardContent className="pb-1 pt-1 lg:py-1 lg:px-10 lg:pt-2">
-                      <div className="flex lg:flex-col items-center space-x-4 mx-auto">
-                        {script.image_path !== "default" &&
-                          isValidURL(script.image_path) && (
-                            <SiteImage
-                              divClass="w-16 h-16 pt-2 lg:pt-0 lg:h-32 lg:w-32 rounded-full"
-                              ratio={1}
-                              alt="Scripture Image"
-                              source={
-                                b2endpoint +
-                                encodeURIComponent(script.image_path)
-                              }
-                            />
-                          )}
-                        <div className="flex flex-col lg:hidden overflow-hidden w-full">
-                          <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl">
-                            {script.book}
-                          </h2>
-                        </div>
-                      </div>
+	<div className="flex flex-col h-full pb-36 lg:pb-10">
+	<ScrollArea className="flex-1 overflow-auto">
+	  <InfiniteScroll
+		dataLength={sortedScriptureData.length}
+		next={fetchMoreData}
+		hasMore={hasMoreItems}
+		loader={<h4></h4>}
+		scrollThreshold={0.8}
+	  >
+		<div className="pb-22 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64 h-full ">
+		  {items.map((scripture, index) => (
+			<div
+			  key={index}
+			  onClick={() => {
+				navigate(`/sermons?scripture=${scripture.slug}`);
+			  }}
+			  className="pt-2 px-2 lg:w-1/3 lg:px-15 "
+			>
+			  <Card>
+				<div className="flex items-center pt-1 pb-1 lg:pt-4 px-5 space-x-2 lg:justify-center">
+				 
+				  <div>
+					  
+					<SiteImage
+					  divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto"
+					  ratio={1}
+					  alt="Topic Image"
+					  source={
+						b2endpoint +
+						encodeURIComponent(scripture.image_path)
+					  }
+					/>
+				  </div>
+				  <div className="flex-grow min-w-0 lg:hidden">
+					<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
+					  {scripture.book}
+					</h2>
+				
+				  </div>
+				</div>
+				<div className=" lg:border-b lg:text-gray-600 lg:pt-2 "></div>
 
-                      {script.image_path !== "default" &&
-                        isValidURL(script.image_path) && (
-                          <div className="lg:border-b lg:text-gray-600 lg:pt-2"></div>
-                        )}
-                      <div
-                        className={`lg:flex lg:justify-center ${
-                          script.image_path !== "default" &&
-                          isValidURL(script.image_path)
-                            ? "lg:pt-2"
-                            : ""
-                        }`}
-                      >
-                        <div className="flex flex-col">
-                          <h2 className="lg:text-xl lg:text-center hidden lg:block">
-                            {script.book}
-                          </h2>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </InfiniteScroll>
-      </ScrollArea>
-    </div>
+				<div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2">
+				  <div className="flex flex-col hidden lg:block">
+					
+					<h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
+					  {scripture.book}
+					</h2>
+				  </div>
+				</div>
+			  </Card>
+			</div>
+		  ))}
+		</div>
+	  </InfiniteScroll>
+	</ScrollArea>
+  </div>
+
   );
 }
 export default Scriptures;

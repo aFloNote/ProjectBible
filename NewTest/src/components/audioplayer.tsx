@@ -145,7 +145,7 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
         onDuration={handleDuration}
         playbackRate={playbackRate}
         width="100%"
-        height="10px"
+        height="0px"
         config={{
           file: {
             attributes: {
