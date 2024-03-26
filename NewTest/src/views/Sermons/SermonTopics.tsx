@@ -66,7 +66,7 @@ export function topics() {
 
   
   return (
-	<div className="flex flex-col h-full pb-36 lg:pb-10">
+	<div className="flex flex-col h-full pb-20 lg:pb-10">
 	<ScrollArea className="flex-1 overflow-auto">
 	  <InfiniteScroll
 		dataLength={items.length}
