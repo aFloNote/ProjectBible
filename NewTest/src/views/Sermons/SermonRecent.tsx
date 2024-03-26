@@ -113,8 +113,21 @@ export function Recent() {
       }
     }
   };
+  console.log(items)
   {
-  return  items.map((SermonFull, index) => {
+
+  return  (
+	<div className="flex flex-col h-full pb-36 lg:pb-10">
+	<ScrollArea className="flex-1 overflow-auto">
+	  <InfiniteScroll
+		dataLength={items.length}
+		next={fetchMoreData}
+		hasMore={hasMoreItems}
+		loader={<h4></h4>}
+		scrollThreshold={0.8}
+	  >
+		<div className="pb-22 lg:pb-1 lg:flex lg:flex-wrap">
+		{items.map((SermonFull, index) => {
       const author_slug = queryParams.get("author");
       const topic_slug = queryParams.get("topic");
       const series_slug = queryParams.get("series");
@@ -132,17 +145,10 @@ export function Recent() {
       } else if (topic_slug) {
         imagePath = SermonFull.TopicType.image_path;
       }
+	  
       return (
-        <div className="flex flex-col h-full pb-36 lg:pb-10">
-          <ScrollArea className="flex-1 overflow-auto">
-            <InfiniteScroll
-              dataLength={items.length}
-              next={fetchMoreData}
-              hasMore={hasMoreItems}
-              loader={<h4></h4>}
-              scrollThreshold={0.8}
-            >
-              <div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64 h-full">
+     
+            
                 <div
                   key={index}
                   onClick={() => {
@@ -200,13 +206,15 @@ export function Recent() {
                       </div>
                     </div>
                   </Card>
-                </div>
-              </div>
-            </InfiniteScroll>
-          </ScrollArea>
-        </div>
-      );
-    });
-  }
+				  </div>
+            
+            );
+          })}
+		  </div>
+        </InfiniteScroll>
+      </ScrollArea>
+    </div>
+  );
+}
 }
 export default Recent;
