@@ -97,7 +97,7 @@ export function Authors() {
     {items?.map((author) => (
         <div className="pt-2 px-2 lg:w-1/3 lg:px-15"  key={author.author_id}>
           <Card>
-		  <CardContent className="pt-5 lg:px-10">
+		  <CardContent className="pt-5 lg:px-10 ">
           <div className="flex lg:flex-col items-center space-x-4">
           <SiteImage
             divClass="w-20 h-20 lg:h-32 lg:w-32 rounded-full"
