@@ -45,14 +45,14 @@ export function EditSeries() {
   );
   useEffect(() => {
     setHeadForm(selectedSeries ? selectedSeries.title : "");
-    setDescForm(selectedSeries ? selectedSeries.description : "");
+    //setDescForm(selectedSeries ? selectedSeries.description : "");
   }, [selectedSeries]);
   const [canSubmit, setCanSubmit] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [headForm, setHeadForm] = useState(
     selectedSeries ? selectedSeries.title : ""
   );
-  const [descForm, setDescForm] = useState("");
+  //const [descForm, setDescForm] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [serverResponse, setServerResponse] = useState<{
     success: boolean;
@@ -126,7 +126,7 @@ export function EditSeries() {
     event.preventDefault();
     const formData = new FormData();
     formData.append("head", headForm);
-    formData.append("desc", descForm);
+    //formData.append("desc", descForm);
     formData.append("image", uploadedFiles[0]);
     if (selectedSeries) formData.append("series_id", selectedSeries.series_id);
 
@@ -160,11 +160,10 @@ export function EditSeries() {
   useEffect(() => {
     setCanSubmit(
       headForm !== "" &&
-        descForm !== "" &&
         uploadedFiles.length > 0 &&
         selectedSeries != null
     );
-  }, [headForm, descForm, uploadedFiles, selectedSeries]);
+  }, [headForm, uploadedFiles, selectedSeries]);
 
   return (
     <Dialog>
@@ -229,18 +228,7 @@ export function EditSeries() {
                     />
 
                   </div>
-                  <div className="pt-2">
-                    <Label htmlFor="desc" className="font-medium pl-3 pb-1">
-                      Description
-                    </Label>
-                    <Input
-                      id="desc"
-                      placeholder="Enter Description"
-                      value={descForm}
-                      onChange={(e) => setDescForm(e.target.value)}
-                      className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
-                    />
-                  </div>
+               
 				  </div>
                 
                 </div>

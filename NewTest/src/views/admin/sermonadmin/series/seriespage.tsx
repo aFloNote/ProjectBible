@@ -28,7 +28,7 @@ import { EditSeries } from "@/views/admin/sermonadmin/series/editseries";
 
 export function Series() {
   const [headForm, setHeadForm] = useState("");
-  const [descForm, setDescForm] = useState("");
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [serverResponse, setServerResponse] = useState<{
@@ -61,7 +61,7 @@ export function Series() {
 
     const formData = new FormData();
     formData.append("head", headForm);
-    formData.append("desc", descForm);
+    //formData.append("desc", descForm);
     formData.append("image", uploadedFiles[0]);
 
     mutate(formData, {
@@ -92,7 +92,7 @@ export function Series() {
 
   // Determine if the form can be submitted based on name, ministry, and image presence
   const canSubmit =
-    headForm !== "" && descForm !== "" && uploadedFiles.length > 0;
+    headForm !== "" && uploadedFiles.length > 0;
 
   return (
     <div className="flex flex-col items-center pt-10 bg-slate-50 dark:bg-background h-screen">
@@ -122,16 +122,7 @@ export function Series() {
                     className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
                   />
 				  </div>
-                  <Label htmlFor="desc" className="font-medium pl-3 pb-1">
-                    Description
-                  </Label>
-                  <Input
-                    id="desc"
-                    placeholder="Enter Description: required"
-                    value={descForm}
-                    onChange={(e) => setDescForm(e.target.value)}
-                    className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
-                  />
+                
                 </div>
 				</div>
 				<div className="border-t-2 pb-2 pt-2"></div>

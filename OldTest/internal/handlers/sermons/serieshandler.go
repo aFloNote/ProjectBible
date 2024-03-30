@@ -120,7 +120,8 @@ func AddSeriesHandler(minioClient *minio.Client, client *typesense.Client) http.
 
 			// Get form data
 			title := r.FormValue("head")
-			desc := r.FormValue("desc")
+			//desc := r.FormValue("desc")
+			desc:="default"
 			seriesID := uuid.New()
 			slug := slug.Make(title)
 
@@ -221,7 +222,8 @@ func UpdateSeriesHandler(minioClient *minio.Client, client *typesense.Client) ht
 			w.Header().Set("Content-Type", "text/plain")
 
 			title := r.FormValue("head")
-			desc := r.FormValue("desc")
+			//desc := r.FormValue("desc")
+			desc:="default"
 			ID := r.FormValue("series_id")
 			slug := slug.Make(title)
 			fmt.Println(desc)
