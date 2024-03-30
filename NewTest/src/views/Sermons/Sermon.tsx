@@ -76,7 +76,7 @@ export function SermonPage() {
             </h2>
             <div className="text-center leading-tight">
               <p className="text-gray-500 text-lg text-center font-medium leading-tight">
-                {sermonFull[0].SeriesType.description}
+                {sermonFull[0].SeriesType.title}
               </p>
             </div>
             <div className="text-gray-500 text-center leading-tight text-md">
