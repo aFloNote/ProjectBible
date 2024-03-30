@@ -129,9 +129,9 @@ export function Recent() {
 		<div className="pb-15 lg:pb-1 lg:flex lg:flex-wrap">
 		{items.map((SermonFull, index) => {
       const author_slug = queryParams.get("author");
-      const topic_slug = queryParams.get("topic");
+
       const series_slug = queryParams.get("series");
-      const script_slug = queryParams.get("scripture");
+  
 
       let imagePath = SermonFull.SeriesType.image_path; // default image path
 
@@ -140,11 +140,7 @@ export function Recent() {
         imagePath = SermonFull.AuthorType.image_path;
       } else if (series_slug) {
         imagePath = SermonFull.SeriesType.image_path;
-      } else if (script_slug) {
-        imagePath = SermonFull.ScriptureType.image_path;
-      } else if (topic_slug) {
-        imagePath = SermonFull.TopicType.image_path;
-      }
+      } 
 	  
       return (
      

@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { IoPersonCircleOutline, } from "react-icons/io5";
 import {IoIosPaper} from "react-icons/io";
 import { TbPodium } from "react-icons/tb";
-import { FaLayerGroup,FaBookOpen } from "react-icons/fa";
+import { FaLayerGroup} from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
@@ -179,26 +179,7 @@ function SermonSideBar() {
             dispatch(setSelectedSermonPage("scriptures"));
           }}
         >
-          <div className="flex flex-col items-center">
-            <FaBookOpen
-              size={iconSize}
-			
-			  className={
-				selectedSermonPage === "scriptures"
-				  ? `${selectedColor} dark:${darkSelectedColor}`
-				  : "text-gray-500 "
-			  }
-			/>
-			<span
-			  className={
-				selectedSermonPage === "scriptures"
-				  ? `text-lg pl-2 text-center font-normal ${selectedColor} dark:${darkSelectedColor}`
-				  : "text-lg pl-2 text-center font-normal text-gray-500"
-			  }
-			>
-              Books
-            </span>
-          </div>
+         
         </Button>
       </div>
     </div>

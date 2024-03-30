@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { AuthImage } from "@/views/admin/imagedrop";
+//import { AuthImage } from "@/views/admin/imagedrop";
 
 import { useSelector } from "react-redux";
 import { setSelectedTopic } from "@/redux/sermonAdminSelector";
@@ -48,7 +48,7 @@ export function EditTopic() {
   const [headForm, setHeadForm] = useState(
     selectedTopic ? selectedTopic.name : ""
   );
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
   const [serverResponse, setServerResponse] = useState<{
     success: boolean;
     message: string;
@@ -58,9 +58,7 @@ export function EditTopic() {
   const { isLoading: isDeleting, mutate: deleteItem } = Delete("deletetopic");
   const dispatch = useDispatch();
   const { data: topicsData } = Fetch<TopicType[]>("fetchtopics", "TopicData");
-  const handleImageUpdate = (files: File[]) => {
-    setUploadedFiles(files);
-  };
+  
   useEffect(() => {
     setHeadForm(selectedTopic ? selectedTopic.name : "");
   }, [selectedTopic]);
@@ -122,8 +120,7 @@ export function EditTopic() {
     event.preventDefault();
     const formData = new FormData();
     formData.append("name", headForm);
-    if (uploadedFiles.length > 0) formData.append("image", uploadedFiles[0]);
-    else formData.append("image", "default");
+  
     if (selectedTopic) formData.append("topic_id", selectedTopic.topic_id);
 
     upload(formData, {
@@ -155,7 +152,7 @@ export function EditTopic() {
   // Determine if the form can be submitted based on name, ministry, and image presence
   useEffect(() => {
     setCanSubmit(headForm !== "" && selectedTopic != null);
-  }, [headForm, uploadedFiles, selectedTopic]);
+  }, [headForm,selectedTopic]);
 
   return (
     <Dialog>
@@ -221,21 +218,8 @@ export function EditTopic() {
                     </div>
                   </div>
                 </div>
-                <div className="border-t-2 pb-2 pt-2"></div>
-                <div className="flex flex-col items-center justify-center">
-                  <Label
-                    htmlFor="typeimage"
-                    className="text-center dark:text-white"
-                  >
-                    Insert Topic Image
-                  </Label>
-                  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-                    <AuthImage
-                      onImageUpdate={handleImageUpdate}
-                      imgpath={selectedTopic ? selectedTopic.image_path : ""}
-                    />
-                  </div>
-                </div>
+            
+              
               </div>
               <DialogFooter>
                 <form onSubmit={handleSubmit}>

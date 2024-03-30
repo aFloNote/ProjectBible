@@ -13,7 +13,7 @@ import (
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
 	db "github.com/aFloNote/ProjectBible/OldTest/internal/postgres"
 	
-	fileStorage "github.com/aFloNote/ProjectBible/OldTest/internal/storage"
+
 	"github.com/aFloNote/ProjectBible/OldTest/types"
 	
 	"github.com/google/uuid"
@@ -92,14 +92,14 @@ func AddTopicsHandler(minioClient *minio.Client,client *typesense.Client) http.H
             w.Header().Set("Content-Type", "text/plain") // Change this to text/plain
 		
             
-            file, header,contentType, err := fileStorage.ParseFile(r, 10<<20,"image") // Use the actual form field name
-			if err != nil {
-				fmt.Fprintf(os.Stderr, "Process fil error: %v\n", err)
-				w.Write([]byte(`{""Failed to process uploaded file: " + err.Error()"}`))
+            //file, header,contentType, err := fileStorage.ParseFile(r, 10<<20,"image") // Use the actual form field name
+		//	if err :!= nil {
+		//		fmt.Fprintf(os.Stderr, "Process fil error: %v\n", err)
+		//		w.Write([]byte(`{""Failed to process uploaded file: " + err.Error()"}`))
 			
-				return
-			}
-			defer file.Close()
+		//		return
+			//}
+			//defer file.Close()
 
             // Get form data
             name := r.FormValue("name")
@@ -107,26 +107,26 @@ func AddTopicsHandler(minioClient *minio.Client,client *typesense.Client) http.H
             topicID := uuid.New()
             // Get the image file from the form
             
-			path:= fmt.Sprintf("sermons/topics/%s/image/%s",slug, header.Filename)
-			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
-            if err != nil {
-				fmt.Fprintf(os.Stderr, "upload file error: %v %v\n", upLoadInfo,err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
-            }
+			//path:= fmt.Sprintf("sermons/topics/%s/image/%s",slug, header.Filename)
+			//upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
+            //if err != nil {
+			//	fmt.Fprintf(os.Stderr, "upload file error: %v %v\n", upLoadInfo,err)
+              //  http.Error(w, err.Error(), http.StatusInternalServerError)
+                //return
+            //}
 
 			 // Attempt to insert author information into the database
-             fmt.Println(path)
+        
 			query := "INSERT INTO topics (topic_id,name, image_path, slug) VALUES ($1, $2, $3,$4)"
-			_, err = db.Exec(query, topicID,name, path,slug) // Note: Using path as MinIO doesn't return a URL in uploadInfo
+			_, err := db.Exec(query, topicID,name, "default",slug) // Note: Using path as MinIO doesn't return a URL in uploadInfo
 			if err != nil {
 				// If the query fails, attempt to remove the uploaded file from MinIO
-				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, minio.RemoveObjectOptions{})
-				if errRemove != nil {
+			//	errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, minio.RemoveObjectOptions{})
+			//	if errRemove != nil {
 					// Log or handle the error occurred during file removal
 					
-					fmt.Fprintf(os.Stderr, "Failed to remove uploaded file after DB error: %v\n", errRemove)
-				}
+			//		fmt.Fprintf(os.Stderr, "Failed to remove uploaded file after DB error: %v\n", errRemove)
+			//	}
 
 				// Return or handle the original database error
 			
@@ -137,7 +137,7 @@ func AddTopicsHandler(minioClient *minio.Client,client *typesense.Client) http.H
 			topicDocument := types.TopicType{
 				TopicID:   topicID.String(),
 				Name:      name,
-				Image_Path: path,
+				Image_Path: "default",
 				Slug:      slug,
 			}
 			_, err = client.Collection("topics").Documents().Create(context.Background(), topicDocument)
@@ -187,18 +187,18 @@ func UpdateTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
           
             
             
-            imgPath,err:=fileStorage.ProcessPathFiles(minioClient, "topic", "image", r, slug)
-            if err!=nil{      
-                fmt.Fprintf(os.Stderr, "upload file error: %v\n", err)
-                http.Error(w, err.Error(), http.StatusInternalServerError)
-                return
+          //  imgPath,err:=fileStorage.ProcessPathFiles(minioClient, "topic", "image", r, slug)
+            //if err!=nil{      
+              //  fmt.Fprintf(os.Stderr, "upload file error: %v\n", err)
+                //http.Error(w, err.Error(), http.StatusInternalServerError)
+                //return
 
-            }
+            //}
 		
             query := "UPDATE topics SET name = $1,image_path =$2, slug= $3 WHERE topic_id = $4"
             fmt.Println("Image path is in the database")
             // Execute SQL statement
-            _, err = db.Exec(query, name,imgPath,slug,ID)
+            _, err := db.Exec(query, name,"default",slug,ID)
             if err != nil {
                 log.Fatal(err)
             }
@@ -206,7 +206,7 @@ func UpdateTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
 			updateData := map[string]interface{}{
 				"'topic_id":   ID,
 				"name":      name,
-				"image_path": imgPath,
+				"image_path": "default",
 				"slug":      slug,
 			}
 			
@@ -234,7 +234,7 @@ func DeleteTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
             w.Header().Set("Content-Type", "text/plain")
          
             topicID := r.FormValue("id")
-            slug:= r.FormValue("slug")
+            //slug:= r.FormValue("slug")
 
           
             _, err := db.Exec("DELETE FROM topics WHERE topic_id=$1", topicID)
@@ -243,22 +243,22 @@ func DeleteTopicsHandler(minioClient *minio.Client,client *typesense.Client) htt
                 return
             }
             // Get the prefix for the objects to delete
-            prefix := fmt.Sprintf("sermons/topics/%s/",slug )
+            //prefix := fmt.Sprintf("sermons/topics/%s/",slug )
 
          
-            for object := range minioClient.ListObjects(context.Background(), os.Getenv("STORAGE_BUCKET"), minio.ListObjectsOptions{Prefix: prefix, Recursive: true}) {
-                fmt.Println(object.Key)
-                if object.Err != nil {
-                    fmt.Fprintf(os.Stderr, "Error listing objects for deletion: %v\n", object.Err)
-                    return
-                }
+            //for object := range minioClient.ListObjects(context.Background(), os.Getenv("STORAGE_BUCKET"), minio.ListObjectsOptions{Prefix: prefix, Recursive: true}) {
+              //  fmt.Println(object.Key)
+                //if object.Err != nil {
+                 //   fmt.Fprintf(os.Stderr, "Error listing objects for deletion: %v\n", object.Err)
+                   // return
+                //}
 
                 
-                errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), object.Key, minio.RemoveObjectOptions{})
-                if errRemove != nil {
-                    fmt.Fprintf(os.Stderr, "Failed to remove object: %v\n", errRemove)
-                }
-            }
+                //errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), object.Key, minio.RemoveObjectOptions{})
+               // if errRemove != nil {
+                 //   fmt.Fprintf(os.Stderr, "Failed to remove object: %v\n", errRemove)
+                //}
+           // }
 			search.DeleteDocument(client, topicID, "topic_id","topics")
 			search.DeleteDocument(client, topicID, "searchid","search")
             w.WriteHeader(http.StatusOK)

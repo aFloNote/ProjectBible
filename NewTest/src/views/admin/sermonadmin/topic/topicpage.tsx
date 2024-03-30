@@ -10,7 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { AuthImage } from "@/views/admin/imagedrop";
+
 
 import { useState } from "react";
 import { Upload } from "@/hooks/sermonhooks";
@@ -25,7 +25,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 export function Topic() {
   const [headForm, setHeadForm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+
   const [serverResponse, setServerResponse] = useState<{
     success: boolean;
     message: string;
@@ -33,9 +33,7 @@ export function Topic() {
   } | null>(null);
   const { isLoading, mutate } = Upload("uploadtopic");
 
-  const handleImageUpdate = (files: File[]) => {
-    setUploadedFiles(files);
-  };
+
   const { data: topicData } = Fetch<TopicType[]>("fetchtopics", "TopicData");
   const queryClient = useQueryClient();
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -57,7 +55,7 @@ export function Topic() {
 
     const formData = new FormData();
     formData.append("name", headForm);
-    formData.append("image", uploadedFiles[0]);
+  
 
     mutate(formData, {
       onSuccess: () => {
@@ -118,15 +116,8 @@ export function Topic() {
 				</div>
 			  </div>
 			  </div>
-			  <div className="border-t-2 pb-2 pt-2"></div>
-				<div className="flex flex-col items-center justify-center">
-				  <Label htmlFor="typeimage" className="dark:text-white">
-					Insert Topic Image
-				  </Label>
-				  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-					<AuthImage onImageUpdate={handleImageUpdate} />
-				  </div>
-				</div>
+		
+			
 			 
 			
 
