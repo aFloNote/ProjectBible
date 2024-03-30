@@ -93,7 +93,7 @@ export function Authors() {
        hasMore={hasMoreItems}
        loader={<h4></h4>}
        scrollThreshold={0.8}>
-			<div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64 h-full">
+			<div className="pb-12 lg:pb-1 lg:flex lg:flex-wrap lg:h-auto lg:h-64">
     {items?.map((author) => (
         <div className="pt-2 px-2 lg:w-1/3 lg:px-15"  key={author.author_id}>
           <Card>
@@ -108,9 +108,9 @@ export function Authors() {
               encodeURIComponent(author.image_path)
             }
           />
-          <div className='text-center'>
+          <div className='lg:text-center'>
             <h2 className="text-xl">{author.name}</h2>
-            <p className='text-gray-500 whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg'>{author.ministry}</p>
+            <p className='text-gray-500'>{author.ministry}</p>
           </div>
         </div>
 		<div className='lg:border-b text-gray-600'></div>
