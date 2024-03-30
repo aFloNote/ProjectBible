@@ -117,9 +117,7 @@ export function Series() {
 					<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
 					  {series.title}
 					</h2>
-					<div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm leading-tight text-gray-600">
-					  {series.description}
-					</div>
+				
 
 					
 				  </div>
@@ -132,9 +130,7 @@ export function Series() {
 					<h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
 					  {series.title}
 					</h2>
-					<p className="lg:text-md lg:text-gray-600 lg:text-center hidden lg:block lg:leading-tight">
-					  {series.description}
-					</p>
+				
 				
 				  </div>
 				</div>
