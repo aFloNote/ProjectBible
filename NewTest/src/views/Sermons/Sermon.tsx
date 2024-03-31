@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Fetch } from "@/hooks/sermonhooks";
 import { SermonFullType } from "@/types/sermon";
 import { SiteImage } from "@/image";
@@ -7,7 +7,8 @@ import { Audio } from "@/components/audioplayer";
 import 'react-h5-audio-player/lib/styles.css';
 import { useDispatch } from "react-redux";
 import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
-
+import { FiArrowLeft } from "react-icons/fi";
+import { ScrollArea } from "@radix-ui/react-scroll-area";
 export function SermonPage() {
 	
   const navigate = useNavigate();
@@ -47,14 +48,17 @@ export function SermonPage() {
   }
 
   return (
-	<div className='mx-auto max-w-lg'>
+	<div className='mx-auto max-w-lg h-screen'>
 	<div className='pb-0 pt-5'  >
-		
-    <div className="flex flex-col"> 
+	<Link to="/sermons" className="absolute top-0 left-0 p-4">
+        <FiArrowLeft size={24} />
+      </Link>
+    <div className="flex flex-col pt-5 h-lvh"> 
+	<ScrollArea className="flex-1 overflow-auto">
       <div className="">
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
           <SiteImage
-            divClass='w-64 h-64 max-[320px]:h-20 max-[320px]:w-20 mx-auto'
+            divClass='w-64 h-64 max-[320px]:h-64 max-[320px]:w-64 mx-auto'
             ratio={1/1}
             alt='Series Image'
             source={
@@ -95,6 +99,7 @@ export function SermonPage() {
       <div className="flex flex-col"> {/* Audio player container */}
         <Audio audio_link={sermonFull[0].SermonType.audio_path} sermonFull={sermonFull}/>
       </div>
+	  </ScrollArea>
     </div>
 
 	</div>
