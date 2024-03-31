@@ -73,18 +73,18 @@ export function SermonPage() {
         <div className="pt-2">
           <div className="col-span-4 leading-tight pb-1">
 		
-            <h2 className="text-xl text-center leading-tight">
+            <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xl text-center leading-tight">
               {sermonFull[0].SermonType.title}
             </h2>
             <div className="text-center leading-tight">
-              <p className="text-gray-500 text-lg text-center font-medium leading-tight">
+              <p className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-500 text-lg text-center font-medium leading-tight">
                 {sermonFull[0].SeriesType.title}
               </p>
             </div>
             <div className="text-gray-500 text-center leading-tight text-md">
               {sermonFull[0].AuthorType.name}
             </div>
-			<div className="text-gray-500 text-center text-primary leading-tight text-sm">
+			<div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-500 text-center text-primary leading-tight text-sm">
               {sermonFull[0].SermonType.scripture}
             </div>
 			<div className='flex text-center leading-none pt-2'>

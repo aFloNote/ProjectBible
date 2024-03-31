@@ -134,6 +134,12 @@ export function SearchPage() {
 	  setFromDate(undefined);
 	  setToDate(undefined);
 	}
+	if (inputValue === "" || inputValue === undefined) {
+		dispatch(setSearch('*'));
+		if (searchResult) {
+		  searchResult.refetch();
+		}
+	  }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
