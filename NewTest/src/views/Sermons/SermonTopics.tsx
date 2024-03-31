@@ -80,7 +80,7 @@ export function topics() {
               <div
                 key={index}
                 onClick={() => {
-                  navigate(`/sermons?scripture=${topic.slug}`);
+                  navigate(`/sermons?topic=${topic.slug}`);
                 }}
                 className="pt-2 px-2 lg:w-1/3 lg:px-15 "
               >

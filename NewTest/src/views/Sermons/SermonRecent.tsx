@@ -150,7 +150,7 @@ export function Recent() {
                   onClick={() => {
                     navigate(`/sermonlistening/${SermonFull.SermonType.slug}`);
                   }}
-                  className="pt-2 px-2 lg:w-1/3 lg:px-15 "
+                  className="pt-2 px-2 lg:w-1/3 lg:px-15"
                 >
                   <Card>
                     <div className="flex items-center pt-1 pb-1 lg:pt-4 px-5 space-x-2 lg:justify-center">
