@@ -128,19 +128,12 @@ export function Recent() {
 	  >
 		<div className="pb-15 lg:pb-1 lg:flex lg:flex-wrap">
 		{items.map((SermonFull, index) => {
-      const author_slug = queryParams.get("author");
-
-      const series_slug = queryParams.get("series");
+  
   
 
       let imagePath = SermonFull.SeriesType.image_path; // default image path
 
-      // Update the image path based on the URL parameters
-      if (author_slug) {
-        imagePath = SermonFull.AuthorType.image_path;
-      } else if (series_slug) {
-        imagePath = SermonFull.SeriesType.image_path;
-      } 
+    
 	  
       return (
      
