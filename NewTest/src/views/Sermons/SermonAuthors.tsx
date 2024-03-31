@@ -85,7 +85,7 @@ export function Authors() {
   
 
   return (
-    <div className='flex flex-col pb-10 lg:pb-10 h-full'>
+    <div className='flex flex-col pb-28 lg:pb-10 h-full'>
 		<ScrollArea className="flex-1 overflow-auto">
     <InfiniteScroll
        dataLength={items.length}
