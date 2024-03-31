@@ -7,11 +7,7 @@ import { Audio } from "@/components/audioplayer";
 import 'react-h5-audio-player/lib/styles.css';
 import { useDispatch } from "react-redux";
 import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
-import {
-	Card,
-	CardContent,
-   
-  } from "@/components/ui/card"
+
 export function SermonPage() {
 	
   const navigate = useNavigate();
@@ -52,9 +48,8 @@ export function SermonPage() {
 
   return (
 	<div className='mx-auto max-w-lg'>
-	<Card>
-		<div className='pb-0 pt-5'  >
-			<CardContent className='min h-[500px]'>	
+	<div className='pb-0 pt-5'  >
+		
     <div className="flex flex-col"> 
       <div className="">
         {sermonFull.length > 0 && sermonFull[0].SeriesType.image_path && (
@@ -101,10 +96,10 @@ export function SermonPage() {
         <Audio audio_link={sermonFull[0].SermonType.audio_path} sermonFull={sermonFull}/>
       </div>
     </div>
-	</CardContent>
+
 	</div>
 
-	</Card>
+	
 	</div>
   );
 }
