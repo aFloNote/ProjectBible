@@ -15,16 +15,14 @@ const Series = lazy(() => import("@/views/Sermons/SermonSeries"));
 const Authors = lazy(() => import("@/views/Sermons/SermonAuthors"));
 const Scriptures = lazy(() => import("./SermonScriptures"));
 const Topics = lazy(() => import("@/views/Sermons/SermonTopics"));
-import { useTheme } from "@/components/theme-provider";
+
 function SermonLanding() {
   const location = useLocation();
   const selectedSermonPage = useSelector(
     (state: RootState) => state.sermon.selectedSermonPage
   );
   const isSermonListeningRoute = location.pathname.includes("/sermonlistening");
-  const { theme, setTheme } = useTheme();
-	if (theme !== "dark")
-		setTheme( "dark" );
+
 
 	
  
