@@ -120,6 +120,7 @@ export function SearchPage() {
 
   const handleDateChange = (date: DateRange | undefined) => {
 	setDatePressed(true);
+	console.log(date)
 	if (date?.from && date?.to) {
 	  const fromMountainTime = new Date(date.from.toLocaleString("en-US", { timeZone: "America/Denver" }));
 	  const toMountainTime = new Date(date.to.toLocaleString("en-US", { timeZone: "America/Denver" }));
@@ -129,10 +130,12 @@ export function SearchPage() {
 	  setToDate(toUnix);
 	  dispatch(setSearch("*"));
 	} else if (date?.from) {
-	  const fromMountainTime = new Date(date.from.toLocaleString("en-US", { timeZone: "America/Denver" }));
-	  const fromUnix = Math.floor(fromMountainTime.getTime() / 1000);
-	  setFromDate(fromUnix);
-	  setToDate(fromUnix);
+		const fromMountainTime = new Date(date.from.toLocaleString("en-US", { timeZone: "America/Denver" }));
+		const fromUnix = Math.floor(fromMountainTime.getTime() / 1000);
+		setFromDate(fromUnix);
+		
+		const toUnix = fromUnix + 86400;
+		setToDate(toUnix);
 	  dispatch(setSearch("*"));
 	} else {
 	  setFromDate(undefined);
