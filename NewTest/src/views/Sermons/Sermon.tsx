@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 import { FiArrowLeft } from "react-icons/fi";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useTheme } from "@/components/theme-provider";
+
 export function SermonPage() {
 	
   const navigate = useNavigate();
@@ -43,9 +43,7 @@ export function SermonPage() {
     // @ts-ignore
     year = date.getUTCFullYear();
  }
- const { theme, setTheme } = useTheme();
- if (theme !== "dark")
-	 setTheme( "dark" );
+
   if (!sermonFull) {
     return <div>Loading...</div>;
   }
