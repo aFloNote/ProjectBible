@@ -136,6 +136,7 @@ export function SearchPage() {
 	}
 	if (inputValue === "" || inputValue === undefined) {
 		setSearchTerm("*")
+		console.log('firstuser effect')
 		dispatch(setSearch('*'));
 		if (searchResult) {
 		  searchResult.refetch();
@@ -151,6 +152,7 @@ export function SearchPage() {
   useEffect(() => {
 	setSearchTerm(inputValue);
 	if (inputValue === "") {
+		console.log('seconduser effect')
 	  dispatch(setSearchResults([]));
 	}
   }, [inputValue, dispatch]);
