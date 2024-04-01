@@ -113,97 +113,89 @@ export function Recent() {
       }
     }
   };
-  console.log(items)
+  console.log(items);
   {
+    return (
+      <div className="flex flex-col h-full pb-36  lg:pb-10">
+        <ScrollArea className="flex-1 overflow-auto">
+          <InfiniteScroll
+            dataLength={items.length}
+            next={fetchMoreData}
+            hasMore={hasMoreItems}
+            loader={<h4></h4>}
+            scrollThreshold={0.8}
+          >
+            <div className="pb-15 lg:pb-1 lg:flex lg:flex-wrap">
+              {items.map((SermonFull, index) => {
+                let imagePath = SermonFull.SeriesType.image_path; // default image path
 
-  return  (
-	<div className="flex flex-col h-full pb-36  lg:pb-10">
-	<ScrollArea className="flex-1 overflow-auto">
-	  <InfiniteScroll
-		dataLength={items.length}
-		next={fetchMoreData}
-		hasMore={hasMoreItems}
-		loader={<h4></h4>}
-		scrollThreshold={0.8}
-	  >
-		<div className="pb-15 lg:pb-1 lg:flex lg:flex-wrap">
-		{items.map((SermonFull, index) => {
-  
-  
-
-      let imagePath = SermonFull.SeriesType.image_path; // default image path
-
-    
-	  
-      return (
-     
-            
-                <div
-                  key={index}
-                  onClick={() => {
-                    navigate(`/sermonlistening/${SermonFull.SermonType.slug}`);
-                  }}
-                  className="pt-2 px-2 lg:w-1/3 lg:px-15"
-                >
-                  <Card>
-                    <div className="flex items-center pt-1 pb-1 lg:pt-4 px-5 space-x-2 lg:justify-center">
-                      <div className="lg:hidden">
-                        <DateComp date={SermonFull.SermonType.date_delivered} />
-                      </div>
-                      <div>
-                        <SiteImage
-                          divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto"
-                          ratio={1}
-                          alt="Topic Image"
-                          source={
-                            b2endpoint +
-                            encodeURIComponent(imagePath)
-                          }
-                        />
-                      </div>
-                      <div className="flex-grow min-w-0 lg:hidden">
-                        <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
-                          {SermonFull.SermonType.title}
-                        </h2>
-                        <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm leading-tight text-gray-600">
-                          {SermonFull.SeriesType.title}
-                        </div>
-
-                        <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xs text-primary leading-tight text-gray-600">
-                          {SermonFull.SermonType.scripture}
-                        </div>
-                      </div>
-                    </div>
-                    <div className=" lg:border-b lg:text-gray-600 lg:pt-2 "></div>
-
-                    <div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2">
-                      <div className="flex flex-col hidden lg:block">
-                        <div className="flex text-center lg:leading-tight">
+                return (
+                  <div
+                    key={index}
+                    onClick={() => {
+                      navigate(
+                        `/sermonlistening/${SermonFull.SermonType.slug}`
+                      );
+                    }}
+                    className="pt-2 px-2 lg:w-1/3 lg:px-15"
+                  >
+                    <Card>
+                      <div className="flex items-center pt-1 pb-1 lg:pt-4 px-5 space-x-2 lg:justify-center">
+                        <div className="lg:hidden">
                           <DateComp
                             date={SermonFull.SermonType.date_delivered}
                           />
                         </div>
-                        <h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
-                          {SermonFull.SermonType.title}
-                        </h2>
-                        <p className="lg:text-md lg:text-gray-600 lg:text-center hidden lg:block lg:leading-tight">
-                          {SermonFull.SeriesType.title}
-                        </p>
-                        <p className="lg:text-sm lg:font-normal lg:text-center lg:text-primary hidden lg:block lg:leading-tight">
-                          {SermonFull.SermonType.scripture}
-                        </p>
+                        <div>
+                          <SiteImage
+                            divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto"
+                            ratio={1}
+                            alt="Topic Image"
+                            source={b2endpoint + encodeURIComponent(imagePath)}
+                          />
+                        </div>
+                        <div className="flex-grow min-w-0 lg:hidden">
+                          <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
+                            {SermonFull.SermonType.title}
+                          </h2>
+                          <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm leading-tight text-gray-600">
+                            {SermonFull.SeriesType.title}
+                          </div>
+
+                          <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xs text-primary leading-tight text-gray-600">
+                            {SermonFull.SermonType.scripture}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </Card>
-				  </div>
-            
-            );
-          })}
-		  </div>
-        </InfiniteScroll>
-      </ScrollArea>
-    </div>
-  );
-}
+                      <div className=" lg:border-b lg:text-gray-600 lg:pt-2 "></div>
+
+                      <div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2">
+                        <div className="flex flex-col hidden lg:block">
+                          <div className="flex text-center lg:leading-tight">
+                            <DateComp
+                              date={SermonFull.SermonType.date_delivered}
+                            />
+                          </div>
+                          <h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
+                            {SermonFull.SermonType.title}
+                          </h2>
+                          <p className="lg:text-md lg:text-gray-600 lg:text-center hidden lg:block lg:leading-tight">
+                            {SermonFull.SeriesType.title}
+                          </p>
+                          <p className="lg:text-sm lg:font-normal lg:text-center lg:text-primary hidden lg:block lg:leading-tight">
+                            {SermonFull.SermonType.scripture}
+                          </p>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
+          </InfiniteScroll>
+        </ScrollArea>
+      </div>
+    );
+  }
 }
 export default Recent;

@@ -23,12 +23,11 @@ function SermonLanding() {
   );
   const isSermonListeningRoute = location.pathname.includes("/sermonlistening");
 
-
-	
- 
   return (
     <div
-	className={`flex flex-col h-screen overflow-hidden dark:bg-background py-2 ${isSermonListeningRoute ? 'bg-stone-700' :'bg-slate-50'}`}
+      className={`flex flex-col h-screen overflow-hidden dark:bg-background py-2 ${
+        isSermonListeningRoute ? "bg-background" : "bg-slate-50"
+      }`}
     >
       {!isSermonListeningRoute && (
         <header>
@@ -40,11 +39,11 @@ function SermonLanding() {
 
       {/* Main content wrapper */}
       <div className="flex flex-grow overflow-hidden">
-        {/* Sidebar */}
-        <aside className="hidden lg:block bg-white dark:bg-background border-r-2 dark:border-none dark:shadow-lg dark:shadow-blue-500/50 lg:p-5">
-          <Side />
-        </aside>
-
+        {!isSermonListeningRoute && (
+          <aside className="hidden lg:block bg-white dark:bg-background border-r-2 dark:border-none dark:shadow-lg dark:shadow-blue-500/50 lg:p-5">
+            <Side />
+          </aside>
+        )}
         {/* Main content area */}
         <main className="flex-grow overflow-hidden h-full w-full p-4">
           <div className="bg-white dark:bg-background">
