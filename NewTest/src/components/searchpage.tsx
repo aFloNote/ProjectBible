@@ -1,6 +1,6 @@
 import { SearchPageFetch } from "@/hooks/sermonhooks";
 import { useState, useEffect, useRef } from "react";
-import { setSearchResults, setSearch } from "@/redux/searchselector";
+import { setSearchResults, setSearch, setDatePressed } from "@/redux/searchselector";
 import { SearchResult } from "@/types/sermon";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -88,10 +88,12 @@ export function SearchPage() {
 	  clearTimeout(timeoutId.current);
 	}
   
-	if (inputValue === "") {
+	if (inputValue === "" && fromDate === undefined && toDate === undefined) {
 	  dispatch(setSearchResults([]));
 	  return;
 	}
+	else if (inputValue === "") 
+		setSearchTerm("*");
   
 	if (searchResult) {
 	  searchResult.refetch().then(() => {
@@ -101,7 +103,7 @@ export function SearchPage() {
 		  } else {
 			dispatch(setSearchResults([{ collection: "", document: "" }]));
 		  }
-		}, 200);
+		}, 500);
 	  });
 	} else {
 	  dispatch(setSearchResults([]));
@@ -113,9 +115,10 @@ export function SearchPage() {
 		clearTimeout(timeoutId.current);
 	  }
 	};
-  }, [inputValue, searchResult?.refetch, dispatch, searchResult.data]);
+  }, [inputValue, fromDate, toDate, searchResult?.refetch, dispatch, searchResult.data]);
 
   const handleDateChange = (date: DateRange | undefined) => {
+	setDatePressed(true);
 	if (date?.from && date?.to) {
 	  const fromMountainTime = new Date(date.from.toLocaleString("en-US", { timeZone: "America/Denver" }));
 	  const toMountainTime = new Date(date.to.toLocaleString("en-US", { timeZone: "America/Denver" }));
@@ -123,25 +126,17 @@ export function SearchPage() {
 	  const toUnix = Math.floor(toMountainTime.getTime() / 1000);
 	  setFromDate(fromUnix);
 	  setToDate(toUnix);
-	  dispatch(setSearch(fromUnix + "-" + toUnix));
+	  dispatch(setSearch("*"));
 	} else if (date?.from) {
 	  const fromMountainTime = new Date(date.from.toLocaleString("en-US", { timeZone: "America/Denver" }));
 	  const fromUnix = Math.floor(fromMountainTime.getTime() / 1000);
 	  setFromDate(fromUnix);
 	  setToDate(fromUnix);
-	  dispatch(setSearch(fromUnix + "-" + fromUnix));
+	  dispatch(setSearch("*"));
 	} else {
 	  setFromDate(undefined);
 	  setToDate(undefined);
 	}
-	if (inputValue === "" || inputValue === undefined) {
-		setSearchTerm("*")
-		console.log('firstuser effect')
-		dispatch(setSearch('*'));
-		if (searchResult) {
-		  searchResult.refetch();
-		}
-	  }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -152,13 +147,12 @@ export function SearchPage() {
   useEffect(() => {
 	setSearchTerm(inputValue);
 	if (inputValue === "") {
-		console.log('seconduser effect')
 	  dispatch(setSearchResults([]));
 	}
   }, [inputValue, dispatch]);
 
   return (
-	<div className="relative bg-slate-50 dark:bg-background pb-3">
+	<div className="relative bg-slate-50 dark:bg-background">
     <div className="flex pt-1 items-center">
       <Input
         value={inputValue}
@@ -166,7 +160,7 @@ export function SearchPage() {
         placeholder={searchCriteria}
         className="pl-10 border-border bg-white dark:bg-background pr-2 text-lg" // Add some padding to prevent the text from overlapping the icon
       />
-      <FaSearch size={20} className={`absolute left-2 top-5 transform -translate-y-2 ${inputValue ? 'text-primary' : 'text-gray-500/50'}`} />
+      <FaSearch size={20} className={`absolute left-2 top-1/2 transform -translate-y-2 ${inputValue ? 'text-primary' : 'text-gray-500/50'}`} />
       {pageName === "sermons" && <DatePickerWithRange className={fromDate !== undefined && toDate !== undefined ? 'pl-2 text-primary dark:text-white' : 'pl-2 text-gray-500/50'}  onDateChange={handleDateChange} />}
     </div>
   </div>

@@ -7,6 +7,7 @@ import { useLocation } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
 import { setSelectedSermonPage } from "@/redux/sermonSelector";
+import { setDatePressed } from "@/redux/searchselector";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { Card } from "@/components/ui/card";
@@ -14,6 +15,7 @@ import { RootState } from "@/redux/store";
 import { SermonType } from "@/types/sermon";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
 import { SiteImage } from "@/image";
+
 
 export function Recent() {
   const navigate = useNavigate();
@@ -61,10 +63,12 @@ export function Recent() {
     queryKey = "TopicsData" + topic_slug;
   }
   const searchTerm = useSelector((state: RootState) => state.search.input);
+  const datePress = useSelector((state: RootState) => state.search.datePressed);
 
   const { data: sermonsData } = Fetch<SermonFullType[]>(route, queryKey, false);
   useEffect(() => {
-    if (searchResults && searchResults.length > 0 && searchTerm !== "") {
+    if (searchResults && searchResults.length > 0 && (searchTerm !== ""||datePress==true)) {
+		dispatch(setDatePressed(false));
       const sermonResults = searchResults
         .filter((result) => result.collection === "sermons")
         .map((result) => result.document as SermonType);
@@ -113,7 +117,7 @@ export function Recent() {
       }
     }
   };
-  console.log(items);
+  //console.log(items);
   {
     return (
       <div className="flex flex-col h-full pb-40  lg:pb-10">
