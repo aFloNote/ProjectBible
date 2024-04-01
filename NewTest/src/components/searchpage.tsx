@@ -93,6 +93,7 @@ export function SearchPage() {
 	  return;
 	}
 	else if (inputValue === "") 
+	//random commit
 		setSearchTerm("*");
   
 	if (searchResult) {
