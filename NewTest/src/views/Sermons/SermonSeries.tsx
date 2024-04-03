@@ -106,7 +106,7 @@ export function Series() {
 					<SiteImage
 					  divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto"
 					  ratio={1}
-					  alt="Topic Image"
+					  alt="Series Image"
 					  source={
 						b2endpoint +
 						encodeURIComponent(series.image_path)

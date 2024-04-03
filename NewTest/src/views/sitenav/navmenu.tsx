@@ -17,7 +17,7 @@ import { useState } from "react";
 
 
 
-import Search from "@/components/search";
+
 
 
   function Menu() {
@@ -153,10 +153,8 @@ import Search from "@/components/search";
 		<PopoverContent onOpenAutoFocus={(event) => event.preventDefault()} className='w-fit -translate-x-1'>
 			<Menu/>
 			<div className='border-t-2'></div>
-			<div className="flex justify-between">
-			<div className=''>
-            <Search setIsClicked={setIsClicked} />
-			</div>
+			<div className="flex justify-center">
+			
       
 		
 		<ModeToggle setIsClicked={setIsClicked} />

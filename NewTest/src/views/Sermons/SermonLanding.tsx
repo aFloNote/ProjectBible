@@ -25,7 +25,7 @@ function SermonLanding() {
 
   return (
     <div
-      className={`flex flex-col h-screen overflow-hidden dark:bg-background py-2 ${
+      className={`flex flex-col h-screen overflow-hidden dark:bg-background ${
         isSermonListeningRoute ? "bg-background" : "bg-slate-50"
       }`}
     >
