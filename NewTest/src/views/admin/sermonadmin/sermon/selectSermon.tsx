@@ -20,10 +20,10 @@ import {
 import { cn } from "@/lib/utils";
 import { useDispatch, useSelector } from 'react-redux';
 import { setSelectedAuthor, setSelectedScripture, setSelectedSeries, setSelectedTopic,setSelectedSermon } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { RootState } from "@/redux/store";
 
-export function SelectSermon({buttonVar="outline"}: {buttonVar?: "outline" | "link" | "default" | "destructive" | "secondary" | "ghost" | null | undefined}) {
+export function SelectSermon() {
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState("");
   const { data: sermonData} = Fetch<SermonFullType[]>(
@@ -52,7 +52,7 @@ export function SelectSermon({buttonVar="outline"}: {buttonVar?: "outline" | "li
         <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
-          variant={buttonVar}
+		  variant='outline'
           role="combobox"
           aria-expanded={open}
           className='h-5 w-full'
