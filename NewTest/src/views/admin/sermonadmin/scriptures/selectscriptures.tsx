@@ -143,7 +143,7 @@ export function SelectScripture() {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
-          <ScrollArea className="h-72 w-48 rounded-md border">
+          <ScrollArea className="h-72 w-46 rounded-md border pointer-events-auto">
             <Command>
               <CommandInput placeholder={`Search scripture...`} />
               <CommandEmpty>No scripture found.</CommandEmpty>

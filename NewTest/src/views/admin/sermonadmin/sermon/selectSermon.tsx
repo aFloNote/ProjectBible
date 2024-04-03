@@ -64,7 +64,7 @@ export function SelectSermon({buttonVar="outline"}: {buttonVar?: "outline" | "li
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">
-        <ScrollArea>
+        <ScrollArea className='h-72 w-46 rounded-md border'>
         <Command>
           <CommandInput placeholder={`Search Sermon...`} />
           <CommandEmpty>No Sermon found.</CommandEmpty>

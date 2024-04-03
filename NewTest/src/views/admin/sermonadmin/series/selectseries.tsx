@@ -75,7 +75,7 @@ const { data: seriesData, error } = Fetch<SeriesType[]>(
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
-          <ScrollArea>
+          <ScrollArea className='h-72 w-46 rounded-md border pointer-events-auto'>
           <Command>
             <CommandInput placeholder={`Search series...`} />
             <CommandEmpty>No series found.</CommandEmpty>
