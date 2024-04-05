@@ -67,7 +67,10 @@ export function Recent() {
 
   const { data: sermonsData } = Fetch<SermonFullType[]>(route, queryKey, false);
   useEffect(() => {
+	console.log('searchResults',searchResults)
+	console.log('datePress',datePress)
     if (searchResults && searchResults.length > 0 && (searchTerm !== ""||datePress==true)) {
+		console.log('datePress',datePress)
 		dispatch(setDatePressed(false));
       const sermonResults = searchResults
         .filter((result) => result.collection === "sermons")

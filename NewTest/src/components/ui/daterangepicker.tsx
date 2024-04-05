@@ -27,7 +27,7 @@ export function DatePickerWithRange({
   const [isClicked, setIsClicked] = React.useState(false);
 
   const handleButtonClick = () => {
-    setIsClicked(false);
+    setIsClicked(true);
     onDateChange?.(date);
   };
 
