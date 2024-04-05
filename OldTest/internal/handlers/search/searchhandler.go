@@ -70,7 +70,7 @@ func SearchPageHandler(client *typesense.Client) http.Handler {
 		fmt.Println("ToDate: ",toDate)
 		fmt.Println("Collection: ",collection)
 		fmt.Println("Query: ",query)
-        if query == "" || collection == "" {
+        if (query == "" && toDate=="")|| collection == "" {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]interface{}{})
 			return
