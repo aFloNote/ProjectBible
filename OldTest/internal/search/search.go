@@ -50,6 +50,7 @@ func DeleteDocument(client *typesense.Client, query string, field string, theTyp
 }
 
 func UpdateDocument(client *typesense.Client, query string, field string, theType string, newDocument map[string]interface{}) {
+
     idValue := GetDocID(client, query, field, theType)
 
     if idValue == "" {
