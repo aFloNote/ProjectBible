@@ -547,11 +547,12 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 				"author_id":    authorId,
 				"series_id":    seriesId,
 				"date_delivered":t.Format(time.RFC3339),
-				"typsense_date":t.Unix(),
+				"typesense_date":t.Unix(),
 				"topic_id":     topicId,
 				"audio_path":   audioPath,
 				"slug":         slug,
 			}
+			fmt.Println("Update data: ", t.Unix(), t.Format(time.RFC3339))
 			search.UpdateDocument(client, sermonId, "sermon_id", "sermons", updateData)
 			updateSearch := map[string]interface{}{
 				"id":   sermonId,
