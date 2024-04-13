@@ -30,7 +30,7 @@ import {
   setSelectedSeries,
   setSelectedAuthor,
   setSelectedScripture,
-  setSelectedTopic,
+  setSelectedTopics,
 } from "@/redux/sermonAdminSelector";
 import { SelectAuthor } from "@/views/admin/sermonadmin/author/selectAuthor";
 import { SelectSeries } from "@/views/admin/sermonadmin/series/selectseries";
@@ -70,7 +70,7 @@ export function EditSermon() {
     (state: RootState) => state.sermonAdmin.selectedSeries
   );
   const selectedTopic = useSelector(
-    (state: RootState) => state.sermonAdmin.selectedTopic
+    (state: RootState) => state.sermonAdmin.selectedTopics
   );
   const selectedScripture = useSelector(
     (state: RootState) => state.sermonAdmin.selectedScripture
@@ -192,7 +192,8 @@ export function EditSermon() {
       "series_id",
       selectedSeries ? selectedSeries.series_id : ""
     );
-    formData.append("topic_id", selectedTopic ? selectedTopic.topic_id : "");
+    if (selectedTopic != null)
+		formData.append("topic_id", selectedTopic.map(topic => topic.topic_id).join(","));
     formData.append(
       "scripture_id",
       selectedScripture ? selectedScripture.scripture_id : ""
@@ -260,7 +261,7 @@ export function EditSermon() {
           dispatch(setSelectedSermon(null));
           dispatch(setSelectedAuthor(null));
           dispatch(setSelectedScripture(null));
-          dispatch(setSelectedTopic(null));
+          dispatch(setSelectedTopics(null));
         }
       }}
     >
@@ -273,7 +274,7 @@ export function EditSermon() {
             dispatch(setSelectedSermon(null));
             dispatch(setSelectedAuthor(null));
             dispatch(setSelectedScripture(null));
-            dispatch(setSelectedTopic(null));
+            dispatch(setSelectedTopics(null));
           }}
         >
           Edit/Del

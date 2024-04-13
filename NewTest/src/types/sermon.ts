@@ -27,7 +27,7 @@ export interface SermonType{
     author_slug: string;
     series_slug: string;
     scripture_id: string;
-    topic_id: string;
+    topic_id: string[];
   }
 export interface TopicType{
     topic_id: string;
@@ -46,7 +46,7 @@ export interface SermonFullType{
   SermonType: SermonType;
   AuthorType: AuthorType;
   SeriesType: SeriesType;
-  TopicType: TopicType;
+  TopicType: TopicType[];
   ScriptureType: ScriptureType;
 }
 export interface SearchType{

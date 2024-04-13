@@ -8,7 +8,8 @@ import (
 	"log"
 	"net/http"
 	"os"
-	
+	"strings"
+
 	"time"
 
 	"github.com/aFloNote/ProjectBible/OldTest/internal/middleware"
@@ -38,6 +39,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 	authorSlug := params.Get("author_slug")
 	seriesSlug := params.Get("series_slug")
 	topicSlug := params.Get("topic_slug")
+	topicSlugArray := strings.Split(topicSlug, ",")
+	fmt.Println("Topic slug array: ", topicSlugArray)
 	scriptureSlug := params.Get("script_slug")
 	// Start building the SQL query
 	query := `
@@ -45,80 +48,58 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
         sermons.sermon_id, sermons.title, sermons.date_delivered, sermons.scripture, sermons.audio_path, sermons.series_id, sermons.author_id,sermons.scripture_id, sermons.slug,
         authors.author_id, authors.name, authors.ministry, authors.image_path, authors.slug,
         series.series_id, series.title, series.description, series.image_path, series.date_published, series.slug,
-		topics.topic_id, topics.name,topics.image_path, topics.slug,
-		scriptures.scripture_id, scriptures.book,scriptures.image_path, scriptures.slug
+        json_agg(topics) as topics,
+        scriptures.scripture_id, scriptures.book,scriptures.image_path, scriptures.slug
     FROM 
         sermons
     INNER JOIN 
         authors ON sermons.author_id = authors.author_id
     INNER JOIN 
         series ON sermons.series_id = series.series_id
-	INNER JOIN 
-        topics ON sermons.topic_id = topics.topic_id
-	INNER JOIN 
+    INNER JOIN 
+        topics ON   topics.topic_id=ANY(sermons.topic_id)
+    INNER JOIN 
         scriptures ON sermons.scripture_id = scriptures.scripture_id
+	
     `
 
 	// If a sermon ID was provided, add a WHERE clause to the query
 
 	var err error
 	var rows *sql.Rows
-
+	var param string
 	if sermonID != "" {
-
-		query += "WHERE sermons.slug = $1 ORDER BY sermons.date_delivered DESC"
-		rows, err = db.Query(query, sermonID)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		query += "WHERE sermons.slug = $1 "
+		param = sermonID
 	} else if authorSlug != "" {
-
-		query += "WHERE authors.slug = $1 ORDER BY sermons.date_delivered DESC"
-		rows, err = db.Query(query, authorSlug)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
+		query += "WHERE authors.slug = $1 "
+		param = authorSlug
 	} else if seriesSlug != "" {
-
-		query += "WHERE series.slug = $1 ORDER BY sermons.date_delivered DESC"
-		rows, err = db.Query(query, seriesSlug)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		query += "WHERE series.slug = $1 "
+		param = seriesSlug
 	} else if topicSlug != "" {
-
-		query += "WHERE topics.slug = $1 ORDER BY sermons.date_delivered DESC"
-		rows, err = db.Query(query, topicSlug)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		query += "WHERE topics.slug = $1 "
+		param = topicSlug
 	} else if scriptureSlug != "" {
-
-		query += "WHERE scriptures.slug = $1 ORDER BY sermons.date_delivered DESC"
-		rows, err = db.Query(query, scriptureSlug)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
+		query += "WHERE scriptures.slug = $1 "
+		param = scriptureSlug
+	
+	} 
+	
+	query += "GROUP BY sermons.sermon_id, authors.author_id, series.series_id, scriptures.scripture_id "
+	query += "ORDER BY sermons.date_delivered DESC"
+	if param != "" {
+		rows, err = db.Query(query, param)
 	} else {
-		query += "ORDER BY sermons.date_delivered DESC"
 		rows, err = db.Query(query)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error querying the database for Sermons no param: %v\n", err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 	}
+	
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error querying the database for Sermons: %v\n", err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	
 
 	// Execute the query
 
@@ -130,26 +111,32 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		var sermon types.SermonType
 		var author types.AuthorType
 		var series types.SeriesType
-		var topic types.TopicType
 		var scripture types.ScriptureType
+		var topics []types.TopicType
+		var topicsJSON []byte
+err := rows.Scan(
+    &sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.ScriptureID, &sermon.Slug,
+    &author.AuthorID, &author.Name, &author.Ministry, &author.Image_Path, &author.Slug,
+    &series.SeriesID, &series.Title, &series.Description, &series.Image_Path, &series.Date_Published, &series.Slug,
+    &topicsJSON,
+    &scripture.ScriptureID, &scripture.Book, &scripture.Image_Path, &scripture.Slug,
+)
+if err != nil {
+    fmt.Fprintf(os.Stderr, "Process Sermons error: %v\n", err)
+    w.Write([]byte(`{""Failed to process series_id: " + err.Error()"}`))
+}
 
-		err := rows.Scan(
-			&sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.ScriptureID, &sermon.Slug,
-			&author.AuthorID, &author.Name, &author.Ministry, &author.Image_Path, &author.Slug,
-			&series.SeriesID, &series.Title, &series.Description, &series.Image_Path, &series.Date_Published, &series.Slug,
-			&topic.TopicID, &topic.Name, &topic.Image_Path, &topic.Slug,
-			&scripture.ScriptureID, &scripture.Book, &scripture.Image_Path, &scripture.Slug,
-		)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Process Sermons error: %v\n", err)
-			w.Write([]byte(`{""Failed to process series_id: " + err.Error()"}`))
-		}
+err = json.Unmarshal(topicsJSON, &topics)
+if err != nil {
+    fmt.Fprintf(os.Stderr, "Failed to unmarshal topics: %v\n", err)
+    w.Write([]byte(`{"Failed to unmarshal topics: " + err.Error()}`))
+}
 
 		sermons = append(sermons, types.SermonFull{
 			SermonType:    sermon,
 			AuthorType:    author,
 			SeriesType:    series,
-			TopicType:     topic,
+			TopicType:     topics,
 			ScriptureType: scripture,
 		})
 	}
@@ -203,6 +190,8 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 			seriesid := r.FormValue("series_id")
 			authid := r.FormValue("author_id")
 			topicid := r.FormValue("topic_id")
+			topicIDStr := fmt.Sprintf("{%s}", topicid)
+
 			scriptid := r.FormValue("scripture_id")
 
 			sermonID := uuid.New()
@@ -243,7 +232,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 			// Attempt to insert author information into the database
 			fmt.Println("Title before database query: ", seriesid)
 			query := "INSERT INTO sermons (sermon_id,title, date_delivered, audio_path, series_id, author_id, scripture, scripture_id,topic_id, slug) VALUES ($1, $2, $3,$4,$5,$6,$7,$8,$9,$10)"
-			_, err = db.Exec(query, sermonID, title, t, path, seriesid, authid, scripture, scriptid, topicid, slugTitle) // Note: Using path as MinIO doesn't return a URL in uploadInfo
+			_, err = db.Exec(query, sermonID, title, t, path, seriesid, authid, scripture, scriptid, topicIDStr, slugTitle) // Note: Using path as MinIO doesn't return a URL in uploadInfo
 			if err != nil {
 				// If the query fails, attempt to remove the uploaded file from MinIO
 				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, minio.RemoveObjectOptions{})
@@ -267,7 +256,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				TopicID       string `json:"topic_id"`
 				ScriptureID   string `json:"scripture_id"`
 				DateDelivered string `json:"date_delivered"`
-				TypesenseDate int64 `json:"typesense_date"`
+				TypesenseDate int64  `json:"typesense_date"`
 				Title         string `json:"title"`
 				Description   string `json:"description"`
 				Image_Path    string `json:"image_path"`
@@ -279,7 +268,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				Scripture:     scripture,
 				SeriesID:      seriesid,
 				AuthorID:      authid,
-				TopicID:       topicid,
+				TopicID:       topicIDStr,
 				ScriptureID:   scriptid,
 				DateDelivered: t,
 				TypesenseDate: t.Unix(),
@@ -323,8 +312,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			
-		
+
 			searchDocument := types.SearchType{
 				ID:        sermonID.String(),
 				Primary:   title,
@@ -360,7 +348,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 					http.Error(w, err.Error(), http.StatusInternalServerError)
 					return
 				}
-			
+
 				scriptDocument := types.ScriptureType{
 					ScriptureID: scriptid,
 					Book:        book,
@@ -385,16 +373,16 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				_, err = client.Collection("search").Documents().Create(context.Background(), searchDocument)
 				if err != nil {
 					fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
-	
+
 					http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
 					return
 				}
-			
-			if _, err := w.Write([]byte("Sermon Added")); err != nil {
-				fmt.Fprintf(os.Stderr, "%v\n", err)
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-				return
-			}
+
+				if _, err := w.Write([]byte("Sermon Added")); err != nil {
+					fmt.Fprintf(os.Stderr, "%v\n", err)
+					http.Error(w, err.Error(), http.StatusInternalServerError)
+					return
+				}
 			}
 		}),
 	)
@@ -415,8 +403,8 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 			sermonId := r.FormValue("sermon_id")
 			authorId := r.FormValue("author_id")
 			topicId := r.FormValue("topic_id")
+			topicIDStr := fmt.Sprintf("{%s}", topicId)
 			scriptureId := r.FormValue("scripture_id")
-			
 
 			row := db.QueryRow("SELECT scripture_id FROM sermons WHERE sermon_id=$1", sermonId)
 			var scriptureIdFromDb string
@@ -439,7 +427,7 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 				for rows.Next() {
 					foundCount++
 				}
-                fmt.Println("Found count: ", foundCount)
+				fmt.Println("Found count: ", foundCount)
 				if err := rows.Err(); err != nil {
 					fmt.Fprintf(os.Stderr, "Error Scanning rows.next line 422: %v\n", err)
 					http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -447,7 +435,7 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 
 				if foundCount == 1 {
 					search.DeleteDocument(client, scriptureIdFromDb, "scripture_id", "scriptures")
-					search.DeleteDocument(client,scriptureIdFromDb,"searchid","search")
+					search.DeleteDocument(client, scriptureIdFromDb, "searchid", "search")
 				}
 				searchResult, err := client.Collection("scriptures").Documents().Search(context.Background(), &api.SearchCollectionParams{
 					Q:       scriptureId,
@@ -470,7 +458,7 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 						http.Error(w, err.Error(), http.StatusInternalServerError)
 						return
 					}
-				
+
 					scriptDocument := types.ScriptureType{
 						ScriptureID: scriptid,
 						Book:        book,
@@ -495,7 +483,7 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 					_, err = client.Collection("search").Documents().Create(context.Background(), searchDocument)
 					if err != nil {
 						fmt.Fprintf(os.Stderr, "Failed to index topic in Typesense: %v\n", err)
-		
+
 						http.Error(w, "Failed to index topic in Typesense: "+err.Error(), http.StatusInternalServerError)
 						return
 					}
@@ -530,7 +518,7 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 			query := "UPDATE sermons SET title = $1, scripture = $2, scripture_id=$3, author_id=$4,series_id=$5,topic_id=$6,date_delivered=$7,audio_path=$8, slug= $9 WHERE sermon_id = $10"
 
 			// Execute SQL statement
-			_, err = db.Exec(query, title, script, scriptureId, authorId, seriesId, topicId, t, audioPath, slug, sermonId)
+			_, err = db.Exec(query, title, script, scriptureId, authorId, seriesId, topicIDStr, t, audioPath, slug, sermonId)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -540,25 +528,25 @@ func UpdateSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 			defer close(doneCh)
 
 			updateData := map[string]interface{}{
-				"'sermon_id":   sermonId,
-				"title":        title,
-				"scripture":    script,
-				"scripture_id": scriptureId,
-				"author_id":    authorId,
-				"series_id":    seriesId,
-				"date_delivered":t.Format(time.RFC3339),
-				"typesense_date":t.Unix(),
-				"topic_id":     topicId,
-				"audio_path":   audioPath,
-				"slug":         slug,
+				"'sermon_id":     sermonId,
+				"title":          title,
+				"scripture":      script,
+				"scripture_id":   scriptureId,
+				"author_id":      authorId,
+				"series_id":      seriesId,
+				"date_delivered": t.Format(time.RFC3339),
+				"typesense_date": t.Unix(),
+				"topic_id":       topicIDStr,
+				"audio_path":     audioPath,
+				"slug":           slug,
 			}
 			fmt.Println("Update data: ", t.Unix(), t.Format(time.RFC3339))
 			search.UpdateDocument(client, sermonId, "sermon_id", "sermons", updateData)
 			updateSearch := map[string]interface{}{
-				"id":   sermonId,
-				"primary":        title,
-				"secondary":      script,
-				"slug":         slug,
+				"id":        sermonId,
+				"primary":   title,
+				"secondary": script,
+				"slug":      slug,
 			}
 			search.UpdateDocument(client, sermonId, "id", "search", updateSearch)
 
@@ -612,11 +600,10 @@ func DeleteSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 
 				if foundCount == 1 {
 					search.DeleteDocument(client, scriptureIdFromDb, "scripture_id", "scriptures")
-					search.DeleteDocument(client,scriptureIdFromDb,"searchid","search")
+					search.DeleteDocument(client, scriptureIdFromDb, "searchid", "search")
 				}
-				
-			}
 
+			}
 
 			_, err = db.Exec("DELETE FROM sermons WHERE sermon_id=$1", sermon_id)
 			if err != nil {
