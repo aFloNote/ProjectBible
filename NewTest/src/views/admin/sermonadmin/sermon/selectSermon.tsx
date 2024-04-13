@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useDispatch, useSelector } from 'react-redux';
-import { setSelectedAuthor, setSelectedScripture, setSelectedSeries, setSelectedTopic,setSelectedSermon } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
+import { setSelectedAuthor, setSelectedScripture, setSelectedSeries, setSelectedTopics,setSelectedSermon } from '@/redux/sermonAdminSelector'; // replace with the actual path to your actions
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RootState } from "@/redux/store";
 
@@ -47,6 +47,7 @@ export function SelectSermon() {
       return <div>Error Finding Sermon</div>
     }
     else {
+	console.log(sermonData);
     return (
      <>
         <Popover open={open} onOpenChange={setOpen}>
@@ -69,7 +70,8 @@ export function SelectSermon() {
           <CommandInput placeholder={`Search Sermon...`} />
           <CommandEmpty>No Sermon found.</CommandEmpty>
           <CommandGroup>
-            {sermonData.map((sermon) => (
+            {
+			sermonData.map((sermon) => (
               <CommandItem
                 key={sermon.SermonType.slug}
                 value={sermon.SermonType.slug}
@@ -80,7 +82,7 @@ export function SelectSermon() {
                   dispatch(setSelectedSeries(currentValue !== selectedId ? sermon.SeriesType : null));
                   dispatch(setSelectedSermon(currentValue !== selectedId ? sermon.SermonType : null));
                   dispatch(setSelectedScripture(currentValue !== selectedId ? sermon.ScriptureType : null));
-                  dispatch(setSelectedTopic(currentValue !== selectedId ? sermon.TopicType : null));
+                  dispatch(setSelectedTopics(currentValue !== selectedId ? sermon.TopicType : null));
                 }}
               >
 				  <CheckIcon

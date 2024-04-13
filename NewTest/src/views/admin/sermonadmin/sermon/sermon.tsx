@@ -64,7 +64,7 @@ export function Sermon() {
     (state: RootState) => state.sermonAdmin.selectedSeries
   );
   const selectedTopic = useSelector(
-    (state: RootState) => state.sermonAdmin.selectedTopic
+    (state: RootState) => state.sermonAdmin.selectedTopics
   );
   const selectedScripture = useSelector(
     (state: RootState) => state.sermonAdmin.selectedScripture
@@ -97,6 +97,7 @@ export function Sermon() {
   }, [location, dispatch]);
   const { isLoading, mutate } = Upload("uploadsermon".toLowerCase());
   React.useEffect(() => {
+	
     setCanSubmit(
       titleForm !== "" &&
         scriptureForm !== "" &&
@@ -147,7 +148,8 @@ export function Sermon() {
       "series_id",
       selectedSeries ? selectedSeries.series_id : ""
     );
-    formData.append("topic_id", selectedTopic ? selectedTopic.topic_id : "");
+	if (selectedTopic != null)
+   		formData.append("topic_id", selectedTopic.map(topic => topic.topic_id).join(","));
     formData.append(
       "scripture_id",
       selectedScripture ? selectedScripture.scripture_id : ""

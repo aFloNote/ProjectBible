@@ -9,7 +9,7 @@ type SermonFull struct {
    AuthorType  AuthorType
    SeriesType SeriesType
    SermonType SermonType
-   TopicType TopicType
+   TopicType []TopicType
    ScriptureType ScriptureType
 }
 type AuthorType struct {

@@ -5,6 +5,7 @@ interface SelectedState {
   selectedSeries: SeriesType | null; // replace with your Series type
   selectedSermon: SermonType | null; 
   selectedTopic: TopicType | null;
+  selectedTopics: TopicType[] | null;
   selectedScripture: ScriptureType | null;
   selectedSermonPage:string;
 }
@@ -14,6 +15,7 @@ const initialState: SelectedState = {
   selectedSeries: null,
   selectedSermon: null,
   selectedTopic: null,
+  selectedTopics: null,
   selectedScripture: null,
   selectedSermonPage: "sermons",
 };
@@ -42,12 +44,14 @@ const selectedSlice = createSlice({
     setSelectedScripture(state, action: PayloadAction<ScriptureType | null>) {
       state.selectedScripture = action.payload;
     },
-
+	setSelectedTopics(state, action: PayloadAction<TopicType[] | null>) {
+		state.selectedTopics = action.payload;
+	},
   },
 });
 
 export const { setSelectedAuthor, setSelectedSeries, setSelectedSermon,setSelectedSermonPage,setSelectedTopic
-,setSelectedScripture } =
+,setSelectedScripture,setSelectedTopics } =
   selectedSlice.actions;
 
 export default selectedSlice.reducer;
