@@ -15,7 +15,7 @@ function AdminNav() {
    
     
   <div className='flex justify-end items-center'>
-  <Button className='' variant="ghost" onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
+  <Button className='' variant="ghost" onClick={() => logout({ logoutParams: { returnTo: "https://fbctreasurevalley.net/admin" } })}>
     Logout
     </Button>
     <div className='pr-10'> 
