@@ -155,13 +155,13 @@ export function Recent() {
                         </div>
                         <div>
                           <SiteImage
-                            divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto"
+                            divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto cursor-pointer"
                             ratio={1}
                             alt="Topic Image"
                             source={b2endpoint + encodeURIComponent(imagePath)}
                           />
                         </div>
-                        <div className="flex-grow min-w-0 lg:hidden">
+                        <div className="flex-grow min-w-0 cursor-pointer lg:hidden">
                           <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
                             {SermonFull.SermonType.title}
                           </h2>
@@ -176,7 +176,7 @@ export function Recent() {
                       </div>
                       <div className=" lg:border-b lg:text-gray-600 lg:pt-2 "></div>
 
-                      <div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2">
+                      <div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2 cursor-pointer">
                         <div className="flex flex-col hidden lg:block">
                           <div className="flex text-center lg:leading-tight">
                             <DateComp
