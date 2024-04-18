@@ -149,7 +149,7 @@ export function Scriptures() {
               >
                 <Card>
                   <div className="flex items-center text-center pb-4 pt-4 px-5 space-x-2 justify-center">
-                    <div className="flex-grow min-w-0">
+                    <div className="flex-grow min-w-0 cursor-pointer">
                       <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
                         {scripture.book}
                       </h2>
