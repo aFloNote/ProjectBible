@@ -104,7 +104,7 @@ export function Series() {
 				  <div>
 					  
 					<SiteImage
-					  divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto"
+					  divClass="w-12 h-12 lg:h-32 lg:w-32 rounded-full lg:mx-auto cursor-pointer"
 					  ratio={1}
 					  alt="Series Image"
 					  source={
@@ -114,7 +114,7 @@ export function Series() {
 					/>
 				  </div>
 				  <div className="flex-grow min-w-0 lg:hidden">
-					<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
+					<h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg cursor-pointer">
 					  {series.title}
 					</h2>
 				
@@ -124,7 +124,7 @@ export function Series() {
 				</div>
 				<div className=" lg:border-b lg:text-gray-600 lg:pt-2 "></div>
 
-				<div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2">
+				<div className="lg:flex lg:justify-center lg:pt-2 lg:pb-2 cursor-pointer">
 				  <div className="flex flex-col hidden lg:block">
 				
 					<h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
