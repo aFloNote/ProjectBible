@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { useDropzone } from 'react-dropzone';
 
 interface AuthAudioProps {
-  onAudioUpdate: (files: File[],fileType:"audio") => void;
+  onAudioUpdate: (files: File[],fileType:"text") => void;
   audiopath: string;
 }
 
@@ -12,7 +12,7 @@ interface AudioWithPreview {
  
 }
 
-export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath }) => {
+export const NotesDrop: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath }) => {
   const [audio, setAudio] = useState<AudioWithPreview[]>([]);
   const prevAudiosRef = useRef<AudioWithPreview[]>([]);
   const b2endpoint = import.meta.env.VITE_REACT_B2_ENDPOINT;
@@ -28,14 +28,14 @@ export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath })
     event.stopPropagation();
     const newAudios = audio.filter(audio => audio.preview !== audioSrc);
     setAudio(newAudios);
-    onAudioUpdate(newAudios.map(audio => audio.file),'audio'); // Add this line
+    onAudioUpdate(newAudios.map(audio => audio.file),'text'); // Add this line
     URL.revokeObjectURL(audioSrc);
   };
   const memoizedOnAudioUpdate = useCallback(onAudioUpdate, []);
   useEffect(() => {
     const files = audio.map(audio => audio.file);
     if (JSON.stringify(prevAudiosRef.current) !== JSON.stringify(files)) {
-      onAudioUpdate(files,'audio');
+      onAudioUpdate(files,'text');
     }
   }, [audio, memoizedOnAudioUpdate]);
   useEffect(() => {
@@ -52,7 +52,13 @@ export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath })
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
-    accept: {'audio/mpeg':[],'audio/wav':[]},
+    accept: { 
+		'text/plain': [],      // For .txt files
+		'application/pdf': [],  // For .pdf files
+		'application/msword': [],  // For .doc files
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document': [], // For .docx files
+		'application/vnd.oasis.opendocument.text': [] // For .odt files
+		},
     maxFiles: 1,
   });
 
@@ -75,7 +81,7 @@ export const AuthAudio: React.FC<AuthAudioProps> = ({ onAudioUpdate,audiopath })
           ))}
         </div>
       ) : (
-        <p className='flex justify-center'>Drag 'n' or click to add audio</p>
+        <p className='flex justify-center'>Drag 'n' or click to add Sermon Notes</p>
       )}
     </div>
   );

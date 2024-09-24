@@ -33,6 +33,7 @@ type SermonType struct {
 	Title       string `json:"title"`
 	DateDelivered time.Time `json:"date_delivered"`
 	Audio_Path string `json:"audio_path"`
+	Note_Path string `json:"note_path"`
 	AuthorID  string    `json:"author_id"`
 	SeriesID   string    `json:"series_id"`
 	ScriptureID string `json:"scripture_id"`

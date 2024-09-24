@@ -45,7 +45,7 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 	// Start building the SQL query
 	query := `
     SELECT 
-        sermons.sermon_id, sermons.title, sermons.date_delivered, sermons.scripture, sermons.audio_path, sermons.series_id, sermons.author_id,sermons.scripture_id, sermons.slug,
+        sermons.sermon_id, sermons.title, sermons.date_delivered, sermons.scripture, sermons.audio_path, sermons.series_id, sermons.author_id,sermons.scripture_id, sermons.slug,sermons.note_path,
         authors.author_id, authors.name, authors.ministry, authors.image_path, authors.slug,
         series.series_id, series.title, series.description, series.image_path, series.date_published, series.slug,
         json_agg(topics) as topics,
@@ -115,7 +115,7 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		var topics []types.TopicType
 		var topicsJSON []byte
 err := rows.Scan(
-    &sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.ScriptureID, &sermon.Slug,
+    &sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.ScriptureID,&sermon.Slug, &sermon.Note_Path,
     &author.AuthorID, &author.Name, &author.Ministry, &author.Image_Path, &author.Slug,
     &series.SeriesID, &series.Title, &series.Description, &series.Image_Path, &series.Date_Published, &series.Slug,
     &topicsJSON,
@@ -175,14 +175,14 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 			w.Header().Set("Access-Control-Allow-Headers", "Authorization")
 			w.Header().Set("Content-Type", "text/plain") // Change this to text/plain
 
-			file, header, contentType, err := fileStorage.ParseFile(r, 10<<20, "audio") // Use the actual form field name
+			fileAudio, headerAudio, contentType, err := fileStorage.ParseFile(r, 10<<20, "audio") // Use the actual form field name
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "Process fil error: %v\n", err)
 				w.Write([]byte(`{""Failed to process uploaded file: " + err.Error()"}`))
 
 				return
 			}
-			defer file.Close()
+			defer fileAudio.Close()
 
 			// Get form data
 			title := r.FormValue("title")
@@ -213,13 +213,13 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				w.Write([]byte(`{""Failed to time " + err.Error()"}`))
 			}
 			// Get the image file from the form
-			fmt.Printf("Size: %v, Content Type: %s\n", header.Size, contentType)
-			path := fmt.Sprintf("sermons/sermons/%s/audio/%s", slugTitle, header.Filename)
+			fmt.Printf("Size: %v, Content Type: %s\n", headerAudio.Size, contentType)
+			audioPath := fmt.Sprintf("sermons/sermons/%s/audio/%s", slugTitle, headerAudio.Filename)
 			// Start the timer
 
 			// Upload the file
 			fmt.Println("Title before database query: ", seriesid)
-			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, file, header.Size, minio.PutObjectOptions{ContentType: contentType})
+			upLoadInfo, err := minioClient.PutObject(context.Background(), os.Getenv("STORAGE_BUCKET"), audioPath, fileAudio, headerAudio.Size, minio.PutObjectOptions{ContentType: contentType})
 
 			// Stop the timer
 
@@ -232,10 +232,10 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 			// Attempt to insert author information into the database
 			fmt.Println("Title before database query: ", seriesid)
 			query := "INSERT INTO sermons (sermon_id,title, date_delivered, audio_path, series_id, author_id, scripture, scripture_id,topic_id, slug) VALUES ($1, $2, $3,$4,$5,$6,$7,$8,$9,$10)"
-			_, err = db.Exec(query, sermonID, title, t, path, seriesid, authid, scripture, scriptid, topicIDStr, slugTitle) // Note: Using path as MinIO doesn't return a URL in uploadInfo
+			_, err = db.Exec(query, sermonID, title, t, audioPath, seriesid, authid, scripture, scriptid, topicIDStr, slugTitle) // Note: Using path as MinIO doesn't return a URL in uploadInfo
 			if err != nil {
 				// If the query fails, attempt to remove the uploaded file from MinIO
-				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), path, minio.RemoveObjectOptions{})
+				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), audioPath, minio.RemoveObjectOptions{})
 				if errRemove != nil {
 					// Log or handle the error occurred during file removal
 
@@ -274,7 +274,7 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				TypesenseDate: t.Unix(),
 				Title:         title,
 				Description:   "",
-				Audio_Path:    path,
+				Audio_Path:    audioPath,
 				Image_Path:    "",
 				Slug:          slugTitle,
 			}
@@ -612,8 +612,10 @@ func DeleteSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 			}
 			// Get the prefix for the objects to delete
 			prefix := fmt.Sprintf("sermons/sermons/%s/", slug)
-
+			fmt.Println(slug)
+			fmt.Println(sermon_id)
 			fmt.Println("prefix")
+			
 			fmt.Println(prefix)
 			for object := range minioClient.ListObjects(context.Background(), os.Getenv("STORAGE_BUCKET"), minio.ListObjectsOptions{Prefix: prefix, Recursive: true}) {
 				fmt.Println(object.Key)
@@ -622,7 +624,7 @@ func DeleteSermonHandler(minioClient *minio.Client, client *typesense.Client) ht
 					return
 				}
 
-				errRemove := minioClient.RemoveObject(context.Background(), os.Getenv("STORAGE_BUCKET"), object.Key, minio.RemoveObjectOptions{})
+				errRemove := minioClient.RemoveObject(context.Background(), "FaithBiblePub", object.Key, minio.RemoveObjectOptions{})
 				if errRemove != nil {
 					fmt.Fprintf(os.Stderr, "Failed to remove object: %v\n", errRemove)
 				}
