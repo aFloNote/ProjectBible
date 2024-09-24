@@ -126,6 +126,7 @@ export function EditSermon() {
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedSermon) {
+		console.log(selectedSermon.slug)
       deleteItem(
         { id: selectedSermon.sermon_id, slug: selectedSermon.slug },
         {

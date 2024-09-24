@@ -20,6 +20,7 @@ export interface SermonType{
     date_delivered: string;
     scripture: string;
     audio_path: string;
+	text_path: string;
     video_path: string;
     series_id: string;
     author_id: string;

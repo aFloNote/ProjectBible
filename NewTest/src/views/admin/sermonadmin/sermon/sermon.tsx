@@ -15,6 +15,7 @@ import { SelectScripture } from "@/views/admin/sermonadmin/scriptures/selectscri
 import { SelectTopic } from "@/views/admin/sermonadmin/topic/selecttopic";
 import { SelectSeries } from "@/views/admin/sermonadmin/series/selectseries";
 import { SelectAuthor } from "@/views/admin/sermonadmin/author/selectAuthor";
+import { NotesDrop} from "@/views/admin/sermonnotesdrop";
 import {
   Dialog,
   DialogContent,
@@ -72,7 +73,10 @@ export function Sermon() {
 
   const [date, setDate] = React.useState<Date>();
 
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{
+	audio:File | "None";
+	text: File | "None";
+  }>({ audio: "None", text: "None" });
 
   const [canSubmit, setCanSubmit] = useState(false);
   const [serverResponse, setServerResponse] = useState<{
@@ -80,8 +84,11 @@ export function Sermon() {
     message: string;
     messageTitle: string;
   } | null>(null);
-  const handleAudioUpdate = (files: File[]) => {
-    setUploadedFiles(files);
+  const handleFileUpdate = (files: File[], fileType:'audio' |'text') => {
+    setUploadedFiles((prevFiles) => ({
+		...prevFiles,
+		[fileType]: files[0],
+	}));
   };
   useEffect(() => {
     const currentPath = location.pathname;
@@ -97,11 +104,14 @@ export function Sermon() {
   }, [location, dispatch]);
   const { isLoading, mutate } = Upload("uploadsermon".toLowerCase());
   React.useEffect(() => {
-	
+	console.log(uploadedFiles.audio)
+	console.log(uploadedFiles.text)
     setCanSubmit(
+		
       titleForm !== "" &&
         scriptureForm !== "" &&
-        uploadedFiles.length > 0 &&
+		
+        uploadedFiles.audio != "None" && uploadedFiles.audio != null &&
         date !== undefined &&
         selectedAuthor != null &&
         selectedSeries != null &&
@@ -138,7 +148,8 @@ export function Sermon() {
     const formData = new FormData();
     formData.append("title", titleForm);
     formData.append("scripture", scriptureForm);
-    formData.append("audio", uploadedFiles[0]);
+    formData.append("audio", uploadedFiles.audio);
+	formData.append("text", uploadedFiles.text);
     formData.append("date", date?.toISOString() as string);
     formData.append(
       "author_id",
@@ -275,7 +286,11 @@ export function Sermon() {
           </div>
           <div className="flex flex-col pt-2">
             <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-              <AuthAudio audiopath="" onAudioUpdate={handleAudioUpdate} />
+              <AuthAudio audiopath="" onAudioUpdate={handleFileUpdate} />
+            </div>
+				<div className='pt-1'/>
+			<div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+              <NotesDrop audiopath="" onAudioUpdate={handleFileUpdate} />
             </div>
 
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
