@@ -7,6 +7,8 @@ import {
   FaPause,
   FaDownload,
   FaEllipsisV,
+  FaFileAlt,
+  FaVolumeUp
 } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import { SermonFullType } from "@/types/sermon";
@@ -20,10 +22,11 @@ import {Share} from "@/components/share";
 
 interface AudioProps {
   audio_link: string;
+  text_link:string;
   sermonFull: SermonFullType[];
 }
 
-export function Audio({ audio_link, sermonFull }: AudioProps) {
+export function Audio({ audio_link,text_link, sermonFull }: AudioProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [played, setPlayed] = useState(0);
   const [duration, setDuration] = useState(0);
@@ -219,27 +222,99 @@ export function Audio({ audio_link, sermonFull }: AudioProps) {
               </Button>
             </PopoverTrigger>
             <PopoverContent className="flex h-fit w-fit">
-              <Button
+			{sermonFull[0]?.SermonType.text_path === "None" ? (
+    // Only show FaDownload icon
+    <Button
+      variant="ghost"
+      onClick={() =>
+        (window.location.href = decodeURIComponent(
+          `${b2endpoint + audio_link}?download=true`
+        ))
+      }
+    >
+      <FaDownload />
+    </Button>
+  ) : (
+  
+    <>
+     
+	 <Button
+      variant="ghost"
+      onClick={() =>
+        window.open(
+          decodeURIComponent(`${b2endpoint + text_link}`),
+          '_blank'
+        )
+      }
+    >
+        <FaFileAlt />
+      </Button>
+
+
+
+
+	  <div className="">
+      <div className="flex items-center">
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="ghost">
+              <FaDownload />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="flex h-fit w-fit">
+		  <Button
+        variant="ghost"
+        onClick={() =>
+          (window.location.href = decodeURIComponent(
+            `${b2endpoint + audio_link}?download=true`
+          ))
+        }
+      >
+        <FaVolumeUp/>
+      </Button>
+	  <Button
+        variant="ghost"
+        onClick={() =>
+          (window.location.href = decodeURIComponent(
+            `${b2endpoint + text_link}?download=true`
+          ))
+        }
+      >
+        <FaFileAlt />
+      </Button>
+          </PopoverContent>
+        </Popover>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </>
+  )}
+			     <Button 
                 variant="ghost"
-				onClick={() =>
-					(window.location.href = decodeURIComponent(
-					  `${b2endpoint + audio_link}?download=true`
-					))
-				  }
-              >
-                <FaDownload />
-              </Button>
-			     <Button
-                variant="ghost"
-                className="text-2xl text-sm"
-              
+				className='pr-0 pl-0'              
+				  
               >
                 <Share />
               </Button>
             </PopoverContent>
           </Popover>
         </div>
+	
       </div>
+	  
     </div>
   );
 }

@@ -91,6 +91,7 @@ func ProcessPathFiles(minioClient *minio.Client, theType, srcType string, r *htt
     ID := r.FormValue(fmt.Sprintf("%s_id", theType))
 
     file, header, contentType, err := ParseFile(r, 10<<20, srcType) 
+
     if err != nil {
         fmt.Fprintf(os.Stderr, "Process file error: %v\n", err)
         return "",err
@@ -109,7 +110,11 @@ func ProcessPathFiles(minioClient *minio.Client, theType, srcType string, r *htt
     if theType=="series"{
         query = fmt.Sprintf("SELECT %s_path, slug FROM %s WHERE %s_id = $1",srcType, theType, theType)
     }else{
+		if srcType=="text"{
+			query = fmt.Sprintf("SELECT note_path, slug FROM %ss WHERE %s_id = $1",theType, theType)
+		}else{
          query = fmt.Sprintf("SELECT %s_path, slug FROM %ss WHERE %s_id = $1",srcType, theType, theType)
+		}
     }
     err = db.QueryRow(query, ID).Scan(&currentPath, &currentSlug)
     if err != nil {

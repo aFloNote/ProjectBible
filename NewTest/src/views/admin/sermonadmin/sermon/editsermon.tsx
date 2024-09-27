@@ -38,6 +38,7 @@ import { SelectScripture } from "@/views/admin/sermonadmin/scriptures/selectscri
 import { SelectTopic } from "@/views/admin/sermonadmin/topic/selecttopic";
 import { SelectSermon } from "@/views/admin/sermonadmin/sermon/selectSermon";
 import { AuthAudio } from "@/views/admin/audiodrop";
+import {NotesDrop} from "@/views/admin/sermonnotesdrop";
 import { Fetch, Upload, Delete } from "@/hooks/sermonhooks";
 
 import { SermonFullType } from "@/types/sermon";
@@ -95,7 +96,10 @@ export function EditSermon() {
   );
 
   const [canSubmit, setCanSubmit] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [uploadedFiles, setUploadedFiles] = useState<{
+	audio:File | "None";
+	text: File | "None";
+  }>({ audio: "None", text: "None" });
   const [serverResponse, setServerResponse] = useState<{
     success: boolean;
     message: string;
@@ -119,8 +123,11 @@ export function EditSermon() {
       selectedSermon ? new Date(selectedSermon.date_delivered) : undefined
     );
   }, [selectedSermon]);
-  const handleAudioUpdate = (files: File[]) => {
-    setUploadedFiles(files);
+  const handleFileUpdate = (files: File[], fileType:'audio' |'text') => {
+    setUploadedFiles((prevFiles) => ({
+		...prevFiles,
+		[fileType]: files[0],
+	}));
   };
   const queryClient = useQueryClient();
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -183,7 +190,8 @@ export function EditSermon() {
     const formData = new FormData();
     formData.append("title", titleForm);
     formData.append("scripture", scriptureForm);
-    formData.append("audio", uploadedFiles[0]);
+	formData.append("audio", uploadedFiles.audio);
+	formData.append("text", uploadedFiles.text);
     formData.append("date", date?.toISOString() as string);
     formData.append(
       "author_id",
@@ -236,7 +244,7 @@ export function EditSermon() {
     setCanSubmit(
       titleForm !== "" &&
         scriptureForm !== "" &&
-        uploadedFiles.length > 0 &&
+        uploadedFiles.audio != "None" && uploadedFiles.audio != null &&
         date !== undefined &&
         selectedAuthor != null &&
         selectedSeries != null &&
@@ -397,12 +405,22 @@ export function EditSermon() {
 
                   <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
                     <AuthAudio
-                      onAudioUpdate={handleAudioUpdate}
+                      onAudioUpdate={handleFileUpdate}
                       audiopath={
                         selectedSermon ? selectedSermon.audio_path : ""
                       }
                     />
                   </div>
+
+				  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+                    <NotesDrop
+                      onAudioUpdate={handleFileUpdate}
+                      audiopath={
+                        selectedSermon ? selectedSermon.text_path : ""
+                      }
+                    />
+                  </div>
+				
               
               </div>
               <DialogFooter>

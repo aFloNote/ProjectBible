@@ -3,7 +3,7 @@ FROM golang:latest
 
 # Set the working directory inside the container.
 WORKDIR /app
-RUN go install github.com/cosmtrek/air@latest
+RUN go install github.com/air-verse/air@latest
 # Copy go.mod and go.sum to download dependencies.
 COPY go.mod go.sum ./
 
