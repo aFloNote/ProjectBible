@@ -11,7 +11,7 @@ import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useContext } from "react";
+
 import { useTheme } from "@/components/theme-provider"; // adjust this import based on your actual file structure
 
 export function Series() {
