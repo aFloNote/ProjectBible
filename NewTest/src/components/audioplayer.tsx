@@ -109,6 +109,8 @@ export function Audio({ audio_link,text_link, sermonFull }: AudioProps) {
       .filter(Boolean)
       .join(":");
   };
+  console.log(b2endpoint + text_link)
+  console.log(b2endpoint + audio_link)
   useEffect(() => {
 	if ("mediaSession" in navigator) {
 	  navigator.mediaSession.metadata = new MediaMetadata({
@@ -242,7 +244,7 @@ export function Audio({ audio_link,text_link, sermonFull }: AudioProps) {
       variant="ghost"
       onClick={() =>
         window.open(
-          decodeURIComponent(`${b2endpoint + text_link}`),
+        `${b2endpoint + text_link}`,
           '_blank'
         )
       }

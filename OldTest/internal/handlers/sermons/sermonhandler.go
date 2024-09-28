@@ -224,10 +224,11 @@ func AddSermonHandler(minioClient *minio.Client, client *typesense.Client) http.
 				w.Write([]byte(`{""Failed to time " + err.Error()"}`))
 			}
 			// Get the image file from the form
-			fmt.Printf("Size: %v, Content Type: %s\n", headerAudio.Size, contentTypeAudio)
+			
 			audioPath := fmt.Sprintf("sermons/sermons/%s/audio/%s", slugTitle, headerAudio.Filename)
 			textPath:="None"
 		if errTextFile == nil{
+			fmt.Printf("Size: %v, Content Type: %s\n", headerText.Size, contentTypeText)
 			textPath = fmt.Sprintf("sermons/sermons/%s/text/%s", slugTitle, headerText.Filename)
 			// Start the timer
 		}
