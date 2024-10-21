@@ -162,15 +162,13 @@ export function Recent() {
                           />
                         </div>
                         <div className="flex-grow min-w-0 cursor-pointer lg:hidden">
-                          <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden leading-none text-lg">
+                          <h2 className="whitespace-nowrap overflow-ellipsis overflow-hidden text-lg">
                             {SermonFull.SermonType.title}
                           </h2>
-                          <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-sm leading-tight text-gray-600">
-                            {SermonFull.SeriesType.title}
-                          </div>
+                        
 
-                          <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-xs text-primary leading-tight text-gray-600">
-                            {SermonFull.SermonType.scripture}
+                          <div className="whitespace-nowrap overflow-ellipsis overflow-hidden text-md text-primary text-gray-600">
+                            {SermonFull.AuthorType.name}
                           </div>
                         </div>
                       </div>
@@ -186,11 +184,9 @@ export function Recent() {
                           <h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
                             {SermonFull.SermonType.title}
                           </h2>
-                          <p className="lg:text-md lg:text-gray-600 lg:text-center hidden lg:block lg:leading-tight">
-                            {SermonFull.SeriesType.title}
-                          </p>
+                          
                           <p className="lg:text-sm lg:font-normal lg:text-center lg:text-primary hidden lg:block lg:leading-tight">
-                            {SermonFull.SermonType.scripture}
+                            {SermonFull.AuthorType.name}
                           </p>
                         </div>
                       </div>

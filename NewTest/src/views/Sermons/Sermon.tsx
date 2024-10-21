@@ -89,7 +89,7 @@ export function SermonPage() {
 			
 				<div className="flex flex-row items-center mx-auto">
 			  <div className='text-center text-gray-400 leading-none text-sm  pr-1'>{month}</div>
-			  <div className='text-center text-gray-400 text-sm  leading-none'>{day}</div>
+			  <div className='text-center text-gray-400 text-sm  leading-none'>{day},</div>
 			  <div className='text-center text-gray-400 leading-none text-sm pl-1'>{year}</div>
 			  </div>
 					  
