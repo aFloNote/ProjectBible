@@ -81,7 +81,7 @@ export function Recent() {
             sermonResult.sermon_id === sermonData.SermonType.sermon_id
         )
       );
-      console.log(sermonResults), console.log(filteredSermonsData);
+	  
       if (filteredSermonsData !== undefined) {
         setItems(filteredSermonsData.slice(0, 200));
       }
@@ -134,6 +134,19 @@ export function Recent() {
           >
             <div className="pb-15 lg:pb-1 lg:flex lg:flex-wrap">
               {items.map((SermonFull, index) => {
+				
+				console.log('Date Delivered:', SermonFull.SermonType.date_delivered);
+				
+					console.log("Date delivered:", SermonFull.SermonType.date_delivered);
+					// Or if you want a Date object:
+					console.log("Dates (as JS Date):");
+					const dateString = SermonFull.SermonType.date_delivered.split("T")[0];
+					const [year, month, day] = dateString.split("-").map(Number);
+			  
+					// Create a local date (month is 0-based in JS)
+					let date = new Date(year, month - 1, day);
+					console.log(date);
+				  
                 let imagePath = SermonFull.SeriesType.image_path; // default image path
 
                 return (
@@ -149,8 +162,9 @@ export function Recent() {
                     <Card>
                       <div className="flex items-center pt-1 pb-1 lg:pt-4 px-5 space-x-2 lg:justify-center">
                         <div className="lg:hidden">
+						
                           <DateComp
-                            date={SermonFull.SermonType.date_delivered}
+                            date={date.toString()}
                           />
                         </div>
                         <div>
@@ -178,7 +192,10 @@ export function Recent() {
                         <div className="flex flex-col hidden lg:block">
                           <div className="flex text-center lg:leading-tight">
                             <DateComp
-                              date={SermonFull.SermonType.date_delivered}
+                              date={
+								
+								
+								SermonFull.SermonType.date_delivered}
                             />
                           </div>
                           <h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">

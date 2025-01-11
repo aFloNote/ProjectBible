@@ -38,7 +38,7 @@ import { SelectScripture } from "@/views/admin/sermonadmin/scriptures/selectscri
 import { SelectTopic } from "@/views/admin/sermonadmin/topic/selecttopic";
 import { SelectSermon } from "@/views/admin/sermonadmin/sermon/selectSermon";
 import { AuthAudio } from "@/views/admin/audiodrop";
-import {NotesDrop} from "@/views/admin/sermonnotesdrop";
+import { NotesDrop } from "@/views/admin/sermonnotesdrop";
 import { Fetch, Upload, Delete } from "@/hooks/sermonhooks";
 
 import { SermonFullType } from "@/types/sermon";
@@ -97,8 +97,8 @@ export function EditSermon() {
 
   const [canSubmit, setCanSubmit] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<{
-	audio:File | "None";
-	text: File | "None";
+    audio: File | "None";
+    text: File | "None";
   }>({ audio: "None", text: "None" });
   const [serverResponse, setServerResponse] = useState<{
     success: boolean;
@@ -114,26 +114,38 @@ export function EditSermon() {
   );
 
   useEffect(() => {
+	let date
+    if (selectedSermon) {
+      console.log("Date delivered:", selectedSermon.date_delivered);
+      // Or if you want a Date object:
+      console.log("Dates (as JS Date):");
+      const dateString = selectedSermon.date_delivered.split("T")[0];
+      const [year, month, day] = dateString.split("-").map(Number);
+
+      // Create a local date (month is 0-based in JS)
+      date = new Date(year, month - 1, day);
+      console.log(date);
+    }
     setTitleForm(selectedSermon ? selectedSermon.title : "");
     setScriptureForm(selectedSermon ? selectedSermon.scripture : "");
     setTopicForm(selectedSermon ? selectedSermon.topic_id : "");
     setSeriesForm(selectedSermon ? selectedSermon.series_id : "");
     setAuthorForm(selectedSermon ? selectedSermon.author_id : "");
     setDate(
-      selectedSermon ? new Date(selectedSermon.date_delivered) : undefined
+      selectedSermon ? date : undefined
     );
   }, [selectedSermon]);
-  const handleFileUpdate = (files: File[], fileType:'audio' |'text') => {
+  const handleFileUpdate = (files: File[], fileType: "audio" | "text") => {
     setUploadedFiles((prevFiles) => ({
-		...prevFiles,
-		[fileType]: files[0],
-	}));
+      ...prevFiles,
+      [fileType]: files[0],
+    }));
   };
   const queryClient = useQueryClient();
   const handleDelete = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (selectedSermon) {
-		console.log(selectedSermon.slug)
+      console.log(selectedSermon.slug);
       deleteItem(
         { id: selectedSermon.sermon_id, slug: selectedSermon.slug },
         {
@@ -190,8 +202,8 @@ export function EditSermon() {
     const formData = new FormData();
     formData.append("title", titleForm);
     formData.append("scripture", scriptureForm);
-	formData.append("audio", uploadedFiles.audio);
-	formData.append("text", uploadedFiles.text);
+    formData.append("audio", uploadedFiles.audio);
+    formData.append("text", uploadedFiles.text);
     formData.append("date", date?.toISOString() as string);
     formData.append(
       "author_id",
@@ -202,7 +214,10 @@ export function EditSermon() {
       selectedSeries ? selectedSeries.series_id : ""
     );
     if (selectedTopic != null)
-		formData.append("topic_id", selectedTopic.map(topic => topic.topic_id).join(","));
+      formData.append(
+        "topic_id",
+        selectedTopic.map((topic) => topic.topic_id).join(",")
+      );
     formData.append(
       "scripture_id",
       selectedScripture ? selectedScripture.scripture_id : ""
@@ -244,7 +259,8 @@ export function EditSermon() {
     setCanSubmit(
       titleForm !== "" &&
         scriptureForm !== "" &&
-        uploadedFiles.audio != "None" && uploadedFiles.audio != null &&
+        uploadedFiles.audio != "None" &&
+        uploadedFiles.audio != null &&
         date !== undefined &&
         selectedAuthor != null &&
         selectedSeries != null &&
@@ -318,15 +334,15 @@ export function EditSermon() {
                   Make Edits, then click Edit Sermon.
                 </DialogDescription>
               </DialogHeader>
-			  <div className='flex flex-row justify-center'>
-              <SelectSermon />
-			  </div>
-			  <div className="border-t-2 pb-2"></div>
+              <div className="flex flex-row justify-center">
+                <SelectSermon />
+              </div>
+              <div className="border-t-2 pb-2"></div>
               <div className="flex flex-col">
                 <div className="flex flex-row pb-4 space-x-10">
                   <div className="flex flex-col">
                     <Label className="font-medium pl-3 pb-1">Title</Label>
-					<Input
+                    <Input
                       id="head"
                       placeholder="Enter Title"
                       value={titleForm}
@@ -352,14 +368,14 @@ export function EditSermon() {
                   </div>
                 </div>
 
-				<div className="flex flex-row pb-4 space-x-10">
-				<div className="flex flex-col">
+                <div className="flex flex-row pb-4 space-x-10">
+                  <div className="flex flex-col">
                     <Label className="font-medium pl-3 pb-1">Book</Label>
                     <SelectScripture />
                   </div>
                   <div className="flex flex-col">
                     <Label className="font-medium pl-3 pb-1">Scripture</Label>
-					<Input
+                    <Input
                       id="desc"
                       placeholder="Enter Scripture"
                       value={scriptureForm}
@@ -367,61 +383,53 @@ export function EditSermon() {
                       className="w-[230px] justify-between bg-white text-gray-500 font-normal dark:bg-background dark:text-white"
                     />
                   </div>
-
-                 
                 </div>
-				<div className="border-t-2 pb-2"></div>
-                 
-                  <div className="flex justify-center pb-2">
-                    <div className="flex items-left space-x-4">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <Button
-                            variant={"ghost"}
-                            className={cn(
-                              "justify-start text-left font-normal",
-                              !date && "text-muted-foreground"
-                            )}
-                          >
-                            <CalendarIcon className="mr-2 h-4 w-4" />
-                            {date ? (
-                              format(date, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0">
-                          <Calendar
-                            mode="single"
-                            selected={date}
-                            onSelect={setDate}
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
-                    </div>
-                  </div>
+                <div className="border-t-2 pb-2"></div>
 
-                  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-                    <AuthAudio
-                      onAudioUpdate={handleFileUpdate}
-                      audiopath={
-                        selectedSermon ? selectedSermon.audio_path : ""
-                      }
-                    />
+                <div className="flex justify-center pb-2">
+                  <div className="flex items-left space-x-4">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant={"ghost"}
+                          className={cn(
+                            "justify-start text-left font-normal",
+                            !date && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {date ? (
+                            format(date, "PPP")
+                          ) : (
+                            <span>Pick a date</span>
+                          )}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0">
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          onSelect={setDate}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
                   </div>
+                </div>
 
-				  <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
-                    <NotesDrop
-                      onAudioUpdate={handleFileUpdate}
-                      audiopath={
-                        selectedSermon ? selectedSermon.text_path : ""
-                      }
-                    />
-                  </div>
-				
-              
+                <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+                  <AuthAudio
+                    onAudioUpdate={handleFileUpdate}
+                    audiopath={selectedSermon ? selectedSermon.audio_path : ""}
+                  />
+                </div>
+
+                <div className="border-dashed border-2 border-gray-300 p-4 rounded-lg cursor-pointer hover:bg-gray-200 dark:hover:bg-sky-500">
+                  <NotesDrop
+                    onAudioUpdate={handleFileUpdate}
+                    audiopath={selectedSermon ? selectedSermon.text_path : ""}
+                  />
+                </div>
               </div>
               <DialogFooter>
                 <form onSubmit={handleSubmit}>

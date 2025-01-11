@@ -105,6 +105,8 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 
 	defer rows.Close()
 
+	
+
 	sermons := []types.SermonFull{}
 
 	for rows.Next() {
@@ -114,24 +116,24 @@ func fetchSermons(w http.ResponseWriter, r *http.Request) {
 		var scripture types.ScriptureType
 		var topics []types.TopicType
 		var topicsJSON []byte
-err := rows.Scan(
-    &sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.ScriptureID,&sermon.Slug, &sermon.Note_Path,
-    &author.AuthorID, &author.Name, &author.Ministry, &author.Image_Path, &author.Slug,
-    &series.SeriesID, &series.Title, &series.Description, &series.Image_Path, &series.Date_Published, &series.Slug,
-    &topicsJSON,
-    &scripture.ScriptureID, &scripture.Book, &scripture.Image_Path, &scripture.Slug,
-)
-if err != nil {
-    fmt.Fprintf(os.Stderr, "Process Sermons error: %v\n", err)
-    w.Write([]byte(`{""Failed to process series_id: " + err.Error()"}`))
-}
+		err := rows.Scan(
+			&sermon.SermonID, &sermon.Title, &sermon.DateDelivered, &sermon.Scripture, &sermon.Audio_Path, &sermon.SeriesID, &sermon.AuthorID, &sermon.ScriptureID,&sermon.Slug, &sermon.Note_Path,
+			&author.AuthorID, &author.Name, &author.Ministry, &author.Image_Path, &author.Slug,
+			&series.SeriesID, &series.Title, &series.Description, &series.Image_Path, &series.Date_Published, &series.Slug,
+			&topicsJSON,
+			&scripture.ScriptureID, &scripture.Book, &scripture.Image_Path, &scripture.Slug,
+		)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Process Sermons error: %v\n", err)
+			w.Write([]byte(`{""Failed to process series_id: " + err.Error()"}`))
+		}
 
-err = json.Unmarshal(topicsJSON, &topics)
-if err != nil {
-    fmt.Fprintf(os.Stderr, "Failed to unmarshal topics: %v\n", err)
-    w.Write([]byte(`{"Failed to unmarshal topics: " + err.Error()}`))
-}
-
+		err = json.Unmarshal(topicsJSON, &topics)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Failed to unmarshal topics: %v\n", err)
+			w.Write([]byte(`{"Failed to unmarshal topics: " + err.Error()}`))
+		}
+		fmt.Println("Sermon date_delivered:", sermon.DateDelivered)
 		sermons = append(sermons, types.SermonFull{
 			SermonType:    sermon,
 			AuthorType:    author,

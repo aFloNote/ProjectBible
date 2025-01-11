@@ -4,6 +4,8 @@ interface DateComponentProps {
   
   const DateComponent: React.FC<DateComponentProps> = ({ date: dateString }) => {
     let date = new Date(dateString);
+	console.log(date)
+	console.log("here")
     let month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
 	let monthFull=date.toLocaleString('default', { month: 'long' });
     let day = date.getUTCDate();
