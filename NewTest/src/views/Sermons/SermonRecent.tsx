@@ -195,7 +195,7 @@ export function Recent() {
                               date={
 								
 								
-								SermonFull.SermonType.date_delivered}
+								date.toString()}
                             />
                           </div>
                           <h2 className="lg:text-xl lg:text-center hidden lg:block lg:leading-none">
