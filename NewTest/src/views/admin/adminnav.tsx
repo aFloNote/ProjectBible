@@ -11,7 +11,7 @@ function AdminNav() {
   
   return (
     <div className='flex columns-3 justify-between w-full'>
-        <Logo ratio={16/9} size="6em"/>
+        <Logo size="6em"/>
    
     
   <div className='flex justify-end items-center'>
