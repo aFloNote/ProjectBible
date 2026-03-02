@@ -97,8 +97,8 @@ export function SermonPage() {
                 {" "}
                 {/* Audio player container */}
                 <Audio
-                  audio_link={sermonFull[0].SermonType.audio_path}
-                  sermonFull={sermonFull}
+                  audio_link={sermonFull[0].SermonType.audio_path} text_link={sermonFull[0].SermonType.text_path} sermonFull={sermonFull}
+          
                 />
               </div>
             </div>
