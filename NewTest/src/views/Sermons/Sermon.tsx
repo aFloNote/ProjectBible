@@ -37,8 +37,13 @@ export function SermonPage() {
   let day=0;
   let year=0;
  if (sermonFull){
-  let date = new Date(sermonFull[0].SermonType.date_delivered);
-     month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
+  
+  const dateString = sermonFull[0].SermonType.date_delivered.split("T")[0];
+  const [yearFor, monthFor, dayFor] = dateString.split("-").map(Number);
+
+  // Create a local date (month is 0-based in JS)
+  	let date = new Date(yearFor, monthFor - 1, dayFor);
+    month = date.toLocaleString('default', { month: 'short' }).toUpperCase();
     day = date.getUTCDate();
     // @ts-ignore
     year = date.getUTCFullYear();
@@ -89,7 +94,7 @@ export function SermonPage() {
 			
 				<div className="flex flex-row items-center mx-auto">
 			  <div className='text-center text-gray-400 leading-none text-sm  pr-1'>{month}</div>
-			  <div className='text-center text-gray-400 text-sm  leading-none'>{day}</div>
+			  <div className='text-center text-gray-400 text-sm  leading-none'>{day},</div>
 			  <div className='text-center text-gray-400 leading-none text-sm pl-1'>{year}</div>
 			  </div>
 					  
@@ -98,7 +103,7 @@ export function SermonPage() {
         </div>
       </div>
       <div className="flex flex-col"> {/* Audio player container */}
-        <Audio audio_link={sermonFull[0].SermonType.audio_path} sermonFull={sermonFull}/>
+        <Audio audio_link={sermonFull[0].SermonType.audio_path} text_link={sermonFull[0].SermonType.text_path} sermonFull={sermonFull}/>
       </div>
 	  </ScrollArea>
     </div>

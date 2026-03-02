@@ -11,7 +11,6 @@ import { setSelectedSermonPage } from "@/redux/sermonAdminSelector";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { useContext } from "react";
 import { useTheme } from "@/components/theme-provider"; // adjust this import based on your actual file structure
 
 export function Series() {
@@ -50,10 +49,16 @@ export function Series() {
     if (searchResults && searchResults.length > 0 && searchTerm !== "") {
       const seriesResults = searchResults
         .filter((result) => result.collection === "series")
-        .map((result) => result.document as SeriesType);
+        .map((result) => result.document as SeriesType)
+		.sort((a, b) => a.title.localeCompare(b.title));
       setItems(seriesResults.slice(0, 200));
     } else {
-      if (seriesData) setItems(seriesData.slice(0, 200));
+		
+		if (seriesData) {
+			const sortedSeries = seriesData
+		  .sort((a, b) => a.title.localeCompare(b.title));
+			setItems(sortedSeries.slice(0, 200));
+		}
     }
   }, [searchResults, seriesData]);
 
@@ -62,6 +67,7 @@ export function Series() {
       const newItems = searchResults
         .filter((result) => result.collection === "series")
         .map((result) => result.document as SeriesType)
+		.sort((a, b) => a.title.localeCompare(b.title))
         .slice(items.length, items.length + 10);
 
       setItems((prevItems) => [...prevItems, ...newItems]);
@@ -71,7 +77,9 @@ export function Series() {
       }
     } else {
       if (!seriesData) return;
-      const newItems = seriesData.slice(items.length, items.length + 10);
+      const newItems = seriesData
+	 .sort((a, b) => a.title.localeCompare(b.title))
+	  .slice(items.length, items.length + 10);
       setItems((prevItems) => [...prevItems, ...newItems]);
 
       if (items.length + 10 >= seriesData.length) {

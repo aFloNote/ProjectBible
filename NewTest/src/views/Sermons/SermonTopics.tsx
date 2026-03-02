@@ -33,11 +33,15 @@ export function topics() {
 	if (searchResults && searchResults.length > 0 && searchTerm !== "") {
 	  const topicsResults = searchResults
 		.filter(result => result.collection === 'topics')
-		.map(result => result.document as TopicType);
+		.map(result => result.document as TopicType)
+		.sort((a, b) => a.name.localeCompare(b.name));
 	  setItems(topicsResults.slice(0, 200));
 	} else {
-	  if(topicsData)
-	  setItems(topicsData.slice(0, 200));
+	  if(topicsData){
+		const sortedTopics = topicsData
+		  .sort((a, b) => a.name.localeCompare(b.name));
+	  setItems(sortedTopics.slice(0, 200));
+	  }
 	}
   }, [searchResults, topicsData]);
   
@@ -46,6 +50,7 @@ export function topics() {
 	  const newItems = searchResults
 		.filter(result => result.collection === 'topics')
 		.map(result => result.document as TopicType)
+		.sort((a, b) => a.name.localeCompare(b.name))
 		.slice(items.length, items.length + 10);
   
 	  setItems((prevItems) => [...prevItems, ...newItems]);
@@ -55,10 +60,13 @@ export function topics() {
 	  }
 	} else {
 	  if (!topicsData) return;
-	  const newItems = topicsData.slice(items.length, items.length + 10);
+	  const newItems = topicsData
+	 .sort((a, b) => a.name.localeCompare(b.name))
+	  .slice(items.length, items.length + 10);
 	  setItems((prevItems) => [...prevItems, ...newItems]);
   
 	  if (items.length + 10 >= topicsData.length) {
+		
 		setHasMoreItems(false);
 	  }
 	}
