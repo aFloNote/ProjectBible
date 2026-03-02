@@ -8,7 +8,7 @@ function TopNav() {
     <div className="flex justify-between w-full pb-1">
   <div className='w-90 pr-10'></div> {/* This empty div is used to take up space on the left side */}
   <Link to='https://www.faithbiblechurchtreasurevalley.net/'>
-  <Logo ratio={16 / 9} size="6em" />
+  <Logo  size="6em" />
   </Link>
   <div className="flex pr-5">
     <MenuNav />
