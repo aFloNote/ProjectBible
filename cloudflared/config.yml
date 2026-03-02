@@ -1,0 +1,7 @@
+tunnel: 91e8c7db-a73d-4d0b-8113-0d6bd301d18c
+credentials-file: /etc/cloudflared/91e8c7db-a73d-4d0b-8113-0d6bd301d18c.json
+
+ingress:
+  - hostname: dev.fbctreasurevalley.net
+    service: http://nginx:80
+  - service: http_status:404
