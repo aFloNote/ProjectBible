@@ -35,29 +35,16 @@ import { useState } from "react";
 			</NavigationMenuLink>
 		  </NavigationMenuItem>
 		  <NavigationMenuItem>
-			<NavigationMenuTrigger>About</NavigationMenuTrigger>
-			<NavigationMenuContent className='text-primary'>
+		
+		
 			  <NavigationMenuLink
 				href="https://www.faithbiblechurchtreasurevalley.net/about"
 				className={navigationMenuTriggerStyle()}
 			  >
 				About Us
 			  </NavigationMenuLink>
-			  <Separator className='bg-secondary'orientation="horizontal" />
-			  <NavigationMenuLink
-				href="https://www.faithbiblechurchtreasurevalley.net/leadership"
-				className={navigationMenuTriggerStyle()}
-			  >
-				Leadership
-			  </NavigationMenuLink>
-			  <Separator className='bg-secondary'orientation="horizontal" />
-			  <NavigationMenuLink
-				href="https://www.faithbiblechurchtreasurevalley.net/what-we-believe"
-				className={navigationMenuTriggerStyle()}
-			  >
-				What We Believe
-			  </NavigationMenuLink>
-			</NavigationMenuContent>
+
+		
 		  </NavigationMenuItem>
 		  <NavigationMenuItem className="relative">
 			<NavigationMenuTrigger className="relative">
@@ -72,21 +59,28 @@ import { useState } from "react";
 			  </NavigationMenuLink>
 			  <Separator className='bg-secondary'orientation="horizontal" />
 			  <NavigationMenuLink
-				href="https://www.faithbiblechurchtreasurevalley.net/women"
+				href="https://www.faithbiblechurchtreasurevalley.net/womensministry"
 				className={navigationMenuTriggerStyle()}
 			  >
 				Women
 			  </NavigationMenuLink>
 			  <Separator className='bg-secondary'orientation="horizontal" />
+			   <NavigationMenuLink
+				href="https://www.faithbiblechurchtreasurevalley.net/youth"
+				className={navigationMenuTriggerStyle()}
+			  >
+				Youth
+			  </NavigationMenuLink>
+			  <Separator className='bg-secondary'orientation="horizontal" />
 			  <NavigationMenuLink
-				href="https://www.faithbiblechurchtreasurevalley.net/children"
+				href="https://www.faithbiblechurchtreasurevalley.net/childrensministry"
 				className={navigationMenuTriggerStyle()}
 			  >
 				Children
 			  </NavigationMenuLink>
 			  <Separator className='bg-secondary'orientation="horizontal" />
 			  <NavigationMenuLink
-				href="https://www.faithbiblechurchtreasurevalley.net/community-group"
+				href="https://www.faithbiblechurchtreasurevalley.net/community-groups"
 				className={navigationMenuTriggerStyle()}
 			  >
 				Community Group
